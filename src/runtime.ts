@@ -1,11 +1,32 @@
 // import * as base64 from 'std/encoding/base64.ts'
 
-import { InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'
+import * as E from 'fp-ts/Either.ts'
+import * as handlers from '#/handlers/mod.ts'
+import { InputMessage, InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'
+import { OutputMessageTranscoder } from '#/schemas/messages/OutputMessage.ts'
 
 const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
 
 const hostname = config.host as string
 const port = config.port as number
+
+const logError = (error: Error) => {
+  const errorMessage = Deno.inspect(error, {
+    colors: true,
+    breakLength: 80,
+    iterableLimit: 100,
+    showHidden: false,
+    strAbbreviateSize: undefined,
+    compact: false,
+    escapeSequences: true,
+    getters: true,
+    showProxy: true,
+    sorted: true,
+    trailingComma: true,
+    depth: Infinity,
+  })
+  console.error(errorMessage)
+}
 
 Deno.serve({
   hostname,
@@ -31,38 +52,41 @@ Deno.serve({
     console.log('a client connected!')
   })
 
-  socket.addEventListener('message', (event) => {
-    // console.log('message', event)
-
+  socket.addEventListener('message', async (event) => {
     try {
-      const inputMessage = JSON.parse(event.data)
-      const decodedInputMessage = InputMessageTranscoder.decode(inputMessage)
-      console.log('decodedInputMessage', decodedInputMessage)
+      const inputMessage = JSON.parse(event.data) as Array<unknown> | Record<string, unknown>
 
-      socket.send(
-        JSON.stringify({
-          protocol: 'secWebsocketProtocol',
-          payload: {},
-        }),
-      )
+      const inputDecodeResult = InputMessageTranscoder.decode(inputMessage)
+      if (E.isLeft(inputDecodeResult)) {
+        throw {
+          inputMessage,
+          transcodeErrors: inputDecodeResult.left,
+        }
+      }
+
+      // TODO: Can't really get these types as literals. Why?
+      const inputMessageResult = inputDecodeResult.right as InputMessage
+      const protocolHandlers = handlers[inputMessageResult.protocol as keyof typeof handlers]
+      const commandHandler = protocolHandlers[inputMessageResult.command as keyof typeof protocolHandlers]
+      const outputMessages = await commandHandler(inputMessageResult as never)
+
+      // const outputEncodeResults = []
+      for (const entry of outputMessages) {
+        const result = OutputMessageTranscoder.encode(entry as never)
+        if (E.isLeft(result)) {
+          throw {
+            outputMessage: entry,
+            transcodeErrors: result.left,
+          }
+        }
+
+        // TODO: Check if you can send multiple messages at once.
+        socket.send(JSON.stringify(result.right))
+      }
     } catch (error: unknown) {
-      // TODO: Return correct error to client?
-      console.error(error as Error)
+      logError(error as Error)
     }
-
-    // if (event.data === 'ping') {
-    //   socket.send('pong')
-    // }
   })
 
   return response
-
-  // return new Response(response.body, {
-  //   headers: new Headers({
-  //     ...response.headers,
-  //     'Sec-Websocket-Accept': secWebsocketAccept,
-  //   }),
-  //   status: response.status,
-  //   statusText: response.statusText,
-  // })
 })

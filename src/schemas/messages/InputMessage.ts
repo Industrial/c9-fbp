@@ -10,4 +10,4 @@ export type InputMessageInput = S.InputOf<typeof InputMessageSchema>
 
 export type InputMessage = S.OutputOf<typeof InputMessageSchema>
 
-export const InputMessageTranscoder = deriveTranscoder(InputMessageSchema)
+export const InputMessageTranscoder = deriveTranscoder<InputMessageInput, InputMessage>(InputMessageSchema)

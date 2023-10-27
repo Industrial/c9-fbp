@@ -5,7 +5,7 @@ import { RuntimeInputMessageBaseSchema } from '#/schemas/messages/runtime/Runtim
 export const GetRuntimeInputMessageSchema = RuntimeInputMessageBaseSchema.intersect(S.Struct({
   command: S.Literal('getruntime'),
   payload: S.Struct({
-    secret: S.String(),
+    secret: S.Optional(S.String()),
   }),
 }))
 
