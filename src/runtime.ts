@@ -1,5 +1,3 @@
-// import * as base64 from 'std/encoding/base64.ts'
-
 import * as E from 'fp-ts/Either.ts'
 import * as handlers from '#/handlers/mod.ts'
 import { InputMessage, InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'

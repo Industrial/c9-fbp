@@ -1,11 +1,22 @@
 import * as S from 'schemata-ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { CapabilitiesSchema } from '#/schemas/messages/shared/Capabilities.ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { RuntimeOutputMessageBaseSchema } from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const RuntimeOutputMessageSchema = RuntimeOutputMessageBaseSchema.intersect(S.Struct({
   command: S.Literal('runtime'),
   payload: S.Struct({
-    secret: S.String(),
+    allCapabilities: CapabilitiesSchema,
+    capabilities: CapabilitiesSchema,
+    graph: GraphIDSchema,
+    id: S.UUID(4),
+    label: S.String(),
+    namespace: S.String(),
+    repository: S.String(),
+    repositoryVersion: S.String(),
+    type: S.String(),
+    version: S.String(),
   }),
 }))
 
