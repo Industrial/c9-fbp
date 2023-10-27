@@ -2,8 +2,8 @@
   "tasks": {
     "fbp-init": "deno run -A npm:fbp-protocol/fbp-init --name c9-fbp --port 3569 --command \"deno task runtime\"",
     "fbp-test": "fbp-protocol/node_modules/.bin/_mocha fbp-protocol/test/*.js --reporter spec",
-    "fbp-install": "cd fbp-protocol && pnpm i",
-    "runtime": "",
+    "fbp-install": "cd fbp-protocol && pnpm i && rm pnpm-lock.yaml",
+    "runtime": "deno run -A src/runtime.ts",
     "start": "deno run -A src/main.ts",
     "dev": "deno run -A --watch src/main.ts",
     "lint": "deno lint",
