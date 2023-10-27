@@ -1,0 +1,8 @@
+{
+  "name": "c9-fbp",
+  "command": "deno task runtime",
+  "host": "localhost",
+  "port": 3569,
+  "collection": "core",
+  "version": "0.7"
+}

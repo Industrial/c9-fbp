@@ -1,0 +1,58 @@
+{
+  "tasks": {
+    "fbp-init": "deno run -A npm:fbp-protocol/fbp-init --name c9-fbp --port 3569 --command \"deno task runtime\"",
+    "fbp-test": "fbp-protocol/node_modules/.bin/_mocha fbp-protocol/test/*.js --reporter spec",
+    "fbp-install": "cd fbp-protocol && pnpm i",
+    "runtime": "",
+    "start": "deno run -A src/main.ts",
+    "dev": "deno run -A --watch src/main.ts",
+    "lint": "deno lint",
+    "lint:watch": "deno task lint --watch",
+    "test": "deno test",
+    "test:coverage": "deno task test --coverage=./coverage && deno coverage ./coverage --lcov --output=./coverage/coverage.lcov && deno coverage ./coverage",
+    "test:watch": "deno task test --watch"
+  },
+  "imports": {
+    "#/": "./src/",
+    "fast-check": "npm:/fast-check",
+    "fbp-protocol": "npm:/fbp-protocol",
+    "fbp-protocol/": "npm:/fbp-protocol/",
+    "fp-ts": "https://deno.land/x/fp_ts@v2.11.4/mod.ts",
+    "fp-ts/": "https://deno.land/x/fp_ts@v2.11.4/",
+    "mocha": "npm:/mocha",
+    "rotating-file-stream": "npm:/rotating-file-stream",
+    "schemata-ts": "npm:/schemata-ts",
+    "schemata-ts/": "npm:/schemata-ts/",
+    "std/": "https://deno.land/std@0.204.0/",
+    "tslog": "npm:/tslog",
+    "viem": "npm:/viem",
+    "viem/": "npm:/viem/",
+    "vitest": "npm:/vitest"
+  },
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ],
+      "exclude": [
+        "require-await"
+      ]
+    },
+    "include": [
+      "src/"
+    ],
+    "exclude": []
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": false,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": [
+      "src/"
+    ],
+    "exclude": []
+  }
+}

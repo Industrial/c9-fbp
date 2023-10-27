@@ -1,0 +1,3 @@
+[submodule "fbp-protocol"]
+	path = fbp-protocol
+	url = https://github.com/flowbased/fbp-protocol
