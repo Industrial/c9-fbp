@@ -1,46 +1,7 @@
 import * as S from 'schemata-ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
-
-export const PortValueSchema = S.Union(
-  S.Ascii,
-  S.Base64,
-  S.Base64Url,
-  S.BigIntFromString,
-  S.BitcoinAddress,
-  S.Boolean,
-  S.BooleanFromNumber,
-  S.BooleanFromString,
-  S.CreditCard,
-  S.Date,
-  S.DateFromInt,
-  S.DateFromIsoString,
-  S.DateFromString,
-  S.DateFromUnixTime,
-  S.EmailAddress,
-  S.EthereumAddress,
-  S.Float,
-  S.FloatFromString,
-  S.HexColor,
-  S.Hexadecimal,
-  S.HslColor,
-  S.Int,
-  S.IntFromString,
-  S.Jwt,
-  S.LatLong,
-  S.Natural,
-  S.NegativeFloat,
-  S.NegativeInt,
-  S.NonNegativeFloat,
-  S.NonPositiveFloat,
-  S.NonPositiveInt,
-  S.Number,
-  S.PositiveFloat,
-  S.PositiveInt,
-  S.RGB,
-  S.String,
-  S.UUID,
-)
+import { ValueSchema } from '#/schemas/messages/shared/Value.ts'
 
 export const PortDefinitionSchema = S.Struct({
   id: PortIDSchema,
@@ -49,8 +10,8 @@ export const PortDefinitionSchema = S.Struct({
   required: S.Boolean,
   addressable: S.Boolean,
   description: S.String(),
-  values: S.Array(PortValueSchema),
-  default: PortValueSchema,
+  values: S.Array(ValueSchema),
+  default: ValueSchema,
 })
 
 export type PortDefinitionInput = S.InputOf<typeof PortDefinitionSchema>

@@ -1,20 +1,38 @@
 import * as S from 'schemata-ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { RuntimeInputMessageBaseSchema } from '#/schemas/messages/runtime/RuntimeInputMessageBase.ts'
-import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import { PortDefinitionSchema } from '#/schemas/messages/shared/PortDefinition.ts'
+import {
+  RuntimeOutputMessageBaseInput,
+  RuntimeOutputMessageBaseSchema,
+} from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
+import { PortDefinition, PortDefinitionInput, PortDefinitionSchema } from '#/schemas/messages/shared/PortDefinition.ts'
+import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 
-export const PortsOutputMessageSchema = RuntimeInputMessageBaseSchema.intersect(S.Struct({
-  command: S.Literal('packet'),
-  payload: S.Struct({
-    inPorts: PortDefinitionSchema,
-    outPorts: PortDefinitionSchema,
-    graph: GraphIDSchema,
-  }),
-}))
+export type PortsOutputMessageInput = RuntimeOutputMessageBaseInput & {
+  command: 'ports'
+  payload: {
+    inPorts: PortDefinitionInput
+    outPorts: PortDefinitionInput
+    graph: GraphIDInput
+  }
+}
 
-export type PortsOutputMessageInput = S.InputOf<typeof PortsOutputMessageSchema>
+export type PortsOutputMessage = RuntimeOutputMessageBaseInput & {
+  command: 'ports'
+  payload: {
+    inPorts: PortDefinition
+    outPorts: PortDefinition
+    graph: GraphID
+  }
+}
 
-export type PortsOutputMessage = S.OutputOf<typeof PortsOutputMessageSchema>
+export const PortsOutputMessageSchema: S.Schema<PortsOutputMessageInput, PortsOutputMessage> =
+  RuntimeOutputMessageBaseSchema.extend({
+    command: S.Literal<['ports']>('ports'),
+    payload: S.Struct({
+      inPorts: PortDefinitionSchema,
+      outPorts: PortDefinitionSchema,
+      graph: GraphIDSchema,
+    }),
+  })
 
 export const PortsOutputMessageTranscoder = deriveTranscoder(PortsOutputMessageSchema)

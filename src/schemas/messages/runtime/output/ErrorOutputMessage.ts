@@ -1,16 +1,30 @@
 import * as S from 'schemata-ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { RuntimeInputMessageBaseSchema } from '../RuntimeInputMessageBase.ts'
+import {
+  RuntimeOutputMessageBaseInput,
+  RuntimeOutputMessageBaseSchema,
+} from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
 
-export const ErrorOutputMessageSchema = RuntimeInputMessageBaseSchema.intersect(S.Struct({
-  command: S.Literal('packet'),
-  payload: S.Struct({
-    message: S.String(),
-  }),
-}))
+export type ErrorOutputMessageInput = RuntimeOutputMessageBaseInput & {
+  command: 'getruntime'
+  payload: {
+    message: string
+  }
+}
 
-export type ErrorOutputMessageInput = S.InputOf<typeof ErrorOutputMessageSchema>
+export type ErrorOutputMessage = RuntimeOutputMessageBaseInput & {
+  command: 'getruntime'
+  payload: {
+    message: string
+  }
+}
 
-export type ErrorOutputMessage = S.OutputOf<typeof ErrorOutputMessageSchema>
+export const ErrorOutputMessageSchema: S.Schema<ErrorOutputMessageInput, ErrorOutputMessage> =
+  RuntimeOutputMessageBaseSchema.extend({
+    command: S.Literal<['getruntime']>('getruntime'),
+    payload: S.Struct({
+      message: S.String(),
+    }),
+  })
 
-export const ErrorOutputMessageTranscoder = deriveTranscoder(ErrorOutputMessageSchema)
+export const ErrorOutputInputMessageTranscoder = deriveTranscoder(ErrorOutputMessageSchema)

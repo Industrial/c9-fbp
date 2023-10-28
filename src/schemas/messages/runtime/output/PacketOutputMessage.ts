@@ -1,29 +1,51 @@
 import * as S from 'schemata-ts'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import {
+  RuntimeOutputMessageBaseInput,
+  RuntimeOutputMessageBaseSchema,
+} from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
-import { RuntimeOutputMessageBaseSchema } from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { PacketEvent, PacketEventInput, PacketEventSchema } from '#/schemas/messages/shared/PacketEvent.ts'
 
-export const PacketOutputMessageSchema = RuntimeOutputMessageBaseSchema.intersect(S.Struct({
-  command: S.Literal('packet'),
-  payload: S.Struct({
-    event: S.Union(
-      S.Literal('connect'),
-      S.Literal('begingroup'),
-      S.Literal('data'),
-      S.Literal('endgroup'),
-      S.Literal('disconnect'),
-    ),
-    graph: GraphIDSchema,
-    payload: S.Struct({}),
-    port: PortIDSchema,
-    schema: S.String(),
-    type: S.String(),
-  }),
-}))
+export type PacketOutputMessageInput = RuntimeOutputMessageBaseInput & {
+  command: 'packet'
+  payload: {
+    message: string
+    event: PacketEventInput
+    graph: string
+    payload: {}
+    port: string
+    schema: string
+    type: string
+  }
+}
 
-export type PacketOutputMessageInput = S.InputOf<typeof PacketOutputMessageSchema>
+export type PacketOutputMessage = RuntimeOutputMessageBaseInput & {
+  command: 'packet'
+  payload: {
+    message: string
+    event: PacketEvent
+    graph: string
+    payload: {}
+    port: string
+    schema: string
+    type: string
+  }
+}
 
-export type PacketOutputMessage = S.OutputOf<typeof PacketOutputMessageSchema>
+export const PacketOutputMessageSchema: S.Schema<PacketOutputMessageInput, PacketOutputMessage> =
+  RuntimeOutputMessageBaseSchema.extend({
+    command: S.Literal<['packet']>('packet'),
+    payload: S.Struct({
+      message: S.String(),
+      event: PacketEventSchema,
+      graph: GraphIDSchema,
+      payload: S.Struct({}),
+      port: PortIDSchema,
+      schema: S.String(),
+      type: S.String(),
+    }),
+  })
 
-export const PacketOutputMessageTranscoder = deriveTranscoder(PacketOutputMessageSchema)
+export const GetRuntimeInputMessageTranscoder = deriveTranscoder(PacketOutputMessageSchema)
