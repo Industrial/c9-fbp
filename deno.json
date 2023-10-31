@@ -14,6 +14,12 @@
   },
   "imports": {
     "#/": "./src/",
+    "alga-ts": "npm:/alga-ts",
+    "alga-ts/": "npm:/alga-ts/",
+    "monocle-ts": "npm:/monocle-ts",
+    "monocle-ts/": "npm:/monocle-ts/",
+    "spectacles-ts": "npm:/spectacles-ts",
+    "spectacles-ts/": "npm:/spectacles-ts/",
     "fast-check": "npm:/fast-check",
     "fbp-protocol": "npm:/fbp-protocol",
     "fbp-protocol/": "npm:/fbp-protocol/",

@@ -1,10 +1,11 @@
 import * as S from 'schemata-ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
 import {
   RuntimeInputMessageBase,
   RuntimeInputMessageBaseInput,
   RuntimeInputMessageBaseSchema,
 } from '#/schemas/messages/runtime/RuntimeInputMessageBase.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export type GetRuntimeInputMessageInput = RuntimeInputMessageBaseInput & {
   command: 'getruntime'
@@ -29,3 +30,7 @@ export const GetRuntimeInputMessageSchema: S.Schema<GetRuntimeInputMessageInput,
   })
 
 export const GetRuntimeInputMessageTranscoder = deriveTranscoder(GetRuntimeInputMessageSchema)
+
+export const GetRuntimeInputMessageInputGuard = deriveInputGuard(GetRuntimeInputMessageSchema)
+
+export const GetRuntimeInputMessageGuard = deriveGuard(GetRuntimeInputMessageSchema)

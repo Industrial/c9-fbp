@@ -6,14 +6,14 @@ import {
 } from '#/schemas/messages/runtime/RuntimeOutputMessageBase.ts'
 
 export type ErrorOutputMessageInput = RuntimeOutputMessageBaseInput & {
-  command: 'getruntime'
+  command: 'error'
   payload: {
     message: string
   }
 }
 
 export type ErrorOutputMessage = RuntimeOutputMessageBaseInput & {
-  command: 'getruntime'
+  command: 'error'
   payload: {
     message: string
   }
@@ -21,7 +21,7 @@ export type ErrorOutputMessage = RuntimeOutputMessageBaseInput & {
 
 export const ErrorOutputMessageSchema: S.Schema<ErrorOutputMessageInput, ErrorOutputMessage> =
   RuntimeOutputMessageBaseSchema.extend({
-    command: S.Literal<['getruntime']>('getruntime'),
+    command: S.Literal<['error']>('error'),
     payload: S.Struct({
       message: S.String(),
     }),

@@ -1,9 +1,12 @@
+import * as TE from 'fp-ts/TaskEither.ts'
+import { ErrorOutputMessage } from '#/schemas/messages/runtime/output/ErrorOutputMessage.ts'
 import { GetRuntimeInputMessage } from '#/schemas/messages/runtime/input/GetRuntimeInputMessage.ts'
+import { Handler } from '#/handlers/Handler.ts'
 import { RuntimeOutputMessage } from '#/schemas/messages/runtime/output/RuntimeOutputMessage.ts'
 import { UUID } from 'schemata-ts'
 
-export const getruntime = async (message: GetRuntimeInputMessage): Promise<Array<RuntimeOutputMessage>> => {
-  const output: RuntimeOutputMessage = {
+export const getruntime: Handler<GetRuntimeInputMessage, ErrorOutputMessage, RuntimeOutputMessage> = (_message) => {
+  return TE.right([{
     protocol: 'runtime',
     command: 'runtime',
     payload: {
@@ -27,6 +30,5 @@ export const getruntime = async (message: GetRuntimeInputMessage): Promise<Array
       version: 'derp',
       // secret: 'derp',
     },
-  }
-  return [output]
+  }])
 }

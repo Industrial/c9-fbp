@@ -5,13 +5,23 @@ import {
   RuntimeOutputMessageInput,
   RuntimeOutputMessageSchema,
 } from '#/schemas/messages/runtime/RuntimeOutputMessage.ts'
+import {
+  GraphOutputMessage,
+  GraphOutputMessageInput,
+  GraphOutputMessageSchema,
+} from '#/schemas/messages/graph/GraphOutputMessage.ts'
 
 export const OutputMessageSchema = S.Union(
+  GraphOutputMessageSchema,
   RuntimeOutputMessageSchema,
 )
 
-export type OutputMessageInput = RuntimeOutputMessageInput
+export type OutputMessageInput =
+  | GraphOutputMessageInput
+  | RuntimeOutputMessageInput
 
-export type OutputMessage = RuntimeOutputMessage
+export type OutputMessage =
+  | GraphOutputMessage
+  | RuntimeOutputMessage
 
-export const OutputMessageTranscoder = deriveTranscoder<OutputMessageInput, OutputMessage>(OutputMessageSchema)
+export const OutputMessageTranscoder = deriveTranscoder(OutputMessageSchema)

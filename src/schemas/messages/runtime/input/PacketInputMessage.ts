@@ -1,13 +1,14 @@
 import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { PacketEvent, PacketEventInput, PacketEventSchema } from '#/schemas/messages/shared/PacketEvent.ts'
 import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import {
   RuntimeInputMessageBase,
   RuntimeInputMessageBaseInput,
   RuntimeInputMessageBaseSchema,
 } from '#/schemas/messages/runtime/RuntimeInputMessageBase.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { PacketEvent, PacketEventInput, PacketEventSchema } from '#/schemas/messages/shared/PacketEvent.ts'
 
 export type PacketInputMessageInput = RuntimeInputMessageBaseInput & {
   command: 'packet'
@@ -47,3 +48,7 @@ export const PacketInputMessageSchema: S.Schema<PacketInputMessageInput, PacketI
   }))
 
 export const PacketInputMessageTranscoder = deriveTranscoder(PacketInputMessageSchema)
+
+export const PacketInputMessageInputGuard = deriveInputGuard(PacketInputMessageSchema)
+
+export const PacketInputMessageGuard = deriveGuard(PacketInputMessageSchema)
