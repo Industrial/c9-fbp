@@ -9,6 +9,7 @@ import { Const } from 'fp-ts/Const.ts'
 import { InputMessage, InputMessageInput, InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'
 import { OutputMessage, OutputMessageInput, OutputMessageTranscoder } from '#/schemas/messages/OutputMessage.ts'
 import { TranscodeErrors } from 'schemata-ts/TranscodeError'
+import { drawErrorTree } from 'schemata-ts/Transcoder'
 import { pipe } from 'fp-ts/function.ts'
 
 const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
@@ -34,6 +35,101 @@ const logError = (error: Error) => {
   console.error(errorMessage)
 }
 
+const getOutputMessagesForInputMessage = (
+  inputMessage: InputMessage,
+): TE.TaskEither<Error, Array<OutputMessageInput>> => {
+  const protocolHandlers = handlers[inputMessage.protocol as keyof typeof handlers]
+  const handler = protocolHandlers[inputMessage.command as keyof typeof protocolHandlers] as (
+    input: InputMessage,
+  ) => TE.TaskEither<Error, Array<OutputMessageInput>>
+  const outputMessageInputs = handler(inputMessage)
+  return outputMessageInputs
+}
+
+const transcodeError = (errors: TranscodeErrors) => {
+  return new Error(drawErrorTree(errors))
+}
+
+const decodeInputMessage = (inputMessageInput: InputMessageInput): E.Either<Error, InputMessage> => {
+  return pipe(
+    InputMessageTranscoder.decode(inputMessageInput) as E.Either<
+      Const<TranscodeErrors, InputMessageInput>,
+      InputMessage
+    >,
+    E.mapLeft(transcodeError),
+  )
+}
+
+const parseInputMessage = (inputMessageString: string): TE.TaskEither<Error, InputMessage> => {
+  return pipe(
+    inputMessageString,
+    json.parse,
+    E.map((json) => {
+      return json as InputMessageInput
+    }),
+    E.map(decodeInputMessage),
+    E.flatten,
+    TE.fromEither,
+  )
+}
+
+const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.Either<Error, OutputMessage> => {
+  return pipe(
+    OutputMessageTranscoder.decode(outputMessageInput) as E.Either<
+      Const<TranscodeErrors, OutputMessageInput>,
+      OutputMessage
+    >,
+    E.mapLeft(transcodeError),
+  )
+}
+
+const decodeOutputMessages = (
+  outputMessageInputs: Array<OutputMessageInput>,
+): TE.TaskEither<Error, Array<OutputMessage>> => {
+  return pipe(
+    outputMessageInputs,
+    A.map(decodeOutputMessage),
+    TE.fromEitherK(E.sequenceArray),
+    TE.map((outputMessages) => {
+      return outputMessages as Array<OutputMessage>
+    }),
+  )
+}
+
+const socketSend = (outputMessageString: string) => {
+  return (socket: WebSocket): IO.IO<void> => {
+    return () => {
+      socket.send(outputMessageString)
+    }
+  }
+}
+
+const sendOutputMessages = (socket: WebSocket) => {
+  return (outputMessages: ReadonlyArray<OutputMessage>): TE.TaskEither<Error, Array<void>> => {
+    return pipe(
+      outputMessages,
+      RA.map(json.stringify),
+      E.sequenceArray,
+      TE.fromEitherK(E.map((outputMessageStrings) => {
+        return pipe(
+          outputMessageStrings,
+          RA.map((outputMessageString) => {
+            socketSend(outputMessageString)(socket)()
+          }),
+        )
+      })),
+      TE.mapLeft((error) => {
+        return new Error('SendOutput', {
+          cause: error,
+        })
+      }),
+      TE.map((steps) => {
+        return steps as Array<void>
+      }),
+    )
+  }
+}
+
 Deno.serve({
   hostname,
   port,
@@ -54,94 +150,13 @@ Deno.serve({
     // idleTimeout: 1,
   })
 
-  const socketSend = (outputMessageString: string): IO.IO<void> => {
-    return () => {
-      socket.send(outputMessageString)
-    }
-  }
-
-  const getOutputMessagesForInputMessage = (
-    inputMessage: InputMessage,
-  ): TE.TaskEither<Error, Array<OutputMessageInput>> => {
-    // console.log('inputMessage', inputMessage)
-    const protocolHandlers = handlers[inputMessage.protocol as keyof typeof handlers]
-    // console.log('protocolHandlers', protocolHandlers)
-    const handler = protocolHandlers[inputMessage.command as keyof typeof protocolHandlers] as (
-      input: InputMessage,
-    ) => TE.TaskEither<Error, Array<OutputMessageInput>>
-    // console.log('handler', handler)
-    const outputMessageInputs = handler(inputMessage)
-    // console.log('outputMessageInputs', outputMessageInputs)
-    return outputMessageInputs
-  }
-
-  // socket.addEventListener('error', (event) => {
-  //   console.log(event)
-  // })
-
-  socket.addEventListener('message', (event: MessageEvent<string>) => {
+  const handleMessage = (message: string): void => {
     pipe(
-      event.data,
-      json.parse,
-      E.map((inputMessageInput) => {
-        return pipe(
-          InputMessageTranscoder.decode(inputMessageInput) as E.Either<
-            Const<TranscodeErrors, InputMessageInput>,
-            InputMessage
-          >,
-          E.mapLeft((error) => {
-            return {
-              inputMessageInput,
-              error,
-            }
-          }),
-        )
-      }),
-      E.flatten,
-      TE.fromEitherK(E.map((x) => {
-        return x
-      })),
-      TE.map(getOutputMessagesForInputMessage),
-      TE.flatten,
-      TE.map((outputMessageInputs) => {
-        return pipe(
-          outputMessageInputs,
-          A.map((outputMessageInput) => {
-            return pipe(
-              OutputMessageTranscoder.decode(outputMessageInput) as E.Either<
-                Const<TranscodeErrors, OutputMessageInput>,
-                OutputMessage
-              >,
-              E.mapLeft((error) => {
-                return {
-                  outputMessageInput,
-                  error,
-                }
-              }),
-            )
-          }),
-          TE.fromEitherK(E.sequenceArray),
-        )
-      }),
-      TE.flatten,
-      TE.map((outputMessages) => {
-        // console.log('outputMessages', outputMessages)
-        return pipe(
-          outputMessages,
-          RA.map(json.stringify),
-          E.sequenceArray,
-          TE.fromEitherK(E.map((outputMessageStrings) => {
-            return pipe(
-              outputMessageStrings,
-              RA.map((outputMessageString) => {
-                // console.log('outputMessageString', outputMessageString)
-                socketSend(outputMessageString)()
-              }),
-            )
-          })),
-        )
-      }),
-      TE.flatten,
+      TE.right(message),
+      TE.chain(parseInputMessage),
+      TE.chain(getOutputMessagesForInputMessage),
+      TE.chain(decodeOutputMessages),
+      TE.chain(sendOutputMessages(socket)),
       TE.match(
         (error) => {
           logError(error as Error)
@@ -150,6 +165,10 @@ Deno.serve({
         },
       ),
     )()
+  }
+
+  socket.addEventListener('message', (event: MessageEvent<string>) => {
+    handleMessage(event.data)
   })
 
   return response
