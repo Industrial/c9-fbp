@@ -1,41 +1,27 @@
 import * as S from 'schemata-ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
+import { IIPSchema } from '#/schemas/messages/shared/IIP.ts'
+import { PortSchema } from '#/schemas/messages/shared/Port.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  GraphInputMessageBase,
-  GraphInputMessageBaseInput,
-  GraphInputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphInputMessageBase.ts'
-import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import { Port, PortInput, PortSchema } from '#/schemas/messages/shared/Port.ts'
-import { IIP, IIPInput, IIPSchema } from '#/schemas/messages/shared/IIP.ts'
 
-export type RemoveInitialInputMessageInput = GraphInputMessageBaseInput & {
-  command: 'removeinitial'
-  payload: {
-    src: IIPInput
-    tgt: PortInput
-    graph: GraphIDInput
-  }
-}
+export const RemoveInitialInputMessageSchema = GraphInputMessageBaseSchema
+  .extend({
+    command: S.Literal<['removeinitial']>('removeinitial'),
+    payload: S.Struct({
+      src: IIPSchema,
+      tgt: PortSchema,
+      graph: GraphIDSchema,
+    }),
+  })
 
-export type RemoveInitialInputMessage = GraphInputMessageBase & {
-  command: 'removeinitial'
-  payload: {
-    src: IIP
-    tgt: Port
-    graph: GraphID
-  }
-}
+export type RemoveInitialInputMessageInput = S.InputOf<typeof RemoveInitialInputMessageSchema>
 
-export const RemoveInitialInputMessageSchema: S.Schema<RemoveInitialInputMessageInput, RemoveInitialInputMessage> =
-  GraphInputMessageBaseSchema
-    .extend({
-      command: S.Literal<['removeinitial']>('removeinitial'),
-      payload: S.Struct({
-        src: IIPSchema,
-        tgt: PortSchema,
-        graph: GraphIDSchema,
-      }),
-    })
+export type RemoveInitialInputMessage = S.OutputOf<typeof RemoveInitialInputMessageSchema>
 
 export const RemoveInitialInputMessageTranscoder = deriveTranscoder(RemoveInitialInputMessageSchema)
+
+export const RemoveInitialInputMessageInputGuard = deriveInputGuard(RemoveInitialInputMessageSchema)
+
+export const RemoveInitialInputMessageGuard = deriveGuard(RemoveInitialInputMessageSchema)

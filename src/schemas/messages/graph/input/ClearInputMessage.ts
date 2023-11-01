@@ -1,38 +1,10 @@
 import * as S from 'schemata-ts'
-import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import {
-  GraphInputMessageBase,
-  GraphInputMessageBaseInput,
-  GraphInputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphInputMessageBase.ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
-export type ClearInputMessageInput = GraphInputMessageBaseInput & {
-  command: 'clear'
-  payload: {
-    id: GraphIDInput
-    name: string
-    main: boolean
-    library?: string
-    icon?: string
-    description?: string
-  }
-}
-
-export type ClearInputMessage = GraphInputMessageBase & {
-  command: 'clear'
-  payload: {
-    id: GraphID
-    name: string
-    main: boolean
-    library: string | undefined
-    icon: string | undefined
-    description: string | undefined
-  }
-}
-
-export const ClearInputMessageSchema: S.Schema<ClearInputMessageInput, ClearInputMessage> = GraphInputMessageBaseSchema
+export const ClearInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
     command: S.Literal<['clear']>('clear'),
     payload: S.Struct({
@@ -44,6 +16,10 @@ export const ClearInputMessageSchema: S.Schema<ClearInputMessageInput, ClearInpu
       description: S.Optional(S.String()),
     }),
   })
+
+export type ClearInputMessageInput = S.InputOf<typeof ClearInputMessageSchema>
+
+export type ClearInputMessage = S.OutputOf<typeof ClearInputMessageSchema>
 
 export const ClearInputMessageTranscoder = deriveTranscoder(ClearInputMessageSchema)
 

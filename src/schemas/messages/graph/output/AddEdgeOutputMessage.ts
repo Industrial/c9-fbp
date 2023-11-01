@@ -1,26 +1,8 @@
 import * as S from 'schemata-ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  GraphOutputMessageBase,
-  GraphOutputMessageBaseInput,
-  GraphOutputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
-import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import { Edge, EdgeInput, EdgeSchema } from '#/schemas/messages/shared/Edge.ts'
-
-// export type AddEdgeOutputMessageInput = GraphOutputMessageBaseInput & {
-//   command: 'addedge'
-//   payload: EdgeInput & {
-//     graph: GraphIDInput
-//   }
-// }
-
-// export type AddEdgeOutputMessage = GraphOutputMessageBase & {
-//   command: 'addedge'
-//   payload: Edge & {
-//     graph: GraphID
-//   }
-// }
+import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { EdgeSchema } from '#/schemas/messages/shared/Edge.ts'
 
 export const AddEdgeOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({

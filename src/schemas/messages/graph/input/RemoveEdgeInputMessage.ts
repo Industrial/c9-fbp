@@ -1,40 +1,26 @@
 import * as S from 'schemata-ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
+import { PortSchema } from '#/schemas/messages/shared/Port.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  GraphInputMessageBase,
-  GraphInputMessageBaseInput,
-  GraphInputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphInputMessageBase.ts'
-import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import { Port, PortInput, PortSchema } from '#/schemas/messages/shared/Port.ts'
 
-export type RemoveEdgeInputMessageInput = GraphInputMessageBaseInput & {
-  command: 'removeedge'
-  payload: {
-    src: PortInput
-    tgt: PortInput
-    graph: GraphIDInput
-  }
-}
+export const RemoveEdgeInputMessageSchema = GraphInputMessageBaseSchema
+  .extend({
+    command: S.Literal<['removeedge']>('removeedge'),
+    payload: S.Struct({
+      src: PortSchema,
+      tgt: PortSchema,
+      graph: GraphIDSchema,
+    }),
+  })
 
-export type RemoveEdgeInputMessage = GraphInputMessageBase & {
-  command: 'removeedge'
-  payload: {
-    src: Port
-    tgt: Port
-    graph: GraphID
-  }
-}
+export type RemoveEdgeInputMessageInput = S.InputOf<typeof RemoveEdgeInputMessageSchema>
 
-export const RemoveEdgeInputMessageSchema: S.Schema<RemoveEdgeInputMessageInput, RemoveEdgeInputMessage> =
-  GraphInputMessageBaseSchema
-    .extend({
-      command: S.Literal<['removeedge']>('removeedge'),
-      payload: S.Struct({
-        src: PortSchema,
-        tgt: PortSchema,
-        graph: GraphIDSchema,
-      }),
-    })
+export type RemoveEdgeInputMessage = S.OutputOf<typeof RemoveEdgeInputMessageSchema>
 
 export const RemoveEdgeInputMessageTranscoder = deriveTranscoder(RemoveEdgeInputMessageSchema)
+
+export const RemoveEdgeInputMessageInputGuard = deriveInputGuard(RemoveEdgeInputMessageSchema)
+
+export const RemoveEdgeInputMessageGuard = deriveGuard(RemoveEdgeInputMessageSchema)

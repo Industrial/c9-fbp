@@ -1,30 +1,22 @@
 import * as S from 'schemata-ts'
+import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  GraphOutputMessageBaseInput,
-  GraphOutputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
 
-export type ErrorOutputMessageInput = GraphOutputMessageBaseInput & {
-  command: 'error'
-  payload: {
-    message: string
-  }
-}
-
-export type ErrorOutputMessage = GraphOutputMessageBaseInput & {
-  command: 'error'
-  payload: {
-    message: string
-  }
-}
-
-export const ErrorOutputMessageSchema: S.Schema<ErrorOutputMessageInput, ErrorOutputMessage> =
-  GraphOutputMessageBaseSchema.extend({
+export const ErrorOutputMessageSchema = GraphOutputMessageBaseSchema
+  .extend({
     command: S.Literal<['error']>('error'),
     payload: S.Struct({
       message: S.String(),
     }),
   })
 
-export const ErrorOutputInputMessageTranscoder = deriveTranscoder(ErrorOutputMessageSchema)
+export type ErrorOutputMessageInput = S.InputOf<typeof ErrorOutputMessageSchema>
+
+export type ErrorOutputMessage = S.OutputOf<typeof ErrorOutputMessageSchema>
+
+export const ErrorOutputMessageTranscoder = deriveTranscoder(ErrorOutputMessageSchema)
+
+export const ErrorOutputMessageInputGuard = deriveInputGuard(ErrorOutputMessageSchema)
+
+export const ErrorOutputMessageGuard = deriveGuard(ErrorOutputMessageSchema)

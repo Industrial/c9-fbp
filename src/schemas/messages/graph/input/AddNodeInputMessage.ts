@@ -1,43 +1,27 @@
 import * as S from 'schemata-ts'
+import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
+import { MetadataNodeSchema } from '#/schemas/messages/shared/MetadataNode.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  GraphInputMessageBase,
-  GraphInputMessageBaseInput,
-  GraphInputMessageBaseSchema,
-} from '#/schemas/messages/graph/GraphInputMessageBase.ts'
-import { GraphID, GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
-import { MetadataNode, MetadataNodeInput, MetadataNodeSchema } from '#/schemas/messages/shared/MetadataNode.ts'
 
-export type AddNodeInputMessageInput = GraphInputMessageBaseInput & {
-  command: 'addnode'
-  payload: {
-    id: string
-    component: string
-    metadata: MetadataNodeInput
-    graph: GraphIDInput
-  }
-}
+export const AddNodeInputMessageSchema = GraphInputMessageBaseSchema
+  .extend({
+    command: S.Literal<['addnode']>('addnode'),
+    payload: S.Struct({
+      id: S.String(),
+      component: S.String(),
+      metadata: MetadataNodeSchema,
+      graph: GraphIDSchema,
+    }),
+  })
 
-export type AddNodeInputMessage = GraphInputMessageBase & {
-  command: 'addnode'
-  payload: {
-    id: string
-    component: string
-    metadata: MetadataNode
-    graph: GraphID
-  }
-}
+export type AddNodeInputMessageInput = S.InputOf<typeof AddNodeInputMessageSchema>
 
-export const AddNodeInputMessageSchema: S.Schema<AddNodeInputMessageInput, AddNodeInputMessage> =
-  GraphInputMessageBaseSchema
-    .extend({
-      command: S.Literal<['addnode']>('addnode'),
-      payload: S.Struct({
-        id: S.String(),
-        component: S.String(),
-        metadata: MetadataNodeSchema,
-        graph: GraphIDSchema,
-      }),
-    })
+export type AddNodeInputMessage = S.OutputOf<typeof AddNodeInputMessageSchema>
 
 export const AddNodeInputMessageTranscoder = deriveTranscoder(AddNodeInputMessageSchema)
+
+export const AddNodeInputMessageInputGuard = deriveInputGuard(AddNodeInputMessageSchema)
+
+export const AddNodeInputMessageGuard = deriveGuard(AddNodeInputMessageSchema)
