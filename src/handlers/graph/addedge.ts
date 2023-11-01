@@ -3,13 +3,14 @@ import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import * as spectacles from 'spectacles-ts'
 import { AddEdgeInputMessage } from '#/schemas/messages/graph/input/AddEdgeInputMessage.ts'
-import { AddEdgeOutputMessage } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
+import { AddEdgeOutputMessageInput } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
 import { Edge } from '#/schemas/messages/shared/Edge.ts'
-import { ErrorOutputMessage } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { Handler } from '#/handlers/Handler.ts'
+import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-export const addedge: Handler<AddEdgeInputMessage, ErrorOutputMessage, AddEdgeOutputMessage> = (message) => {
+export const addedge = (
+  message: AddEdgeInputMessage,
+): TE.TaskEither<Error, Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput>> => {
   const edge: Edge = {
     src: message.payload.src,
     tgt: message.payload.tgt,
@@ -35,28 +36,33 @@ export const addedge: Handler<AddEdgeInputMessage, ErrorOutputMessage, AddEdgeOu
         ),
       )
     }),
-    TE.mapLeft((error): ErrorOutputMessage => {
-      return {
-        protocol: 'graph',
-        command: 'error',
-        payload: {
-          message: error.message,
-        },
-      }
-    }),
-    TE.map((graph): Array<AddEdgeOutputMessage> => {
-      return [
-        {
-          protocol: 'graph',
-          command: 'addedge',
-          payload: {
-            graph: graph.id,
-            metadata: edge.metadata,
-            src: edge.src,
-            tgt: edge.tgt,
+    TE.match(
+      (error): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+        return [
+          {
+            protocol: 'graph',
+            command: 'error',
+            payload: {
+              message: error.message,
+            },
           },
-        },
-      ]
-    }),
+        ]
+      },
+      (graph): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+        return [
+          {
+            protocol: 'graph',
+            command: 'addedge',
+            payload: {
+              graph: graph.id,
+              metadata: edge.metadata,
+              src: edge.src,
+              tgt: edge.tgt,
+            },
+          },
+        ]
+      },
+    ),
+    TE.fromTask,
   )
 }

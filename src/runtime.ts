@@ -1,17 +1,14 @@
 import * as A from 'fp-ts/Array.ts'
 import * as E from 'fp-ts/Either.ts'
 import * as IO from 'fp-ts/IO.ts'
-import * as R from 'fp-ts/Record.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
+import * as handlers from '#/handlers/mod.ts'
 import * as json from 'fp-ts/Json.ts'
 import { Const } from 'fp-ts/Const.ts'
-import { ErrorOutputMessage } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { Handler } from '#/handlers/Handler.ts'
 import { InputMessage, InputMessageInput, InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'
 import { OutputMessage, OutputMessageInput, OutputMessageTranscoder } from '#/schemas/messages/OutputMessage.ts'
 import { TranscodeErrors } from 'schemata-ts/TranscodeError'
-import { handlers } from '#/handlers/mod.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
@@ -63,96 +60,72 @@ Deno.serve({
     }
   }
 
-  const getOutputMessageForInputMessage = (
+  const getOutputMessagesForInputMessage = (
     inputMessage: InputMessage,
-  ): TE.TaskEither<ErrorOutputMessage, Array<OutputMessageInput>> => {
-    return pipe(
-      handlers,
-      R.lookup(inputMessage.protocol),
-      E.fromOption(() => {
-        return new Error('ProtocolNotFound')
-      }),
-      E.map((protocolHandlers) => {
-        return pipe(
-          protocolHandlers,
-          R.lookup(inputMessage.command),
-          E.fromOption(() => {
-            return new Error('CommandNotFound')
-          }),
-        )
-      }),
-      E.flatten,
-      E.map((commandHandlers) => {
-        const outputMessages: TE.TaskEither<ErrorOutputMessage, Array<OutputMessageInput>> =
-          (handler as Handler<InputMessage, ErrorOutputMessage, OutputMessage>)(
-            inputMessageResult as never,
-          ) as TE.TaskEither<ErrorOutputMessage, Array<OutputMessageInput>>
-      }),
-    )
+  ): TE.TaskEither<Error, Array<OutputMessageInput>> => {
+    // console.log('inputMessage', inputMessage)
+    const protocolHandlers = handlers[inputMessage.protocol as keyof typeof handlers]
+    // console.log('protocolHandlers', protocolHandlers)
+    const handler = protocolHandlers[inputMessage.command as keyof typeof protocolHandlers] as (
+      input: InputMessage,
+    ) => TE.TaskEither<Error, Array<OutputMessageInput>>
+    // console.log('handler', handler)
+    const outputMessageInputs = handler(inputMessage)
+    // console.log('outputMessageInputs', outputMessageInputs)
+    return outputMessageInputs
   }
 
-  socket.addEventListener('open', () => {
-    console.log('a client connected!')
-  })
+  // socket.addEventListener('error', (event) => {
+  //   console.log(event)
+  // })
 
   socket.addEventListener('message', (event: MessageEvent<string>) => {
-    return pipe(
+    pipe(
       event.data,
       json.parse,
-      E.map((inputMessage) => {
-        return InputMessageTranscoder.decode(inputMessage) as E.Either<
-          Const<TranscodeErrors, InputMessageInput>,
-          InputMessage
-        >
+      E.map((inputMessageInput) => {
+        return pipe(
+          InputMessageTranscoder.decode(inputMessageInput) as E.Either<
+            Const<TranscodeErrors, InputMessageInput>,
+            InputMessage
+          >,
+          E.mapLeft((error) => {
+            return {
+              inputMessageInput,
+              error,
+            }
+          }),
+        )
       }),
       E.flatten,
-      TE.fromEitherK(E.map((inputMessageResult) => {
-        return pipe(
-          handlers[inputMessageResult.protocol as keyof typeof handlers],
-          E.fromNullable,
-          E.map((x) => {
-            return
-          }),
-          // E.map(getProtocol)
-          // E.map((x) => {
-          //   return handlers[inputMessageResult.protocol as keyof typeof handlers]
-          // }),
-          // E.map((x) => {
-          // })
-        )
-
-        const protocol = handlers[inputMessageResult.protocol as keyof typeof handlers]
-        if (!protocol) {
-          return E.left(new Error('ProtocolNotFound'))
-        }
-        const handler = protocol[inputMessageResult.command as keyof typeof protocol]
-        if (!handler) {
-          return E.left(new Error('HandlerNotFound'))
-        }
-
-        // I'm just taking a specific Error Message here for the typing to resolve.
-        const outputMessages: TE.TaskEither<ErrorOutputMessage, Array<OutputMessageInput>> =
-          (handler as Handler<InputMessage, ErrorOutputMessage, OutputMessage>)(
-            inputMessageResult as never,
-          ) as TE.TaskEither<ErrorOutputMessage, Array<OutputMessageInput>>
-
-        return outputMessages
+      TE.fromEitherK(E.map((x) => {
+        return x
       })),
+      TE.map(getOutputMessagesForInputMessage),
       TE.flatten,
       TE.map((outputMessageInputs) => {
         return pipe(
           outputMessageInputs,
           A.map((outputMessageInput) => {
-            return OutputMessageTranscoder.decode(outputMessageInput) as E.Either<
-              Const<TranscodeErrors, OutputMessageInput>,
-              OutputMessage
-            >
+            return pipe(
+              OutputMessageTranscoder.decode(outputMessageInput) as E.Either<
+                Const<TranscodeErrors, OutputMessageInput>,
+                OutputMessage
+              >,
+              E.mapLeft((error) => {
+                return {
+                  outputMessageInput,
+                  error,
+                }
+              }),
+            )
           }),
           TE.fromEitherK(E.sequenceArray),
         )
       }),
       TE.flatten,
       TE.map((outputMessages) => {
+        // console.log('outputMessages', outputMessages)
         return pipe(
           outputMessages,
           RA.map(json.stringify),
@@ -160,20 +133,23 @@ Deno.serve({
           TE.fromEitherK(E.map((outputMessageStrings) => {
             return pipe(
               outputMessageStrings,
-              RA.map(socketSend),
+              RA.map((outputMessageString) => {
+                // console.log('outputMessageString', outputMessageString)
+                socketSend(outputMessageString)()
+              }),
             )
           })),
         )
       }),
       TE.flatten,
       TE.match(
-        (e) => {
-          logError(E.toError(e))
+        (error) => {
+          logError(error as Error)
         },
         () => {
         },
       ),
-    )
+    )()
   })
 
   return response
