@@ -6,7 +6,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const RemoveGroupOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
-    command: S.Literal<['changegroup']>('changegroup'),
+    command: S.Literal<['removegroup']>('removegroup'),
     payload: S.Struct({
       name: S.String(),
       graph: GraphIDSchema,

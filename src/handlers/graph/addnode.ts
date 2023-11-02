@@ -4,16 +4,16 @@ import * as graphs from '#/graphs.ts'
 import * as spectacles from 'spectacles-ts'
 import { AddNodeInputMessage } from '#/schemas/messages/graph/input/AddNodeInputMessage.ts'
 import { AddNodeOutputMessageInput } from '#/schemas/messages/graph/output/AddNodeOutputMessage.ts'
-import { Edge } from '#/schemas/messages/shared/Edge.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { Node } from '#/schemas/messages/shared/Node.ts'
 
 export const addnode = (
   message: AddNodeInputMessage,
 ): TE.TaskEither<Error, Array<AddNodeOutputMessageInput | ErrorOutputMessageInput>> => {
-  const edge: Edge = {
-    src: message.payload.src,
-    tgt: message.payload.tgt,
+  const node: Node = {
+    id: message.payload.id,
+    component: message.payload.component,
     metadata: message.payload.metadata,
   }
 
@@ -28,10 +28,9 @@ export const addnode = (
           pipe(
             graph.nodes,
             RA.filter((a) => {
-              return a.src.node !== edge.src.node && a.src.port !== edge.src.port && a.tgt.node !== edge.tgt.node &&
-                a.tgt.port !== edge.tgt.port
+              return a.id !== node.id
             }),
-            RA.append(edge),
+            RA.append(node),
           ),
         ),
       )
@@ -48,16 +47,16 @@ export const addnode = (
           },
         ]
       },
-      (graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
+      (_graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
-            command: 'addedge',
+            command: 'addnode',
             payload: {
-              graph: graph.id,
-              metadata: edge.metadata,
-              src: edge.src,
-              tgt: edge.tgt,
+              id: message.payload.id,
+              component: message.payload.component,
+              metadata: message.payload.metadata,
+              graph: message.payload.graph,
             },
           },
         ]

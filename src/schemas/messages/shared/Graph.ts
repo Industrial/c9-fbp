@@ -1,7 +1,8 @@
 import * as S from 'schemata-ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
 import { Edge, EdgeInput, EdgeSchema } from '#/schemas/messages/shared/Edge.ts'
 import { GraphIDInput, GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
+import { Node, NodeInput, NodeSchema } from '#/schemas/messages/shared/Node.ts'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export type GraphInput = {
   id: GraphIDInput
@@ -10,7 +11,7 @@ export type GraphInput = {
   description?: string
   icon?: string
   library?: string
-  nodes: ReadonlyArray<EdgeInput>
+  nodes: ReadonlyArray<NodeInput>
   edges: ReadonlyArray<EdgeInput>
 }
 
@@ -21,7 +22,7 @@ export type Graph = {
   description: string | undefined
   icon: string | undefined
   library: string | undefined
-  nodes: ReadonlyArray<Edge>
+  nodes: ReadonlyArray<Node>
   edges: ReadonlyArray<Edge>
 }
 
@@ -32,7 +33,7 @@ export const GraphSchema = S.Struct({
   description: S.Optional(S.String()),
   icon: S.Optional(S.String()),
   library: S.Optional(S.String()),
-  nodes: S.Array(EdgeSchema),
+  nodes: S.Array(NodeSchema),
   edges: S.Array(EdgeSchema),
 })
 

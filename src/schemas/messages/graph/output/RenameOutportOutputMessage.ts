@@ -7,7 +7,7 @@ import { PortSchema } from '#/schemas/messages/shared/Port.ts'
 
 export const RenameOutportOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
-    command: S.Literal<['renameinport']>('renameinport'),
+    command: S.Literal<['renameoutport']>('renameoutport'),
     payload: S.Struct({
       from: PortSchema,
       to: PortSchema,
