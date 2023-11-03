@@ -1,7 +1,7 @@
 import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
-import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
+import { MetadataGroupSchema } from '#/schemas/messages/shared/MetadataGroup.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
@@ -10,7 +10,7 @@ export const ChangeGroupOutputMessageSchema = GraphOutputMessageBaseSchema
     command: S.Literal<['changegroup']>('changegroup'),
     payload: S.Struct({
       name: S.String(),
-      metadata: MetadataEdgeSchema,
+      metadata: MetadataGroupSchema,
       graph: GraphIDSchema,
     }),
   })

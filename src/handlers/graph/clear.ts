@@ -11,6 +11,7 @@ export const clear = (
   return pipe(
     graphs.set(message.payload.id, {
       ...message.payload,
+      groups: [],
       nodes: [],
       edges: [],
     }),

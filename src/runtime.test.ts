@@ -220,7 +220,9 @@ describe('Runtime', () => {
             payload: {
               name: 'foo',
               graph: 'foo',
-              metadata: {},
+              metadata: {
+                description: 'foo',
+              },
             },
           }
 
@@ -232,7 +234,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'GroupNotFound',
                 },
               },
             ],
@@ -267,7 +269,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'NodeNotFound',
                 },
               },
             ],
@@ -301,7 +303,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'EdgeNotFound',
                 },
               },
             ],
@@ -328,7 +330,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'GroupNotFound',
                 },
               },
             ],
@@ -361,7 +363,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'IIPNotFound',
                 },
               },
             ],
@@ -391,7 +393,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'InportNotFound',
                 },
               },
             ],
@@ -418,7 +420,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'NodeNotFound',
                 },
               },
             ],
@@ -448,7 +450,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'OutportNotFound',
                 },
               },
             ],
@@ -476,7 +478,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'GroupNotFound',
                 },
               },
             ],
@@ -510,7 +512,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'InportNotFound',
                 },
               },
             ],
@@ -538,7 +540,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'NodeNotFound',
                 },
               },
             ],
@@ -572,7 +574,7 @@ describe('Runtime', () => {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
-                  message: 'edge does not exist',
+                  message: 'OutportNotFound',
                 },
               },
             ],
