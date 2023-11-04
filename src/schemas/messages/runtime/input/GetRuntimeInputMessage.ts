@@ -1,33 +1,18 @@
 import * as S from 'schemata-ts'
-import {
-  RuntimeInputMessageBase,
-  RuntimeInputMessageBaseInput,
-  RuntimeInputMessageBaseSchema,
-} from '#/schemas/messages/runtime/RuntimeInputMessageBase.ts'
+import { RuntimeInputMessageBaseSchema } from '#/schemas/messages/runtime/RuntimeInputMessageBase.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
-export type GetRuntimeInputMessageInput = RuntimeInputMessageBaseInput & {
-  command: 'getruntime'
-  payload: {
-    secret?: string
-  }
-}
+export const GetRuntimeInputMessageSchema = RuntimeInputMessageBaseSchema.extend({
+  command: S.Literal<['getruntime']>('getruntime'),
+  payload: S.Struct({
+    secret: S.Optional(S.String()),
+  }),
+})
 
-export type GetRuntimeInputMessage = RuntimeInputMessageBase & {
-  command: 'getruntime'
-  payload: {
-    secret: string | undefined
-  }
-}
+export type GetRuntimeInputMessageInput = S.InputOf<typeof GetRuntimeInputMessageSchema>
 
-export const GetRuntimeInputMessageSchema: S.Schema<GetRuntimeInputMessageInput, GetRuntimeInputMessage> =
-  RuntimeInputMessageBaseSchema.extend({
-    command: S.Literal<['getruntime']>('getruntime'),
-    payload: S.Struct({
-      secret: S.Optional(S.String()),
-    }),
-  })
+export type GetRuntimeInputMessage = S.OutputOf<typeof GetRuntimeInputMessageSchema>
 
 export const GetRuntimeInputMessageTranscoder = deriveTranscoder(GetRuntimeInputMessageSchema)
 

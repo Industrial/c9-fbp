@@ -9,10 +9,12 @@ import { MetadataGroupSchema } from '#/schemas/messages/shared/MetadataGroup.ts'
 export const AddGroupOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['addgroup']>('addgroup'),
-    name: S.String(),
-    nodes: S.Array(NodeIDSchema),
-    metadata: MetadataGroupSchema,
-    graph: GraphIDSchema,
+    payload: S.Struct({
+      name: S.String(),
+      nodes: S.Array(NodeIDSchema),
+      metadata: MetadataGroupSchema,
+      graph: GraphIDSchema,
+    }),
   })
 
 export type AddGroupOutputMessageInput = S.InputOf<typeof AddGroupOutputMessageSchema>

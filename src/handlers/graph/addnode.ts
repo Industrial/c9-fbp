@@ -1,12 +1,11 @@
-import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import * as spectacles from 'spectacles-ts'
 import { AddNodeInputMessage } from '#/schemas/messages/graph/input/AddNodeInputMessage.ts'
 import { AddNodeOutputMessageInput } from '#/schemas/messages/graph/output/AddNodeOutputMessage.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
 import { Node } from '#/schemas/messages/shared/Node.ts'
+import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
+import { graphWithNode, toGraphErrorInput } from '#/domain/graph.ts'
+import { pipe } from 'fp-ts/function.ts'
 
 export const addnode = (
   message: AddNodeInputMessage,
@@ -19,35 +18,10 @@ export const addnode = (
 
   return pipe(
     graphs.get(message.payload.graph),
-    TE.map((graph) => {
-      return pipe(
-        graph,
-        // @ts-ignore: deep type
-        spectacles.set(
-          'nodes',
-          pipe(
-            graph.nodes,
-            RA.filter((a) => {
-              return a.id !== node.id
-            }),
-            RA.append(node),
-          ),
-        ),
-      )
-    }),
+    TE.chain(graphWithNode(node)),
     TE.match(
-      (error): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
-        return [
-          {
-            protocol: 'graph',
-            command: 'error',
-            payload: {
-              message: error.message,
-            },
-          },
-        ]
-      },
-      (_graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorInput,
+      (graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
@@ -56,7 +30,7 @@ export const addnode = (
               id: message.payload.id,
               component: message.payload.component,
               metadata: message.payload.metadata,
-              graph: message.payload.graph,
+              graph: graph.id,
             },
           },
         ]

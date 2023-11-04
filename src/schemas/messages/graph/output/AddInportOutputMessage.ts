@@ -10,11 +10,13 @@ import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 export const AddInportOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['addinport']>('addinport'),
-    public: PortIDSchema,
-    node: NodeIDSchema,
-    port: PortIDSchema,
-    metadata: MetadataGroupSchema,
-    graph: GraphIDSchema,
+    payload: S.Struct({
+      public: PortIDSchema,
+      node: NodeIDSchema,
+      port: PortIDSchema,
+      metadata: MetadataGroupSchema,
+      graph: GraphIDSchema,
+    }),
   })
 
 export type AddInportOutputMessageInput = S.InputOf<typeof AddInportOutputMessageSchema>

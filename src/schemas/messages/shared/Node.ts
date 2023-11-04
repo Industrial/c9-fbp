@@ -2,9 +2,10 @@ import * as S from 'schemata-ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 import { MetadataNodeSchema } from '#/schemas/messages/shared/MetadataNode.ts'
+import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
 
 export const NodeSchema = S.Struct({
-  id: S.String(),
+  id: NodeIDSchema,
   component: S.String(),
   metadata: MetadataNodeSchema,
 })

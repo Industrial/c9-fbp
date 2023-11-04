@@ -1,12 +1,12 @@
 import * as S from 'schemata-ts'
 import { MetadataGroupSchema } from '#/schemas/messages/shared/MetadataGroup.ts'
-import { NodeSchema } from '#/schemas/messages/shared/Node.ts'
+import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const GroupSchema = S.Struct({
   name: S.String(),
-  nodes: S.Array(NodeSchema),
+  nodes: S.Array(NodeIDSchema),
   metadata: MetadataGroupSchema,
 })
 
