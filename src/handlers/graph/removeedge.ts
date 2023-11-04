@@ -1,3 +1,4 @@
+import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { Edge } from '#/schemas/messages/shared/Edge.ts'
@@ -22,19 +23,27 @@ export const removeedge = (
 
   return pipe(
     graphs.get(message.payload.graph),
-    TE.chain(graphContainsEdge(edge)),
-    TE.chain(graphWithoutEdge(edge)),
+    TE.chain((graph) => {
+      return pipe(
+        E.right(graph),
+        E.chain(graphContainsEdge(edge)),
+        E.chain(graphWithoutEdge(edge)),
+        TE.fromEitherK(E.map((graph) => {
+          return graph
+        })),
+      )
+    }),
     TE.match(
       toGraphErrorInput,
-      (graph): Array<RemoveEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+      (_graph): Array<RemoveEdgeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removeedge',
             payload: {
-              graph: graph.id,
-              src: edge.src,
-              tgt: edge.tgt,
+              graph: message.payload.graph,
+              src: message.payload.src,
+              tgt: message.payload.tgt,
             },
           },
         ]

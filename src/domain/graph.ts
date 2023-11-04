@@ -1,6 +1,5 @@
 import * as E from 'fp-ts/Either.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
-import * as TE from 'fp-ts/TaskEither.ts'
 import * as edgeDomain from '#/domain/edge.ts'
 import * as groupDomain from '#/domain/group.ts'
 import * as nodeDomain from '#/domain/node.ts'
@@ -9,6 +8,7 @@ import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOu
 import { Graph } from '#/schemas/messages/shared/Graph.ts'
 import { Group } from '#/schemas/messages/shared/Group.ts'
 import { Node } from '#/schemas/messages/shared/Node.ts'
+import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const toGraphErrorInput = <T>(error: Error): ReadonlyArray<T | ErrorOutputMessageInput> => {
@@ -35,27 +35,30 @@ export const areGraphsNotEqual = (a: Graph) => {
   }
 }
 
-export const graphContainsNode = (node: Node) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
+export const graphFindNodeById = (id: Node['id']) => {
+  return (graph: Graph): E.Either<Error, Node> => {
     return pipe(
-      TE.right(graph),
-      TE.chain((graph) => {
-        return pipe(
-          graph.nodes,
-          RA.findFirst(nodeDomain.areNodesNotEqual(node)),
-          E.fromOption(() => {
-            return new Error('NodeNotFound')
-          }),
-          TE.fromEither,
-        )
+      graph.nodes,
+      findFirstByPropertyE('id', id),
+    )
+  }
+}
+
+export const graphContainsNode = (node: Node) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.nodes,
+      findFirstByPredicateE(nodeDomain.areNodesNotEqual(node)),
+      E.map(() => {
+        return graph
       }),
     )
   }
 }
 
 export const graphWithoutNode = (node: Node) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       nodes: pipe(
         graph.nodes,
@@ -66,8 +69,8 @@ export const graphWithoutNode = (node: Node) => {
 }
 
 export const graphWithNode = (node: Node) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       nodes: pipe(
         graph.nodes,
@@ -79,26 +82,20 @@ export const graphWithNode = (node: Node) => {
 }
 
 export const graphContainsEdge = (edge: Edge) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
+  return (graph: Graph): E.Either<Error, Graph> => {
     return pipe(
-      TE.right(graph),
-      TE.chain((graph) => {
-        return pipe(
-          graph.edges,
-          RA.findFirst(edgeDomain.areEdgesNotEqual(edge)),
-          E.fromOption(() => {
-            return new Error('EdgeNotFound')
-          }),
-          TE.fromEither,
-        )
+      graph.edges,
+      findFirstByPredicateE(edgeDomain.areEdgesNotEqual(edge)),
+      E.map(() => {
+        return graph
       }),
     )
   }
 }
 
 export const graphWithoutEdge = (edge: Edge) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       edges: pipe(
         graph.edges,
@@ -109,8 +106,8 @@ export const graphWithoutEdge = (edge: Edge) => {
 }
 
 export const graphWithEdge = (edge: Edge) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       edges: pipe(
         graph.edges,
@@ -121,27 +118,30 @@ export const graphWithEdge = (edge: Edge) => {
   }
 }
 
-export const graphContainsGroup = (group: Group) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
+export const graphFindGroupByName = (name: Group['name']) => {
+  return (graph: Graph): E.Either<Error, Group> => {
     return pipe(
-      TE.right(graph),
-      TE.chain((graph) => {
-        return pipe(
-          graph.groups,
-          RA.findFirst(groupDomain.areGroupsNotEqual(group)),
-          E.fromOption(() => {
-            return new Error('GroupNotFound')
-          }),
-          TE.fromEither,
-        )
+      graph.groups,
+      findFirstByPropertyE('name', name),
+    )
+  }
+}
+
+export const graphContainsGroup = (group: Group) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.groups,
+      findFirstByPredicateE(groupDomain.areGroupsNotEqual(group)),
+      E.map(() => {
+        return graph
       }),
     )
   }
 }
 
 export const graphWithoutGroup = (group: Group) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       groups: pipe(
         graph.groups,
@@ -152,8 +152,8 @@ export const graphWithoutGroup = (group: Group) => {
 }
 
 export const graphWithGroup = (group: Group) => {
-  return (graph: Graph): TE.TaskEither<Error, Graph> => {
-    return TE.right({
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return E.right({
       ...graph,
       groups: pipe(
         graph.groups,

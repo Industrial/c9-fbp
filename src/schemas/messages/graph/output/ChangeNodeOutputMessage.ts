@@ -1,6 +1,7 @@
 import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
+import { MetadataNodeSchema } from '#/schemas/messages/shared/MetadataNode.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
@@ -8,8 +9,8 @@ export const ChangeNodeOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['changenode']>('changenode'),
     payload: S.Struct({
-      from: S.String(),
-      to: S.String(),
+      id: S.String(),
+      metadata: MetadataNodeSchema,
       graph: GraphIDSchema,
     }),
   })

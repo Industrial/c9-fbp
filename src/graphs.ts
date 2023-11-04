@@ -7,6 +7,16 @@ import { pipe } from 'fp-ts/function.ts'
 
 let graphs: Record<GraphID, Graph> = {}
 
+export const getE = (id: GraphID) => {
+  return pipe(
+    graphs,
+    R.lookup(id),
+    E.fromOption(() => {
+      return new Error('GraphNotFound')
+    }),
+  )
+}
+
 export const get = (id: GraphID) => {
   return pipe(
     graphs,
