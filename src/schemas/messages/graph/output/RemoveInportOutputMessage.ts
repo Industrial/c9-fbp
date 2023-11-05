@@ -1,15 +1,15 @@
 import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutputMessageBase.ts'
+import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { PortSchema } from '#/schemas/messages/shared/Port.ts'
 
 export const RemoveInportOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['removeinport']>('removeinport'),
     payload: S.Struct({
-      public: PortSchema,
+      public: PortIDSchema,
       graph: GraphIDSchema,
     }),
   })

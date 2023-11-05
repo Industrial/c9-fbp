@@ -1,24 +1,23 @@
 import * as S from 'schemata-ts'
+import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
+import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
+import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { MetadataEdge, MetadataEdgeInput, MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
-import { Port, PortInput, PortSchema } from '#/schemas/messages/shared/Port.ts'
-
-export type EdgeInput = {
-  src: PortInput
-  tgt: PortInput
-  metadata: MetadataEdgeInput
-}
-
-export type Edge = {
-  src: Port
-  tgt: Port
-  metadata: MetadataEdge
-}
 
 export const EdgeSchema = S.Struct({
-  src: PortSchema,
-  tgt: PortSchema,
+  src: S.Struct({
+    node: NodeIDSchema,
+    port: PortIDSchema,
+  }),
+  tgt: S.Struct({
+    node: NodeIDSchema,
+    port: PortIDSchema,
+  }),
   metadata: MetadataEdgeSchema,
 })
+
+export type EdgeInput = S.InputOf<typeof EdgeSchema>
+
+export type Edge = S.OutputOf<typeof EdgeSchema>
 
 export const EdgeTranscoder = deriveTranscoder<EdgeInput, Edge>(EdgeSchema)

@@ -11,9 +11,12 @@ export const clear = (
   return pipe(
     graphs.set(message.payload.id, {
       ...message.payload,
-      groups: [],
-      nodes: [],
       edges: [],
+      groups: [],
+      iips: [],
+      inports: [],
+      nodes: [],
+      outports: [],
     }),
     TE.match(
       (error): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
