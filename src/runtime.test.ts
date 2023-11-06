@@ -1,3 +1,8 @@
+import { AddEdgeInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeInputMessage.ts'
+import { AddGroupInputMessageInput } from '#/schemas/messages/graph/input/AddGroupInputMessage.ts'
+import { AddInitialInputMessageInput } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
+import { AddInportInputMessageInput } from '#/schemas/messages/graph/input/AddInportInputMessage.ts'
+import { AddOutportInputMessageInput } from '#/schemas/messages/graph/input/AddOutportInputMessage.ts'
 import { ChangeEdgeInputMessageInput } from '#/schemas/messages/graph/input/ChangeEdgeInputMessage.ts'
 import { ChangeGroupInputMessageInput } from '#/schemas/messages/graph/input/ChangeGroupInputMessage.ts'
 import { ClearInputMessageInput } from '#/schemas/messages/graph/input/ClearInputMessage.ts'
@@ -159,7 +164,6 @@ describe('Runtime', () => {
             main: true,
           },
         }
-
         await assertOutputMatchesExpected(
           socketInstance,
           input,
@@ -175,6 +179,165 @@ describe('Runtime', () => {
             },
           ],
         )
+      })
+
+      describe('AddEdge', () => {
+        it('should return an ErrorOutputMessage', async () => {
+          const input: AddEdgeInputMessageInput = {
+            protocol: 'graph',
+            command: 'addedge',
+            payload: {
+              graph: 'foo',
+              src: {
+                node: 'somenode',
+                port: 'someport',
+              },
+              tgt: {
+                node: 'someothernode',
+                port: 'someotherport',
+              },
+              metadata: {},
+            },
+          }
+          await assertOutputMatchesExpected(
+            socketInstance,
+            input,
+            [
+              {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NotFound',
+                },
+              },
+            ],
+          )
+        })
+      })
+
+      describe('AddGroup', () => {
+        it('should return an ErrorOutputMessage', async () => {
+          const input: AddGroupInputMessageInput = {
+            protocol: 'graph',
+            command: 'addgroup',
+            payload: {
+              graph: 'foo',
+              name: 'somename',
+              nodes: ['somenonexistantnode'],
+              metadata: {
+                description: 'somedescription',
+              },
+            },
+          }
+          await assertOutputMatchesExpected(
+            socketInstance,
+            input,
+            [
+              {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NotFound',
+                },
+              },
+            ],
+          )
+        })
+      })
+
+      describe('AddInitial', () => {
+        it('should return an ErrorOutputMessage', async () => {
+          const input: AddInitialInputMessageInput = {
+            protocol: 'graph',
+            command: 'addinitial',
+            payload: {
+              graph: 'foo',
+              src: {
+                data: 'somedata',
+              },
+              tgt: {
+                node: 'someothernode',
+                port: 'someotherport',
+              },
+              metadata: {},
+            },
+          }
+          await assertOutputMatchesExpected(
+            socketInstance,
+            input,
+            [
+              {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NotFound',
+                },
+              },
+            ],
+          )
+        })
+      })
+
+      describe('AddInport', () => {
+        it('should return an ErrorOutputMessage', async () => {
+          const input: AddInportInputMessageInput = {
+            protocol: 'graph',
+            command: 'addinport',
+            payload: {
+              graph: 'foo',
+              node: 'somenode',
+              port: 'someport',
+              public: 'someport',
+              metadata: {
+                description: 'somedescription',
+              },
+            },
+          }
+          await assertOutputMatchesExpected(
+            socketInstance,
+            input,
+            [
+              {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NotFound',
+                },
+              },
+            ],
+          )
+        })
+      })
+
+      describe('AddOutport', () => {
+        it('should return an ErrorOutputMessage', async () => {
+          const input: AddOutportInputMessageInput = {
+            protocol: 'graph',
+            command: 'addoutport',
+            payload: {
+              graph: 'foo',
+              node: 'somenode',
+              port: 'someport',
+              public: 'someport',
+              metadata: {
+                description: 'somedescription',
+              },
+            },
+          }
+          await assertOutputMatchesExpected(
+            socketInstance,
+            input,
+            [
+              {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NotFound',
+                },
+              },
+            ],
+          )
+        })
       })
 
       describe('ChangeEdge', () => {
@@ -195,7 +358,6 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -225,7 +387,6 @@ describe('Runtime', () => {
               },
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -260,7 +421,6 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -294,7 +454,6 @@ describe('Runtime', () => {
               },
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -321,7 +480,6 @@ describe('Runtime', () => {
               name: 'foo',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -354,7 +512,6 @@ describe('Runtime', () => {
               },
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -381,7 +538,6 @@ describe('Runtime', () => {
               public: 'someport',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -408,7 +564,6 @@ describe('Runtime', () => {
               id: 'foo',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -435,7 +590,6 @@ describe('Runtime', () => {
               public: 'someport',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -463,7 +617,6 @@ describe('Runtime', () => {
               to: 'bar',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -491,7 +644,6 @@ describe('Runtime', () => {
               to: 'someotherport',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -519,7 +671,6 @@ describe('Runtime', () => {
               to: 'bar',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,
@@ -547,7 +698,6 @@ describe('Runtime', () => {
               to: 'someotherport',
             },
           }
-
           await assertOutputMatchesExpected(
             socketInstance,
             input,

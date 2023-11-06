@@ -1,18 +1,11 @@
 import * as S from 'schemata-ts'
 import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
-import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
-import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const EdgeSchema = S.Struct({
-  src: S.Struct({
-    node: NodeIDSchema,
-    port: PortIDSchema,
-  }),
-  tgt: S.Struct({
-    node: NodeIDSchema,
-    port: PortIDSchema,
-  }),
+  src: TargetNodeSchema,
+  tgt: TargetNodeSchema,
   metadata: MetadataEdgeSchema,
 })
 

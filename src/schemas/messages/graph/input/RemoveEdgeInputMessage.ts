@@ -1,23 +1,16 @@
 import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
-import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
-import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 
 export const RemoveEdgeInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
     command: S.Literal<['removeedge']>('removeedge'),
     payload: S.Struct({
-      src: S.Struct({
-        node: NodeIDSchema,
-        port: PortIDSchema,
-      }),
-      tgt: S.Struct({
-        node: NodeIDSchema,
-        port: PortIDSchema,
-      }),
+      src: TargetNodeSchema,
+      tgt: TargetNodeSchema,
       graph: GraphIDSchema,
     }),
   })

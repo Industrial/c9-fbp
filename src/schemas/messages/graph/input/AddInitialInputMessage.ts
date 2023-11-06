@@ -3,7 +3,7 @@ import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
 import { IIPValueSchema } from '../../shared/IIPValue.ts'
 import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
-import { PortSchema } from '#/schemas/messages/shared/Port.ts'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
@@ -12,7 +12,7 @@ export const AddInitialInputMessageSchema = GraphInputMessageBaseSchema
     command: S.Literal<['addinitial']>('addinitial'),
     payload: S.Struct({
       src: IIPValueSchema,
-      tgt: PortSchema,
+      tgt: TargetNodeSchema,
       metadata: MetadataEdgeSchema,
       graph: GraphIDSchema,
     }),

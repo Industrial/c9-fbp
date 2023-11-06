@@ -2,20 +2,16 @@ import * as S from 'schemata-ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
 import { IIPValueSchema } from '../../shared/IIPValue.ts'
-import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
-import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 
 export const RemoveInitialInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
     command: S.Literal<['removeinitial']>('removeinitial'),
     payload: S.Struct({
       src: IIPValueSchema,
-      tgt: S.Struct({
-        node: NodeIDSchema,
-        port: PortIDSchema,
-      }),
+      tgt: TargetNodeSchema,
       graph: GraphIDSchema,
     }),
   })

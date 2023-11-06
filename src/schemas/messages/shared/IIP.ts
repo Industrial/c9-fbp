@@ -1,16 +1,12 @@
 import * as S from 'schemata-ts'
 import { IIPValueSchema } from '#/schemas/messages/shared/IIPValue.ts'
 import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
-import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
-import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const IIPSchema = S.Struct({
   src: IIPValueSchema,
-  tgt: S.Struct({
-    node: NodeIDSchema,
-    port: PortIDSchema,
-  }),
+  tgt: TargetNodeSchema,
   metadata: MetadataEdgeSchema,
 })
 

@@ -1,13 +1,13 @@
 import * as S from 'schemata-ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { PortSchema } from '#/schemas/messages/shared/Port.ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const NetworkEventSchema = S.Struct({
   id: S.String(),
-  src: PortSchema,
-  tgt: PortSchema,
+  src: TargetNodeSchema,
+  tgt: TargetNodeSchema,
   graph: GraphIDSchema,
   subgraph: S.Array(NodeIDSchema),
 })

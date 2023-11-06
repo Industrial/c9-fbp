@@ -1,9 +1,10 @@
+import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { AddInitialInputMessage } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
 import { AddInitialOutputMessageInput } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphWithIIP, toGraphErrorInput } from '#/domain/graph.ts'
+import { graphContainsNodeById, graphWithIIP, toGraphErrorInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const addinitial = (
@@ -13,11 +14,15 @@ export const addinitial = (
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
       return pipe(
-        graph,
-        TE.fromEitherK(graphWithIIP({
+        E.right(graph),
+        E.chain(graphContainsNodeById(message.payload.tgt.node)),
+        E.chain(graphWithIIP({
           src: message.payload.src,
           tgt: message.payload.tgt,
           metadata: message.payload.metadata,
+        })),
+        TE.fromEitherK(E.map((graph) => {
+          return graph
         })),
       )
     }),

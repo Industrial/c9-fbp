@@ -1,9 +1,10 @@
+import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { AddGroupInputMessage } from '#/schemas/messages/graph/input/AddGroupInputMessage.ts'
 import { AddGroupOutputMessageInput } from '#/schemas/messages/graph/output/AddGroupOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphWithGroup, toGraphErrorInput } from '#/domain/graph.ts'
+import { graphContainsAllNodesById, graphWithGroup, toGraphErrorInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const addgroup = (
@@ -13,11 +14,15 @@ export const addgroup = (
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
       return pipe(
-        graph,
-        TE.fromEitherK(graphWithGroup({
+        E.right(graph),
+        E.chain(graphContainsAllNodesById(message.payload.nodes)),
+        E.chain(graphWithGroup({
           metadata: message.payload.metadata,
           name: message.payload.name,
           nodes: message.payload.nodes,
+        })),
+        TE.fromEitherK(E.map((graph) => {
+          return graph
         })),
       )
     }),

@@ -1,3 +1,4 @@
+import * as S from 'fp-ts/string.ts'
 import * as E from 'fp-ts/Either.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as edgeDomain from '#/domain/edge.ts'
@@ -44,6 +45,40 @@ export const graphFindNodeById = (id: Node['id']) => {
     return pipe(
       graph.nodes,
       findFirstByPropertyE('id', id),
+    )
+  }
+}
+
+export const graphContainsNodeById = (id: Node['id']) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.nodes,
+      findFirstByPropertyE('id', id),
+      E.map(() => {
+        return graph
+      }),
+    )
+  }
+}
+
+export const graphContainsAllNodesById = (ids: ReadonlyArray<Node['id']>) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph,
+      E.fromPredicate(
+        () => {
+          return pipe(
+            graph.nodes,
+            RA.map((node) => {
+              return node.id
+            }),
+            RA.difference(S.Eq)(ids),
+          ).length > 0
+        },
+        () => {
+          return new Error('NotFound')
+        },
+      ),
     )
   }
 }
