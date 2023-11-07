@@ -776,36 +776,81 @@ describe('Runtime', () => {
       })
 
       describe('AddOutport', () => {
-        // describe('When passed AddOutport and no node exists for the outport', () => {
-        //   it('should return an NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: AddOutportInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'addoutport',
-        //       payload: {
-        //         graph: 'foo',
-        //         node: 'somenode',
-        //         port: 'someport',
-        //         public: 'someport',
-        //         metadata: {
-        //           description: 'somedescription',
-        //         },
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NodeNotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed AddOutport and a node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            const input: AddOutportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addoutport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'NodeNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed AddOutport and the node exists on the graph', () => {
+          beforeEach(async () => {
+            const input: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            const output: AddNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+
+          it('should return a AddOutportOutputMessage', async () => {
+            const input: AddOutportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addoutport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: AddOutportOutputMessage = {
+              protocol: 'graph',
+              command: 'addoutport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('ChangeEdge', () => {
