@@ -1,8 +1,15 @@
+import chai from 'chai'
 import { AddEdgeInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeInputMessage.ts'
+import { AddEdgeOutputMessage } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
 import { AddGroupInputMessageInput } from '#/schemas/messages/graph/input/AddGroupInputMessage.ts'
+import { AddGroupOutputMessage } from '#/schemas/messages/graph/output/AddGroupOutputMessage.ts'
 import { AddInitialInputMessageInput } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
 import { AddInportInputMessageInput } from '#/schemas/messages/graph/input/AddInportInputMessage.ts'
+import { AddInportOutputMessage } from '#/schemas/messages/graph/output/AddInportOutputMessage.ts'
+import { AddNodeInputMessage, AddNodeInputMessageInput } from '#/schemas/messages/graph/input/AddNodeInputMessage.ts'
+import { AddNodeOutputMessage } from '#/schemas/messages/graph/output/AddNodeOutputMessage.ts'
 import { AddOutportInputMessageInput } from '#/schemas/messages/graph/input/AddOutportInputMessage.ts'
+import { AddOutportOutputMessage } from '#/schemas/messages/graph/output/AddOutportOutputMessage.ts'
 import { ChangeEdgeInputMessageInput } from '#/schemas/messages/graph/input/ChangeEdgeInputMessage.ts'
 import { ChangeGroupInputMessageInput } from '#/schemas/messages/graph/input/ChangeGroupInputMessage.ts'
 import { ClearInputMessageInput } from '#/schemas/messages/graph/input/ClearInputMessage.ts'
@@ -20,6 +27,8 @@ import { RenameOutportInputMessageInput } from '#/schemas/messages/graph/input/R
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
 import { assertObjectMatch } from 'std/assert/mod.ts'
 import { startServer } from '#/server.ts'
+
+chai.config.truncateThreshold = 0
 
 const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
 const hostname = config.host as string
@@ -92,7 +101,7 @@ const assertOutputMatchesExpected = async (
   const resultJSON = JSON.parse(result.data as string)
   const currentExpectation = expected.slice(0, 1)[0]
 
-  assertObjectMatch(resultJSON, currentExpectation)
+  chai.expect(resultJSON).to.deep.equal(currentExpectation)
 
   await assertOutputMatchesExpected(socketInstance, actual, expected.slice(1))
 }
@@ -112,15 +121,13 @@ describe('Runtime', () => {
   describe('Runtime Protocol', () => {
     describe('requesting runtime metadata', () => {
       it('should provide it back', async () => {
-        const input: GetRuntimeInputMessageInput = {
-          protocol: 'runtime',
-          command: 'getruntime',
-          payload: {},
-        }
-
         await assertOutputMatchesExpected(
           socketInstance,
-          input,
+          {
+            protocol: 'runtime',
+            command: 'getruntime',
+            payload: {},
+          } as GetRuntimeInputMessageInput,
           [
             {
               protocol: 'runtime',
@@ -153,20 +160,46 @@ describe('Runtime', () => {
   })
 
   describe('Graph Protocol', () => {
-    describe('Operations that should fail without existing state', () => {
-      beforeEach(async () => {
-        const input: ClearInputMessageInput = {
-          protocol: 'graph',
-          command: 'clear',
-          payload: {
-            id: 'foo',
-            name: 'foo',
-            main: true,
-          },
-        }
+    describe('When no Clear has been passed', () => {
+      it('should return a GraphNotFound ErrorOutputMessage', async () => {
         await assertOutputMatchesExpected(
           socketInstance,
-          input,
+          {
+            protocol: 'graph',
+            command: 'addnode',
+            payload: {
+              component: 'foo',
+              graph: 'foo',
+              id: 'foo',
+              metadata: {},
+            },
+          } as AddNodeInputMessage,
+          [
+            {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'GraphNotFound',
+              },
+            },
+          ],
+        )
+      })
+    })
+
+    describe('When Clear has been passed', () => {
+      beforeEach(async () => {
+        await assertOutputMatchesExpected(
+          socketInstance,
+          {
+            protocol: 'graph',
+            command: 'clear',
+            payload: {
+              id: 'foo',
+              name: 'foo',
+              main: true,
+            },
+          } as ClearInputMessageInput,
           [
             {
               protocol: 'graph',
@@ -182,536 +215,991 @@ describe('Runtime', () => {
       })
 
       describe('AddEdge', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: AddEdgeInputMessageInput = {
-            protocol: 'graph',
-            command: 'addedge',
-            payload: {
-              graph: 'foo',
-              src: {
-                node: 'somenode',
-                port: 'someport',
-              },
-              tgt: {
-                node: 'someothernode',
-                port: 'someotherport',
-              },
-              metadata: {},
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
+        describe('When passed AddEdge and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            await assertOutputMatchesExpected(
+              socketInstance,
               {
                 protocol: 'graph',
-                command: 'error',
+                command: 'addedge',
                 payload: {
-                  message: 'NotFound',
+                  graph: 'foo',
+                  src: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  tgt: {
+                    node: 'someothernode',
+                    port: 'someotherport',
+                  },
+                  metadata: {},
                 },
-              },
-            ],
-          )
+              } as AddEdgeInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'error',
+                  payload: {
+                    message: 'NodeNotFound',
+                  },
+                },
+              ],
+            )
+          })
+        })
+
+        describe('When passed AddEdge and all nodes on the edge exist on the graph', () => {
+          beforeEach(async () => {
+            await assertOutputMatchesExpected(
+              socketInstance,
+              {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              } as AddNodeInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'somenode',
+                    component: 'somecomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+            await assertOutputMatchesExpected(
+              socketInstance,
+              {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              } as AddNodeInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'someothernode',
+                    component: 'someothercomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+          })
+
+          describe('When a port on the edge does not exist on a node', () => {
+            it('should return a OutportNotFound ErrorOutputMessage', async () => {
+              await assertOutputMatchesExpected(
+                socketInstance,
+                {
+                  protocol: 'graph',
+                  command: 'addedge',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    tgt: {
+                      node: 'someothernode',
+                      port: 'someotherport',
+                    },
+                    metadata: {},
+                  },
+                } as AddEdgeInputMessageInput,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'error',
+                    payload: {
+                      message: 'OutportNotFound',
+                    },
+                  },
+                ],
+              )
+            })
+          })
+
+          describe('When all ports on the edge exist on the nodes', () => {
+            beforeEach(async () => {
+              await assertOutputMatchesExpected(
+                socketInstance,
+                {
+                  protocol: 'graph',
+                  command: 'addoutport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'somenode',
+                    port: 'someport',
+                    public: 'someport',
+                    metadata: {},
+                  },
+                } as AddOutportInputMessageInput,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'addoutport',
+                    payload: {
+                      graph: 'foo',
+                      node: 'somenode',
+                      port: 'someport',
+                      public: 'someport',
+                      metadata: {},
+                    },
+                  } as AddOutportOutputMessage,
+                ],
+              )
+
+              await assertOutputMatchesExpected(
+                socketInstance,
+                {
+                  protocol: 'graph',
+                  command: 'addinport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'someothernode',
+                    port: 'someotherport',
+                    public: 'someotherport',
+                    metadata: {},
+                  },
+                } as AddInportInputMessageInput,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'addinport',
+                    payload: {
+                      graph: 'foo',
+                      node: 'someothernode',
+                      port: 'someotherport',
+                      public: 'someotherport',
+                      metadata: {},
+                    },
+                  } as AddInportOutputMessage,
+                ],
+              )
+            })
+
+            it('should return a AddEdgeOutputMessage', async () => {
+              await assertOutputMatchesExpected(
+                socketInstance,
+                {
+                  protocol: 'graph',
+                  command: 'addedge',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    tgt: {
+                      node: 'someothernode',
+                      port: 'someotherport',
+                    },
+                    metadata: {},
+                  },
+                } as AddEdgeInputMessageInput,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'addedge',
+                    payload: {
+                      graph: 'foo',
+                      src: {
+                        node: 'somenode',
+                        port: 'someport',
+                      },
+                      tgt: {
+                        node: 'someothernode',
+                        port: 'someotherport',
+                      },
+                      metadata: {},
+                    },
+                  } as AddEdgeOutputMessage,
+                ],
+              )
+            })
+          })
         })
       })
 
       describe('AddGroup', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: AddGroupInputMessageInput = {
-            protocol: 'graph',
-            command: 'addgroup',
-            payload: {
-              graph: 'foo',
-              name: 'somename',
-              nodes: ['somenonexistantnode'],
-              metadata: {
-                description: 'somedescription',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
+        describe('When passed AddGroup and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            await assertOutputMatchesExpected(
+              socketInstance,
               {
                 protocol: 'graph',
-                command: 'error',
+                command: 'addgroup',
                 payload: {
-                  message: 'NotFound',
+                  graph: 'foo',
+                  name: 'somename',
+                  nodes: ['somenonexistantnode'],
+                  metadata: {
+                    description: 'somedescription',
+                  },
                 },
-              },
-            ],
-          )
+              } as AddGroupInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'error',
+                  payload: {
+                    message: 'NodeNotFound',
+                  },
+                },
+              ],
+            )
+          })
+        })
+
+        describe('When passed AddGroup and all nodes in the group exist on the graph', () => {
+          beforeEach(async () => {
+            await assertOutputMatchesExpected(
+              socketInstance,
+              {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              } as AddNodeInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'somenode',
+                    component: 'somecomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+            await assertOutputMatchesExpected(
+              socketInstance,
+              {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              } as AddNodeInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'someothernode',
+                    component: 'someothercomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+          })
+
+          it('should return a AddGroupOutputMessage', async () => {
+            await assertOutputMatchesExpected(
+              socketInstance,
+              {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              } as AddGroupInputMessageInput,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addgroup',
+                  payload: {
+                    graph: 'foo',
+                    name: 'somegroup',
+                    nodes: [
+                      'somenode',
+                      'someothernode',
+                    ],
+                    metadata: {
+                      description: 'foo',
+                    },
+                  },
+                } as AddGroupOutputMessage,
+              ],
+            )
+          })
         })
       })
 
       describe('AddInitial', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: AddInitialInputMessageInput = {
-            protocol: 'graph',
-            command: 'addinitial',
-            payload: {
-              graph: 'foo',
-              src: {
-                data: 'somedata',
-              },
-              tgt: {
-                node: 'someothernode',
-                port: 'someotherport',
-              },
-              metadata: {},
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
+        describe('When passed AddInitial and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            const input: AddInitialInputMessageInput = {
+              protocol: 'graph',
+              command: 'addinitial',
+              payload: {
+                graph: 'foo',
+                src: {
+                  data: 'somedata',
                 },
+                tgt: {
+                  node: 'somenode',
+                  port: 'someport',
+                },
+                metadata: {},
               },
-            ],
-          )
+            }
+            await assertOutputMatchesExpected(
+              socketInstance,
+              input,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'error',
+                  payload: {
+                    message: 'NodeNotFound',
+                  },
+                },
+              ],
+            )
+          })
+        })
+
+        describe('When passed AddInitial and all nodes in the group exist on the graph', () => {
+          beforeEach(async () => {
+            const input: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(
+              socketInstance,
+              input,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'somenode',
+                    component: 'somecomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+          })
+
+          describe('When passed AddInitial and an inport does not exist on the node', () => {
+            it('should return an InportNotFound ErrorOutputMessage', async () => {
+              const input: AddInitialInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinitial',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    data: 'somedata',
+                  },
+                  tgt: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(
+                socketInstance,
+                input,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'error',
+                    payload: {
+                      message: 'InportNotFound',
+                    },
+                  },
+                ],
+              )
+            })
+          })
+
+          describe('When passed AddInitial and an inport exists on the node', () => {
+            beforeEach(async () => {
+              const input: AddInportInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someport',
+                  metadata: {},
+                },
+              }
+              const output: AddInportOutputMessage = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someport',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(
+                socketInstance,
+                input,
+                [
+                  output,
+                ],
+              )
+            })
+
+            it('should return a AddInitialOutputMessage', async () => {
+              const input: AddInitialInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinitial',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    data: 'somedata',
+                  },
+                  tgt: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(
+                socketInstance,
+                input,
+                [
+                  {
+                    protocol: 'graph',
+                    command: 'addinitial',
+                    payload: {
+                      graph: 'foo',
+                      src: {
+                        data: 'somedata',
+                      },
+                      tgt: {
+                        node: 'somenode',
+                        port: 'someport',
+                      },
+                      metadata: {},
+                    },
+                  },
+                ],
+              )
+            })
+          })
         })
       })
 
       describe('AddInport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: AddInportInputMessageInput = {
-            protocol: 'graph',
-            command: 'addinport',
-            payload: {
-              graph: 'foo',
-              node: 'somenode',
-              port: 'someport',
-              public: 'someport',
-              metadata: {
-                description: 'somedescription',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('When passed AddInport and no node exists for the inport', () => {
+        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
+        //     const input: AddInportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'addinport',
+        //       payload: {
+        //         graph: 'foo',
+        //         node: 'somenode',
+        //         port: 'someport',
+        //         public: 'someport',
+        //         metadata: {
+        //           description: 'somedescription',
+        //         },
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NodeNotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('AddOutport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: AddOutportInputMessageInput = {
-            protocol: 'graph',
-            command: 'addoutport',
-            payload: {
-              graph: 'foo',
-              node: 'somenode',
-              port: 'someport',
-              public: 'someport',
-              metadata: {
-                description: 'somedescription',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('When passed AddOutport and no node exists for the outport', () => {
+        //   it('should return an NodeNotFound ErrorOutputMessage', async () => {
+        //     const input: AddOutportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'addoutport',
+        //       payload: {
+        //         graph: 'foo',
+        //         node: 'somenode',
+        //         port: 'someport',
+        //         public: 'someport',
+        //         metadata: {
+        //           description: 'somedescription',
+        //         },
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NodeNotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('ChangeEdge', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: ChangeEdgeInputMessageInput = {
-            protocol: 'graph',
-            command: 'changeedge',
-            payload: {
-              graph: 'foo',
-              src: {
-                node: 'somenode',
-                port: 'someport',
-              },
-              tgt: {
-                node: 'someothernode',
-                port: 'someotherport',
-              },
-              metadata: {},
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // // TODO: An edge has a source an a target but when I pass ChangeEdge,
+        // // where is the information that changes either the source or the
+        // // target?
+        // describe('When passed ChangeEdge and no node exists for the edge', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: ChangeEdgeInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'changeedge',
+        //       payload: {
+        //         graph: 'foo',
+        //         src: {
+        //           node: 'somenode',
+        //           port: 'someport',
+        //         },
+        //         tgt: {
+        //           node: 'someothernode',
+        //           port: 'someotherport',
+        //         },
+        //         metadata: {},
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NodeNotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('ChangeGroup', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: ChangeGroupInputMessageInput = {
-            protocol: 'graph',
-            command: 'changegroup',
-            payload: {
-              name: 'foo',
-              graph: 'foo',
-              metadata: {
-                description: 'foo',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('When passed ChangeGroup and AddNode has not been passed', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: ChangeGroupInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'changegroup',
+        //       payload: {
+        //         name: 'foo',
+        //         graph: 'foo',
+        //         metadata: {
+        //           description: 'foo',
+        //         },
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NodeNotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('ChangeNode', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: ChangeEdgeInputMessageInput = {
-            protocol: 'graph',
-            command: 'changeedge',
-            payload: {
-              graph: 'foo',
-              src: {
-                node: 'foo',
-                port: 'foo',
-              },
-              tgt: {
-                node: 'bar',
-                port: 'bar',
-              },
-              metadata: {},
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('ChangeNode', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: ChangeEdgeInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'changeedge',
+        //       payload: {
+        //         graph: 'foo',
+        //         src: {
+        //           node: 'foo',
+        //           port: 'foo',
+        //         },
+        //         tgt: {
+        //           node: 'bar',
+        //           port: 'bar',
+        //         },
+        //         metadata: {},
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveEdge', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveEdgeInputMessageInput = {
-            protocol: 'graph',
-            command: 'removeedge',
-            payload: {
-              graph: 'foo',
-              src: {
-                node: 'somenode',
-                port: 'someport',
-              },
-              tgt: {
-                node: 'someothernode',
-                port: 'someotherport',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveEdge', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveEdgeInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removeedge',
+        //       payload: {
+        //         graph: 'foo',
+        //         src: {
+        //           node: 'somenode',
+        //           port: 'someport',
+        //         },
+        //         tgt: {
+        //           node: 'someothernode',
+        //           port: 'someotherport',
+        //         },
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveGroup', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveGroupInputMessageInput = {
-            protocol: 'graph',
-            command: 'removegroup',
-            payload: {
-              graph: 'foo',
-              name: 'foo',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveGroup', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveGroupInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removegroup',
+        //       payload: {
+        //         graph: 'foo',
+        //         name: 'foo',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveInitial', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveInitialInputMessageInput = {
-            protocol: 'graph',
-            command: 'removeinitial',
-            payload: {
-              graph: 'foo',
-              src: {
-                data: 'test',
-              },
-              tgt: {
-                node: 'someothernode',
-                port: 'someotherport',
-              },
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveInitial', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveInitialInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removeinitial',
+        //       payload: {
+        //         graph: 'foo',
+        //         src: {
+        //           data: 'test',
+        //         },
+        //         tgt: {
+        //           node: 'someothernode',
+        //           port: 'someotherport',
+        //         },
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveInport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveInportInputMessageInput = {
-            protocol: 'graph',
-            command: 'removeinport',
-            payload: {
-              graph: 'foo',
-              public: 'someport',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveInport', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveInportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removeinport',
+        //       payload: {
+        //         graph: 'foo',
+        //         public: 'someport',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveNode', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveNodeInputMessageInput = {
-            protocol: 'graph',
-            command: 'removenode',
-            payload: {
-              graph: 'foo',
-              id: 'foo',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveNode', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveNodeInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removenode',
+        //       payload: {
+        //         graph: 'foo',
+        //         id: 'foo',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RemoveOutport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RemoveOutportInputMessageInput = {
-            protocol: 'graph',
-            command: 'removeoutport',
-            payload: {
-              graph: 'foo',
-              public: 'someport',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RemoveOutport', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RemoveOutportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'removeoutport',
+        //       payload: {
+        //         graph: 'foo',
+        //         public: 'someport',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RenameGroup', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RenameGroupInputMessageInput = {
-            protocol: 'graph',
-            command: 'renamegroup',
-            payload: {
-              graph: 'foo',
-              from: 'foo',
-              to: 'bar',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RenameGroup', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RenameGroupInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'renamegroup',
+        //       payload: {
+        //         graph: 'foo',
+        //         from: 'foo',
+        //         to: 'bar',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RenameInport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RenameInportInputMessageInput = {
-            protocol: 'graph',
-            command: 'renameinport',
-            payload: {
-              graph: 'foo',
-              from: 'someport',
-              to: 'someotherport',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RenameInport', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RenameInportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'renameinport',
+        //       payload: {
+        //         graph: 'foo',
+        //         from: 'someport',
+        //         to: 'someotherport',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RenameNode', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RenameNodeInputMessageInput = {
-            protocol: 'graph',
-            command: 'renamenode',
-            payload: {
-              graph: 'foo',
-              from: 'foo',
-              to: 'bar',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RenameNode', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RenameNodeInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'renamenode',
+        //       payload: {
+        //         graph: 'foo',
+        //         from: 'foo',
+        //         to: 'bar',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
 
       describe('RenameOutport', () => {
-        it('should return an ErrorOutputMessage', async () => {
-          const input: RenameOutportInputMessageInput = {
-            protocol: 'graph',
-            command: 'renameinport',
-            payload: {
-              graph: 'foo',
-              from: 'someport',
-              to: 'someotherport',
-            },
-          }
-          await assertOutputMatchesExpected(
-            socketInstance,
-            input,
-            [
-              {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'NotFound',
-                },
-              },
-            ],
-          )
-        })
+        // describe('RenameOutport', () => {
+        //   it('should return an ErrorOutputMessage', async () => {
+        //     const input: RenameOutportInputMessageInput = {
+        //       protocol: 'graph',
+        //       command: 'renameinport',
+        //       payload: {
+        //         graph: 'foo',
+        //         from: 'someport',
+        //         to: 'someotherport',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(
+        //       socketInstance,
+        //       input,
+        //       [
+        //         {
+        //           protocol: 'graph',
+        //           command: 'error',
+        //           payload: {
+        //             message: 'NotFound',
+        //           },
+        //         },
+        //       ],
+        //     )
+        //   })
+        // })
       })
     })
   })

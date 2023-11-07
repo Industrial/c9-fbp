@@ -4,7 +4,7 @@ import * as graphs from '#/graphs.ts'
 import { AddInitialInputMessage } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
 import { AddInitialOutputMessageInput } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphContainsNodeById, graphWithIIP, toGraphErrorInput } from '#/domain/graph.ts'
+import { graphContainsInportByPublic, graphContainsNodeById, graphWithIIP, toGraphErrorInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const addinitial = (
@@ -16,6 +16,7 @@ export const addinitial = (
       return pipe(
         E.right(graph),
         E.chain(graphContainsNodeById(message.payload.tgt.node)),
+        E.chain(graphContainsInportByPublic(message.payload.tgt.port)),
         E.chain(graphWithIIP({
           src: message.payload.src,
           tgt: message.payload.tgt,
@@ -25,6 +26,9 @@ export const addinitial = (
           return graph
         })),
       )
+    }),
+    TE.map((graph) => {
+      return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,

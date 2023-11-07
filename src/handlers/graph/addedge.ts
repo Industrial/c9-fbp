@@ -4,7 +4,12 @@ import * as graphs from '#/graphs.ts'
 import { AddEdgeInputMessage } from '#/schemas/messages/graph/input/AddEdgeInputMessage.ts'
 import { AddEdgeOutputMessageInput } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphContainsNodeById, graphWithEdge, toGraphErrorInput } from '#/domain/graph.ts'
+import {
+  graphContainsInportByPublic,
+  graphContainsNodeById,
+  graphContainsOutportByPublic,
+  graphWithEdge,
+} from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const addedge = (
@@ -16,7 +21,9 @@ export const addedge = (
       return pipe(
         E.right(graph),
         E.chain(graphContainsNodeById(message.payload.src.node)),
+        E.chain(graphContainsOutportByPublic(message.payload.src.port)),
         E.chain(graphContainsNodeById(message.payload.tgt.node)),
+        E.chain(graphContainsInportByPublic(message.payload.tgt.port)),
         E.chain(graphWithEdge({
           src: message.payload.src,
           tgt: message.payload.tgt,
@@ -27,8 +34,22 @@ export const addedge = (
         })),
       )
     }),
+    TE.map((graph) => {
+      return graphs.set(graph.id, graph)
+    }),
     TE.match(
-      toGraphErrorInput,
+      // toGraphErrorInput,
+      (error): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+        return [
+          {
+            protocol: 'graph',
+            command: 'error',
+            payload: {
+              message: error.message,
+            },
+          },
+        ]
+      },
       (_graph): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {

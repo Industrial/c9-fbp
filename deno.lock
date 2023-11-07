@@ -3,6 +3,7 @@
   "packages": {
     "specifiers": {
       "npm:alga-ts": "npm:alga-ts@1.0.2_fp-ts@2.16.1",
+      "npm:chai": "npm:chai@4.3.10",
       "npm:fast-check": "npm:fast-check@3.13.2",
       "npm:fbp-protocol": "npm:fbp-protocol@0.9.8",
       "npm:husky@^8.0.1": "npm:husky@8.0.3",

@@ -21,6 +21,9 @@ export const addnode = (
         })),
       )
     }),
+    TE.map((graph) => {
+      return graphs.set(graph.id, graph)
+    }),
     TE.match(
       toGraphErrorInput,
       (_graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {

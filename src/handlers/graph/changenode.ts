@@ -24,6 +24,9 @@ export const changenode = (
         })),
       )
     }),
+    TE.map((graph) => {
+      return graphs.set(graph.id, graph)
+    }),
     TE.match(
       toGraphErrorInput,
       (_graph): Array<ChangeNodeOutputMessageInput | ErrorOutputMessageInput> => {

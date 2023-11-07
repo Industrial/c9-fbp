@@ -4,8 +4,8 @@ import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GroupSchema } from '#/schemas/messages/shared/Group.ts'
 import { IIPSchema } from '#/schemas/messages/shared/IIP.ts'
 import { NodeSchema } from '#/schemas/messages/shared/Node.ts'
-import { deriveTranscoder } from 'schemata-ts/Transcoder'
 import { PortSchema } from '#/schemas/messages/shared/Port.ts'
+import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const GraphSchema = S.Struct({
   id: GraphIDSchema,

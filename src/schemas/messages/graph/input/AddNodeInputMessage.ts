@@ -7,7 +7,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const AddNodeInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
-    command: S.Literal<['addnodeinput']>('addnodeinput'),
+    command: S.Literal<['addnode']>('addnode'),
     payload: S.Struct({
       id: S.String(),
       component: S.String(),

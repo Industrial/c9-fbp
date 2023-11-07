@@ -28,6 +28,9 @@ export const addoutport = (
         })),
       )
     }),
+    TE.map((graph) => {
+      return graphs.set(graph.id, graph)
+    }),
     TE.match(
       toGraphErrorInput,
       (_graph): Array<AddOutportOutputMessageInput | ErrorOutputMessageInput> => {

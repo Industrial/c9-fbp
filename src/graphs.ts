@@ -22,7 +22,7 @@ export const get = (id: GraphID) => {
     graphs,
     R.lookup(id),
     TE.fromEitherK(E.fromOption(() => {
-      return new Error(`Graph with id '${id}' not found.`)
+      return new Error('GraphNotFound')
     })),
   )
 }

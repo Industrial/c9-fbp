@@ -1,6 +1,6 @@
-import * as S from 'fp-ts/string.ts'
 import * as E from 'fp-ts/Either.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
+import * as S from 'fp-ts/string.ts'
 import * as edgeDomain from '#/domain/edge.ts'
 import * as groupDomain from '#/domain/group.ts'
 import * as iipDomain from '#/domain/iip.ts'
@@ -45,6 +45,9 @@ export const graphFindNodeById = (id: Node['id']) => {
     return pipe(
       graph.nodes,
       findFirstByPropertyE('id', id),
+      E.mapLeft(() => {
+        return new Error('NodeNotFound')
+      }),
     )
   }
 }
@@ -57,6 +60,9 @@ export const graphContainsNodeById = (id: Node['id']) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('NodeNotFound')
+      }),
     )
   }
 }
@@ -67,16 +73,22 @@ export const graphContainsAllNodesById = (ids: ReadonlyArray<Node['id']>) => {
       graph,
       E.fromPredicate(
         () => {
-          return pipe(
-            graph.nodes,
-            RA.map((node) => {
-              return node.id
-            }),
-            RA.difference(S.Eq)(ids),
-          ).length > 0
+          return RA.getEq(S.Eq).equals(
+            pipe(
+              graph.nodes,
+              RA.map((node) => {
+                return node.id
+              }),
+              RA.sort(S.Ord),
+            ),
+            pipe(
+              ids,
+              RA.sort(S.Ord),
+            ),
+          )
         },
         () => {
-          return new Error('NotFound')
+          return new Error('NodeNotFound')
         },
       ),
     )
@@ -91,6 +103,9 @@ export const graphContainsNode = (node: Node) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('NodeNotFound')
+      }),
     )
   }
 }
@@ -101,7 +116,7 @@ export const graphWithoutNode = (node: Node) => {
       ...graph,
       nodes: pipe(
         graph.nodes,
-        RA.filter(nodeDomain.areNodesEqual(node)),
+        RA.filter(nodeDomain.areNodesNotEqual(node)),
       ),
     })
   }
@@ -113,7 +128,7 @@ export const graphWithNode = (node: Node) => {
       ...graph,
       nodes: pipe(
         graph.nodes,
-        RA.filter(nodeDomain.areNodesEqual(node)),
+        RA.filter(nodeDomain.areNodesNotEqual(node)),
         RA.append(node),
       ),
     })
@@ -128,6 +143,9 @@ export const graphContainsEdge = (edge: Edge) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('EdgeNotFound')
+      }),
     )
   }
 }
@@ -138,7 +156,7 @@ export const graphWithoutEdge = (edge: Edge) => {
       ...graph,
       edges: pipe(
         graph.edges,
-        RA.filter(edgeDomain.areEdgesEqual(edge)),
+        RA.filter(edgeDomain.areEdgesNotEqual(edge)),
       ),
     })
   }
@@ -150,7 +168,7 @@ export const graphWithEdge = (edge: Edge) => {
       ...graph,
       edges: pipe(
         graph.edges,
-        RA.filter(edgeDomain.areEdgesEqual(edge)),
+        RA.filter(edgeDomain.areEdgesNotEqual(edge)),
         RA.append(edge),
       ),
     })
@@ -162,6 +180,9 @@ export const graphFindGroupByName = (name: Group['name']) => {
     return pipe(
       graph.groups,
       findFirstByPropertyE('name', name),
+      E.mapLeft(() => {
+        return new Error('GroupNotFound')
+      }),
     )
   }
 }
@@ -174,6 +195,9 @@ export const graphContainsGroup = (group: Group) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('GroupNotFound')
+      }),
     )
   }
 }
@@ -184,7 +208,7 @@ export const graphWithoutGroup = (group: Group) => {
       ...graph,
       groups: pipe(
         graph.groups,
-        RA.filter(groupDomain.areGroupsEqual(group)),
+        RA.filter(groupDomain.areGroupsNotEqual(group)),
       ),
     })
   }
@@ -196,7 +220,7 @@ export const graphWithGroup = (group: Group) => {
       ...graph,
       groups: pipe(
         graph.groups,
-        RA.filter(groupDomain.areGroupsEqual(group)),
+        RA.filter(groupDomain.areGroupsNotEqual(group)),
         RA.append(group),
       ),
     })
@@ -211,6 +235,9 @@ export const graphContainsIIP = (iip: IIP) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('IIPNotFound')
+      }),
     )
   }
 }
@@ -221,7 +248,7 @@ export const graphWithoutIIP = (iip: IIP) => {
       ...graph,
       iips: pipe(
         graph.iips,
-        RA.filter(iipDomain.areIIPsEqual(iip)),
+        RA.filter(iipDomain.areIIPsNotEqual(iip)),
       ),
     })
   }
@@ -233,7 +260,7 @@ export const graphWithIIP = (iip: IIP) => {
       ...graph,
       iips: pipe(
         graph.iips,
-        RA.filter(iipDomain.areIIPsEqual(iip)),
+        RA.filter(iipDomain.areIIPsNotEqual(iip)),
         RA.append(iip),
       ),
     })
@@ -245,6 +272,24 @@ export const graphFindInportByPublic = (name: Port['public']) => {
     return pipe(
       graph.inports,
       findFirstByPropertyE('public', name),
+      E.mapLeft(() => {
+        return new Error('InportNotFound')
+      }),
+    )
+  }
+}
+
+export const graphContainsInportByPublic = (name: Port['public']) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.inports,
+      findFirstByPropertyE('public', name),
+      E.map(() => {
+        return graph
+      }),
+      E.mapLeft(() => {
+        return new Error('InportNotFound')
+      }),
     )
   }
 }
@@ -257,32 +302,39 @@ export const graphContainsInport = (port: Port) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('InportNotFound')
+      }),
     )
   }
 }
 
 export const graphWithoutInport = (port: Port) => {
   return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
+    const newGraph: Graph = {
       ...graph,
-      ports: pipe(
+      inports: pipe(
         graph.inports,
-        RA.filter(portDomain.arePortsEqual(port)),
+        RA.filter(portDomain.arePortsNotEqual(port)),
       ),
-    })
+    }
+
+    return E.right(newGraph)
   }
 }
 
 export const graphWithInport = (port: Port) => {
   return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
+    const newGraph: Graph = {
       ...graph,
-      ports: pipe(
-        graph.outports,
-        RA.filter(portDomain.arePortsEqual(port)),
+      inports: pipe(
+        graph.inports,
+        RA.filter(portDomain.arePortsNotEqual(port)),
         RA.append(port),
       ),
-    })
+    }
+
+    return E.right(newGraph)
   }
 }
 
@@ -291,6 +343,24 @@ export const graphFindOutportByPublic = (name: Port['public']) => {
     return pipe(
       graph.outports,
       findFirstByPropertyE('public', name),
+      E.mapLeft(() => {
+        return new Error('OutportNotFound')
+      }),
+    )
+  }
+}
+
+export const graphContainsOutportByPublic = (name: Port['public']) => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.outports,
+      findFirstByPropertyE('public', name),
+      E.map(() => {
+        return graph
+      }),
+      E.mapLeft(() => {
+        return new Error('OutportNotFound')
+      }),
     )
   }
 }
@@ -303,31 +373,38 @@ export const graphContainsOutport = (port: Port) => {
       E.map(() => {
         return graph
       }),
+      E.mapLeft(() => {
+        return new Error('OutportNotFound')
+      }),
     )
   }
 }
 
 export const graphWithoutOutport = (port: Port) => {
   return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
+    const newGraph: Graph = {
       ...graph,
-      ports: pipe(
+      outports: pipe(
         graph.outports,
-        RA.filter(portDomain.arePortsEqual(port)),
+        RA.filter(portDomain.arePortsNotEqual(port)),
       ),
-    })
+    }
+
+    return E.right(newGraph)
   }
 }
 
 export const graphWithOutport = (port: Port) => {
   return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
+    const newGraph: Graph = {
       ...graph,
-      ports: pipe(
+      outports: pipe(
         graph.outports,
-        RA.filter(portDomain.arePortsEqual(port)),
+        RA.filter(portDomain.arePortsNotEqual(port)),
         RA.append(port),
       ),
-    })
+    }
+
+    return E.right(newGraph)
   }
 }
