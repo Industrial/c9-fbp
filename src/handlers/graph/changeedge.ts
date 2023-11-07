@@ -3,10 +3,16 @@ import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ChangeEdgeInputMessage } from '#/schemas/messages/graph/input/ChangeEdgeInputMessage.ts'
 import { ChangeEdgeOutputMessageInput } from '#/schemas/messages/graph/output/ChangeEdgeOutputMessage.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphContainsEdge, graphWithEdge, toGraphErrorInput } from '#/domain/graph.ts'
-import { pipe } from 'fp-ts/function.ts'
 import { Edge } from '#/schemas/messages/shared/Edge.ts'
+import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
+import {
+  graphContainsEdge,
+  graphContainsNodeById,
+  graphContainsOutportByPublic,
+  graphWithEdge,
+  toGraphErrorInput,
+} from '#/domain/graph.ts'
+import { pipe } from 'fp-ts/function.ts'
 
 export const changeedge = (
   message: ChangeEdgeInputMessage,
@@ -22,6 +28,10 @@ export const changeedge = (
     TE.chain((graph) => {
       return pipe(
         E.right(graph),
+        E.chain(graphContainsNodeById(message.payload.src.node)),
+        E.chain(graphContainsOutportByPublic(message.payload.src.port)),
+        E.chain(graphContainsNodeById(message.payload.tgt.node)),
+        E.chain(graphContainsOutportByPublic(message.payload.tgt.port)),
         E.chain(graphContainsEdge(edge)),
         E.chain(graphWithEdge(edge)),
         TE.fromEitherK(E.map((graph) => {
