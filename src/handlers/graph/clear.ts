@@ -30,13 +30,18 @@ export const clear = (
           },
         ]
       },
-      (graph): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
+      (_graph): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'clear',
             payload: {
-              ...graph,
+              id: message.payload.id,
+              main: message.payload.main,
+              name: message.payload.name,
+              description: message.payload.description,
+              icon: message.payload.icon,
+              library: message.payload.library,
             },
           },
         ]
