@@ -27,6 +27,7 @@ import { RenameOutportInputMessageInput } from '#/schemas/messages/graph/input/R
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
 import { assertObjectMatch } from 'std/assert/mod.ts'
 import { startServer } from '#/server.ts'
+import { ErrorOutputMessage } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -734,36 +735,86 @@ describe('Runtime', () => {
       })
 
       describe('AddInport', () => {
-        // describe('When passed AddInport and no node exists for the inport', () => {
-        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: AddInportInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'addinport',
-        //       payload: {
-        //         graph: 'foo',
-        //         node: 'somenode',
-        //         port: 'someport',
-        //         public: 'someport',
-        //         metadata: {
-        //           description: 'somedescription',
-        //         },
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NodeNotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed AddInport and a node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            const input: AddInportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addinport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'NodeNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed AddInport and the node exists on the graph', () => {
+          beforeEach(async () => {
+            const input: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(
+              socketInstance,
+              input,
+              [
+                {
+                  protocol: 'graph',
+                  command: 'addnode',
+                  payload: {
+                    graph: 'foo',
+                    id: 'somenode',
+                    component: 'somecomponent',
+                    metadata: {},
+                  },
+                } as AddNodeOutputMessage,
+              ],
+            )
+          })
+
+          it('should return a AddInportOutputMessage', async () => {
+            const input: AddInportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addinport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: AddInportOutputMessage = {
+              protocol: 'graph',
+              command: 'addinport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('AddOutport', () => {
