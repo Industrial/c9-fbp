@@ -36,6 +36,7 @@ import { ChangeGroupOutputMessage } from '#/schemas/messages/graph/output/Change
 import { ChangeNodeInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeInputMessage.ts'
 import { ChangeNodeOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
 import { RemoveEdgeOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'
+import { RemoveGroupOutputMessage } from '#/schemas/messages/graph/output/RemoveGroupOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1512,31 +1513,130 @@ describe('Runtime', () => {
       })
 
       describe('RemoveGroup', () => {
-        // describe('RemoveGroup', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RemoveGroupInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'removegroup',
-        //       payload: {
-        //         graph: 'foo',
-        //         name: 'foo',
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed RemoveGroup and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorOutputMessage', async () => {
+            const input: RemoveGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'removegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somename',
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'GroupNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RemoveGroup and the group exists on the graph', () => {
+          beforeEach(async () => {
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+            await (async () => {
+              const input: AddGroupInputMessageInput = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              const output: AddGroupOutputMessage = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+          })
+
+          it('should return a RemoveGroupOutputMessage', async () => {
+            const input: RemoveGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'removegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somegroup',
+              },
+            }
+            const output: RemoveGroupOutputMessage = {
+              protocol: 'graph',
+              command: 'removegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somegroup',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('RemoveInitial', () => {
