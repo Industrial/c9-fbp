@@ -32,6 +32,7 @@ import { ClearOutputMessage, ClearOutputMessageInput } from '#/schemas/messages/
 import { RuntimeOutputMessage } from '#/schemas/messages/runtime/output/RuntimeOutputMessage.ts'
 import { UUID } from 'schemata-ts'
 import { AddInitialOutputMessage } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
+import { ChangeGroupOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1033,34 +1034,139 @@ describe('Runtime', () => {
       })
 
       describe('ChangeGroup', () => {
-        // describe('When passed ChangeGroup and AddNode has not been passed', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: ChangeGroupInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'changegroup',
-        //       payload: {
-        //         name: 'foo',
-        //         graph: 'foo',
-        //         metadata: {
-        //           description: 'foo',
-        //         },
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NodeNotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed ChangeGroup and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorOutputMessage', async () => {
+            const input: ChangeGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'changegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somename',
+                metadata: {
+                  description: 'somedescription',
+                },
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'GroupNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed ChangeGroup and the group exists on the graph', () => {
+          beforeEach(async () => {
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+            await (async () => {
+              const input: AddGroupInputMessageInput = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              const output: AddGroupOutputMessage = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+          })
+
+          it('should return a AddGroupOutputMessage', async () => {
+            const input: ChangeGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'changegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somegroup',
+                metadata: {
+                  description: 'somedescription',
+                },
+              },
+            }
+            const output: ChangeGroupOutputMessage = {
+              protocol: 'graph',
+              command: 'changegroup',
+              payload: {
+                graph: 'foo',
+                name: 'somegroup',
+                metadata: {
+                  description: 'somedescription',
+                },
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('ChangeNode', () => {

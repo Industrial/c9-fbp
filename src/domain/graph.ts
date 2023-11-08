@@ -15,6 +15,7 @@ import { Node } from '#/schemas/messages/shared/Node.ts'
 import { Port } from '#/schemas/messages/shared/Port.ts'
 import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
 
 export const toGraphErrorInput = <T>(error: Error): ReadonlyArray<T | ErrorOutputMessageInput> => {
   return [
@@ -132,6 +133,26 @@ export const graphWithNode = (node: Node) => {
         RA.append(node),
       ),
     })
+  }
+}
+
+export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
+  return (graph: Graph): E.Either<Error, Edge> => {
+    return pipe(
+      graph.edges,
+      findFirstByPredicateE(edgeDomain.areEdgesNotEqual({
+        src,
+        tgt,
+        metadata: {
+          route: undefined,
+          schema: undefined,
+          secure: undefined,
+        },
+      })),
+      E.mapLeft(() => {
+        return new Error('EdgeNotFound')
+      }),
+    )
   }
 }
 
