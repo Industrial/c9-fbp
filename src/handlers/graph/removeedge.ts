@@ -1,7 +1,6 @@
 import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import { Edge } from '#/schemas/messages/shared/Edge.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 import { RemoveEdgeInputMessage } from '#/schemas/messages/graph/input/RemoveEdgeInputMessage.ts'
 import { RemoveEdgeOutputMessageInput } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'

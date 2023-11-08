@@ -252,7 +252,7 @@ export const graphContainsIIP = (iip: IIP) => {
   return (graph: Graph): E.Either<Error, Graph> => {
     return pipe(
       graph.iips,
-      findFirstByPredicateE(iipDomain.areIIPsNotEqual(iip)),
+      findFirstByPredicateE(iipDomain.areIIPsEqual(iip)),
       E.map(() => {
         return graph
       }),

@@ -37,6 +37,7 @@ import { ChangeNodeInputMessageInput } from '#/schemas/messages/graph/input/Chan
 import { ChangeNodeOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
 import { RemoveEdgeOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'
 import { RemoveGroupOutputMessage } from '#/schemas/messages/graph/output/RemoveGroupOutputMessage.ts'
+import { RemoveInitialOutputMessage } from '#/schemas/messages/graph/output/RemoveInitialOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1640,37 +1641,212 @@ describe('Runtime', () => {
       })
 
       describe('RemoveInitial', () => {
-        // describe('RemoveInitial', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RemoveInitialInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'removeinitial',
-        //       payload: {
-        //         graph: 'foo',
-        //         src: {
-        //           data: 'test',
-        //         },
-        //         tgt: {
-        //           node: 'someothernode',
-        //           port: 'someotherport',
-        //         },
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed RemoveInitial and a node on the edge does not exist on the graph', () => {
+          it('should return a IIPNotFound ErrorOutputMessage', async () => {
+            const input: RemoveInitialInputMessageInput = {
+              protocol: 'graph',
+              command: 'removeinitial',
+              payload: {
+                graph: 'foo',
+                src: {
+                  data: 'somedata',
+                },
+                tgt: {
+                  node: 'somenode',
+                  port: 'someport',
+                },
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'IIPNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RemoveInitial and all nodes in the group exist on the graph', () => {
+          beforeEach(async () => {
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+            await (async () => {
+              const input: AddInportInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someotherport',
+                  metadata: {},
+                },
+              }
+              const output: AddInportOutputMessage = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someotherport',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+          })
+
+          describe('When passed RemoveInitial and an inport does not exist on the node', () => {
+            it('should return an InportNotFound ErrorOutputMessage', async () => {
+              const input: AddInitialInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinitial',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    data: 'somedata',
+                  },
+                  tgt: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  metadata: {},
+                },
+              }
+              const output: ErrorOutputMessage = {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'InportNotFound',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+
+          describe('When passed RemoveInitial and an inport exists on the node', () => {
+            beforeEach(async () => {
+              await (async () => {
+                const input: AddInportInputMessageInput = {
+                  protocol: 'graph',
+                  command: 'addinport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'somenode',
+                    port: 'someport',
+                    public: 'someport',
+                    metadata: {},
+                  },
+                }
+                const output: AddInportOutputMessage = {
+                  protocol: 'graph',
+                  command: 'addinport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'somenode',
+                    port: 'someport',
+                    public: 'someport',
+                    metadata: {},
+                  },
+                }
+                await assertOutputMatchesExpected(socketInstance, input, [output])
+              })()
+              await (async () => {
+                const input: AddInitialInputMessageInput = {
+                  protocol: 'graph',
+                  command: 'addinitial',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      data: 'somedata',
+                    },
+                    tgt: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    metadata: {},
+                  },
+                }
+                const output: AddInitialOutputMessage = {
+                  protocol: 'graph',
+                  command: 'addinitial',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      data: 'somedata',
+                    },
+                    tgt: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    metadata: {
+                      route: undefined,
+                      schema: undefined,
+                      secure: undefined,
+                    },
+                  },
+                }
+                await assertOutputMatchesExpected(socketInstance, input, [output])
+              })()
+            })
+
+            it('should return a RemoveInitialOutputMessage', async () => {
+              const input: RemoveInitialInputMessageInput = {
+                protocol: 'graph',
+                command: 'removeinitial',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    data: 'somedata',
+                  },
+                  tgt: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                },
+              }
+              const output: RemoveInitialOutputMessage = {
+                protocol: 'graph',
+                command: 'removeinitial',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    data: 'somedata',
+                  },
+                  tgt: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+        })
       })
 
       describe('RemoveInport', () => {
