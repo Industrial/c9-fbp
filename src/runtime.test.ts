@@ -33,6 +33,8 @@ import { RuntimeOutputMessage } from '#/schemas/messages/runtime/output/RuntimeO
 import { UUID } from 'schemata-ts'
 import { AddInitialOutputMessage } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
 import { ChangeGroupOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupOutputMessage.ts'
+import { ChangeNodeInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeInputMessage.ts'
+import { ChangeNodeOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1198,39 +1200,79 @@ describe('Runtime', () => {
       })
 
       describe('ChangeNode', () => {
-        // describe('ChangeNode', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: ChangeEdgeInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'changeedge',
-        //       payload: {
-        //         graph: 'foo',
-        //         src: {
-        //           node: 'foo',
-        //           port: 'foo',
-        //         },
-        //         tgt: {
-        //           node: 'bar',
-        //           port: 'bar',
-        //         },
-        //         metadata: {},
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed ChangeNode and the node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            const input: ChangeNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'changenode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                metadata: {},
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'NodeNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed ChangeNode and the node exists on the graph', () => {
+          beforeEach(async () => {
+            const input: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            const output: AddNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+
+          it('should return a ChangeNodeOutputMessage', async () => {
+            const input: ChangeNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'changenode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                metadata: {
+                  description: 'somedescription',
+                },
+              },
+            }
+            const output: ChangeNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'changenode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                metadata: {
+                  description: 'somedescription',
+                },
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('RemoveEdge', () => {
