@@ -757,6 +757,34 @@ describe('Runtime', () => {
         })
       })
 
+      describe('AddNode', () => {
+        describe('When passed AddNode', () => {
+          it('should return a AddNodeOutputMessage', async () => {
+            const input: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            const output: AddNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+      })
+
       describe('AddOutport', () => {
         describe('When passed AddOutport and a node does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorOutputMessage', async () => {
