@@ -35,6 +35,7 @@ import { AddInitialOutputMessage } from '#/schemas/messages/graph/output/AddInit
 import { ChangeGroupOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupOutputMessage.ts'
 import { ChangeNodeInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeInputMessage.ts'
 import { ChangeNodeOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
+import { RemoveEdgeOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1276,38 +1277,238 @@ describe('Runtime', () => {
       })
 
       describe('RemoveEdge', () => {
-        // describe('RemoveEdge', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RemoveEdgeInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'removeedge',
-        //       payload: {
-        //         graph: 'foo',
-        //         src: {
-        //           node: 'somenode',
-        //           port: 'someport',
-        //         },
-        //         tgt: {
-        //           node: 'someothernode',
-        //           port: 'someotherport',
-        //         },
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed RemoveEdge and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorOutputMessage', async () => {
+            const input: RemoveEdgeInputMessageInput = {
+              protocol: 'graph',
+              command: 'removeedge',
+              payload: {
+                graph: 'foo',
+                src: {
+                  node: 'somenode',
+                  port: 'someport',
+                },
+                tgt: {
+                  node: 'someothernode',
+                  port: 'someotherport',
+                },
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'NodeNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RemoveEdge and all nodes on the edge exist on the graph', () => {
+          beforeEach(async () => {
+            const firstInput: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            const firstOutput: AddNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+            const secondInput: AddNodeInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'someothernode',
+                component: 'someothercomponent',
+                metadata: {},
+              },
+            }
+            const secondOutput: AddNodeOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'someothernode',
+                component: 'someothercomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+          })
+
+          describe('When a port on the edge does not exist on a node', () => {
+            it('should return a OutportNotFound ErrorOutputMessage', async () => {
+              const input: RemoveEdgeInputMessageInput = {
+                protocol: 'graph',
+                command: 'removeedge',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  tgt: {
+                    node: 'someothernode',
+                    port: 'someotherport',
+                  },
+                },
+              }
+              const output: ErrorOutputMessage = {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'OutportNotFound',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+
+          describe('When all ports on the edge exist on the nodes', () => {
+            beforeEach(async () => {
+              await (async () => {
+                const input: AddOutportInputMessageInput = {
+                  protocol: 'graph',
+                  command: 'addoutport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'somenode',
+                    port: 'someport',
+                    public: 'someport',
+                    metadata: {},
+                  },
+                }
+                const output: AddOutportOutputMessage = {
+                  protocol: 'graph',
+                  command: 'addoutport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'somenode',
+                    port: 'someport',
+                    public: 'someport',
+                    metadata: {},
+                  },
+                }
+                await assertOutputMatchesExpected(socketInstance, input, [output])
+              })()
+
+              await (async () => {
+                const input: AddInportInputMessageInput = {
+                  protocol: 'graph',
+                  command: 'addinport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'someothernode',
+                    port: 'someotherport',
+                    public: 'someotherport',
+                    metadata: {},
+                  },
+                }
+                const output: AddInportOutputMessage = {
+                  protocol: 'graph',
+                  command: 'addinport',
+                  payload: {
+                    graph: 'foo',
+                    node: 'someothernode',
+                    port: 'someotherport',
+                    public: 'someotherport',
+                    metadata: {},
+                  },
+                }
+                await assertOutputMatchesExpected(socketInstance, input, [output])
+              })()
+
+              await (async () => {
+                const input: AddEdgeInputMessageInput = {
+                  protocol: 'graph',
+                  command: 'addedge',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    tgt: {
+                      node: 'someothernode',
+                      port: 'someotherport',
+                    },
+                    metadata: {},
+                  },
+                }
+                const output: AddEdgeOutputMessage = {
+                  protocol: 'graph',
+                  command: 'addedge',
+                  payload: {
+                    graph: 'foo',
+                    src: {
+                      node: 'somenode',
+                      port: 'someport',
+                    },
+                    tgt: {
+                      node: 'someothernode',
+                      port: 'someotherport',
+                    },
+                    metadata: {
+                      route: undefined,
+                      schema: undefined,
+                      secure: undefined,
+                    },
+                  },
+                }
+                await assertOutputMatchesExpected(socketInstance, input, [output])
+              })()
+            })
+
+            it('should return a RemoveEdgeOutputMessage', async () => {
+              const input: RemoveEdgeInputMessageInput = {
+                protocol: 'graph',
+                command: 'removeedge',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  tgt: {
+                    node: 'someothernode',
+                    port: 'someotherport',
+                  },
+                },
+              }
+              const output: RemoveEdgeOutputMessage = {
+                protocol: 'graph',
+                command: 'removeedge',
+                payload: {
+                  graph: 'foo',
+                  src: {
+                    node: 'somenode',
+                    port: 'someport',
+                  },
+                  tgt: {
+                    node: 'someothernode',
+                    port: 'someotherport',
+                  },
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+        })
       })
 
       describe('RemoveGroup', () => {

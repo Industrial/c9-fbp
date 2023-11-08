@@ -5,6 +5,7 @@ import { ChangeEdgeInputMessage } from '#/schemas/messages/graph/input/ChangeEdg
 import { ChangeEdgeOutputMessageInput } from '#/schemas/messages/graph/output/ChangeEdgeOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 import {
+  graphContainsInportByPublic,
   graphContainsNodeById,
   graphContainsOutportByPublic,
   graphFindEdgeByTargetNode,
@@ -24,7 +25,7 @@ export const changeedge = (
         E.chain(graphContainsNodeById(message.payload.src.node)),
         E.chain(graphContainsOutportByPublic(message.payload.src.port)),
         E.chain(graphContainsNodeById(message.payload.tgt.node)),
-        E.chain(graphContainsOutportByPublic(message.payload.tgt.port)),
+        E.chain(graphContainsInportByPublic(message.payload.tgt.port)),
         E.chain(graphFindEdgeByTargetNode(message.payload.src, message.payload.tgt)),
         TE.fromEitherK(E.chain((edge) => {
           return pipe(

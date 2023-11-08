@@ -140,7 +140,7 @@ export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
   return (graph: Graph): E.Either<Error, Edge> => {
     return pipe(
       graph.edges,
-      findFirstByPredicateE(edgeDomain.areEdgesNotEqual({
+      findFirstByPredicateE(edgeDomain.areEdgesEqual({
         src,
         tgt,
         metadata: {
