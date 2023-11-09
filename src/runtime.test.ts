@@ -41,6 +41,7 @@ import { RemoveInitialOutputMessage } from '#/schemas/messages/graph/output/Remo
 import { RemoveInportOutputMessage } from '#/schemas/messages/graph/output/RemoveInportOutputMessage.ts'
 import { RemoveOutportOutputMessage } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
 import { RemoveNodeOutputMessage } from '#/schemas/messages/graph/output/RemoveNodeOutputMessage.ts'
+import { RenameGroupOutputMessage } from '#/schemas/messages/graph/output/RenameGroupOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -424,7 +425,7 @@ describe('Runtime', () => {
       })
 
       describe('AddGroup', () => {
-        describe('When passed AddGroup and a node on the edge does not exist on the graph', () => {
+        describe('When passed AddGroup and a node in the group does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorOutputMessage', async () => {
             const input: AddGroupInputMessageInput = {
               protocol: 'graph',
@@ -1069,6 +1070,7 @@ describe('Runtime', () => {
         })
       })
 
+      // TODO: nodes don't exist on the group, so can't check for node existence?
       describe('ChangeGroup', () => {
         describe('When passed ChangeGroup and the group does not exist on the graph', () => {
           it('should return a GroupNotFound ErrorOutputMessage', async () => {
@@ -2190,32 +2192,135 @@ describe('Runtime', () => {
       })
 
       describe('RenameGroup', () => {
-        // describe('RenameGroup', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RenameGroupInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'renamegroup',
-        //       payload: {
-        //         graph: 'foo',
-        //         from: 'foo',
-        //         to: 'bar',
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed RenameGroup and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorOutputMessage', async () => {
+            const input: RenameGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'renamegroup',
+              payload: {
+                graph: 'foo',
+                from: 'somegroup',
+                to: 'someothergroup',
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'GroupNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RenameGroup and the group exist on the graph', () => {
+          beforeEach(async () => {
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+
+            await (async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+
+            await (async () => {
+              const input: AddGroupInputMessageInput = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              const output: AddGroupOutputMessage = {
+                protocol: 'graph',
+                command: 'addgroup',
+                payload: {
+                  graph: 'foo',
+                  name: 'somegroup',
+                  nodes: [
+                    'somenode',
+                    'someothernode',
+                  ],
+                  metadata: {
+                    description: 'foo',
+                  },
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })()
+          })
+
+          it('should return a RenameGroupOutputMessage', async () => {
+            const input: RenameGroupInputMessageInput = {
+              protocol: 'graph',
+              command: 'renamegroup',
+              payload: {
+                graph: 'foo',
+                from: 'somegroup',
+                to: 'someothergroup',
+              },
+            }
+            const output: RenameGroupOutputMessage = {
+              protocol: 'graph',
+              command: 'renamegroup',
+              payload: {
+                graph: 'foo',
+                from: 'somegroup',
+                to: 'someothergroup',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
       })
 
       describe('RenameInport', () => {

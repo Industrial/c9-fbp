@@ -14,8 +14,8 @@ export const renamegroup = (
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
       return pipe(
-        graph,
-        graphFindGroupByName(message.payload.from),
+        E.right(graph),
+        E.chain(graphFindGroupByName(message.payload.from)),
         TE.fromEitherK(E.chain((group) => {
           return pipe(
             graph,
