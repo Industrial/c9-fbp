@@ -12,7 +12,9 @@ export const removeinitial = (
   message: RemoveInitialInputMessage,
 ): TE.TaskEither<Error, Array<RemoveInitialOutputMessageInput | ErrorOutputMessageInput>> => {
   const iip: IIP = {
-    src: message.payload.src,
+    src: message.payload.src ?? {
+      data: undefined,
+    },
     tgt: message.payload.tgt,
     metadata: {
       route: undefined,
@@ -33,18 +35,18 @@ export const removeinitial = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RemoveInitialOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RemoveInitialOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removeinitial',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               src: message.payload.src,
               tgt: message.payload.tgt,
             },

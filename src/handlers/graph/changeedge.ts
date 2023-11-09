@@ -35,18 +35,18 @@ export const changeedge = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<ChangeEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<ChangeEdgeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'changeedge',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               src: message.payload.src,
               tgt: message.payload.tgt,
               metadata: message.payload.metadata,

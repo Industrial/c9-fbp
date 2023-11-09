@@ -17,25 +17,25 @@ export const addnode = (
         TE.fromEitherK(graphWithNode({
           id: message.payload.id,
           component: message.payload.component,
-          metadata: message.payload.metadata,
+          metadata: message.payload.metadata ?? {},
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<AddNodeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addnode',
             payload: {
+              graph: graph.id,
               id: message.payload.id,
               component: message.payload.component,
               metadata: message.payload.metadata,
-              graph: message.payload.graph,
             },
           },
         ]

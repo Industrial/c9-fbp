@@ -6,10 +6,10 @@ import { MetadataNodeSchema } from '#/schemas/messages/shared/MetadataNode.ts'
 
 export const PortSchema = S.Struct({
   index: S.Optional(S.Union(S.Float(), S.String())),
-  metadata: MetadataNodeSchema,
   node: NodeIDSchema,
   port: PortIDSchema,
   public: PortIDSchema,
+  metadata: S.Optional(MetadataNodeSchema),
 })
 
 export type PortInput = S.InputOf<typeof PortSchema>

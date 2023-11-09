@@ -27,18 +27,18 @@ export const addinitial = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<AddInitialOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<AddInitialOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addinitial',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               metadata: message.payload.metadata,
               src: message.payload.src,
               tgt: message.payload.tgt,

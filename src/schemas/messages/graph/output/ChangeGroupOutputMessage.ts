@@ -10,8 +10,8 @@ export const ChangeGroupOutputMessageSchema = GraphOutputMessageBaseSchema
     command: S.Literal<['changegroup']>('changegroup'),
     payload: S.Struct({
       name: S.String(),
-      metadata: MetadataGroupSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataGroupSchema),
     }),
   })
 

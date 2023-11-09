@@ -26,21 +26,21 @@ export const addgroup = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<AddGroupOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<AddGroupOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addgroup',
             payload: {
+              graph: graph.id,
               metadata: message.payload.metadata,
               name: message.payload.name,
               nodes: message.payload.nodes,
-              graph: message.payload.graph,
             },
           },
         ]

@@ -14,8 +14,8 @@ export const AddOutportInputMessageSchema = GraphInputMessageBaseSchema
       public: PortIDSchema,
       node: NodeIDSchema,
       port: PortIDSchema,
-      metadata: MetadataNodeSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataNodeSchema),
     }),
   })
 

@@ -24,18 +24,18 @@ export const removeinport = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RemoveInportOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RemoveInportOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removeinport',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               public: message.payload.public,
             },
           },

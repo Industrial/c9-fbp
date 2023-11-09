@@ -1656,9 +1656,7 @@ describe('Runtime', () => {
               command: 'removeinitial',
               payload: {
                 graph: 'foo',
-                src: {
-                  data: 'somedata',
-                },
+                src: undefined,
                 tgt: {
                   node: 'somenode',
                   port: 'someport',
@@ -1828,9 +1826,7 @@ describe('Runtime', () => {
                 command: 'removeinitial',
                 payload: {
                   graph: 'foo',
-                  src: {
-                    data: 'somedata',
-                  },
+                  src: undefined,
                   tgt: {
                     node: 'somenode',
                     port: 'someport',
@@ -1842,9 +1838,7 @@ describe('Runtime', () => {
                 command: 'removeinitial',
                 payload: {
                   graph: 'foo',
-                  src: {
-                    data: 'somedata',
-                  },
+                  src: undefined,
                   tgt: {
                     node: 'somenode',
                     port: 'someport',

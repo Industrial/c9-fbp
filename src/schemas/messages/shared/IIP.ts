@@ -7,7 +7,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 export const IIPSchema = S.Struct({
   src: IIPValueSchema,
   tgt: TargetNodeSchema,
-  metadata: MetadataEdgeSchema,
+  metadata: S.Optional(MetadataEdgeSchema),
 })
 
 export type IIPInput = S.InputOf<typeof IIPSchema>

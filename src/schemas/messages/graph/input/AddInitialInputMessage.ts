@@ -13,8 +13,8 @@ export const AddInitialInputMessageSchema = GraphInputMessageBaseSchema
     payload: S.Struct({
       src: IIPValueSchema,
       tgt: TargetNodeSchema,
-      metadata: MetadataEdgeSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataEdgeSchema),
     }),
   })
 

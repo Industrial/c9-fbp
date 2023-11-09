@@ -12,8 +12,8 @@ export const AddGroupOutputMessageSchema = GraphOutputMessageBaseSchema
     payload: S.Struct({
       name: S.String(),
       nodes: S.Array(NodeIDSchema),
-      metadata: MetadataGroupSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataGroupSchema),
     }),
   })
 

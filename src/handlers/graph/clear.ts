@@ -4,13 +4,19 @@ import { ClearInputMessage } from '#/schemas/messages/graph/input/ClearInputMess
 import { ClearOutputMessageInput } from '#/schemas/messages/graph/output/ClearOutputMessage.ts'
 import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { toGraphErrorInput } from '#/domain/graph.ts'
 
 export const clear = (
   message: ClearInputMessage,
 ): TE.TaskEither<Error, ClearOutputMessageInput | ErrorOutputMessageInput> => {
   return pipe(
     graphs.set(message.payload.id, {
-      ...message.payload,
+      id: message.payload.id,
+      description: message.payload.description,
+      icon: message.payload.icon,
+      library: message.payload.library,
+      name: message.payload.name ?? 'main',
+      main: message.payload.main ?? false,
       edges: [],
       groups: [],
       iips: [],
@@ -19,24 +25,14 @@ export const clear = (
       outports: [],
     }),
     TE.match(
-      (error): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
-        return [
-          {
-            protocol: 'graph',
-            command: 'error',
-            payload: {
-              message: error.message,
-            },
-          },
-        ]
-      },
-      (_graph): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorInput,
+      (graph): Array<ClearOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'clear',
             payload: {
-              id: message.payload.id,
+              id: graph.id,
               main: message.payload.main,
               name: message.payload.name,
               description: message.payload.description,

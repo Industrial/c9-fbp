@@ -28,18 +28,18 @@ export const addinport = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<AddInportOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<AddInportOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addinport',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               metadata: message.payload.metadata,
               public: message.payload.public,
               node: message.payload.node,

@@ -27,19 +27,19 @@ export const renameinport = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RenameInportOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RenameInportOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'renameinport',
             payload: {
+              graph: graph.id,
               from: message.payload.from,
-              graph: message.payload.graph,
               to: message.payload.to,
             },
           },

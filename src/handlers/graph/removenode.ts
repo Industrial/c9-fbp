@@ -24,19 +24,19 @@ export const removenode = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RemoveNodeOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RemoveNodeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removenode',
             payload: {
+              graph: graph.id,
               id: message.payload.id,
-              graph: message.payload.graph,
             },
           },
         ]

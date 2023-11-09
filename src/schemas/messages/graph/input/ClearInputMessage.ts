@@ -9,8 +9,8 @@ export const ClearInputMessageSchema = GraphInputMessageBaseSchema
     command: S.Literal<['clear']>('clear'),
     payload: S.Struct({
       id: GraphIDSchema,
-      name: S.String(),
-      main: S.Boolean,
+      name: S.Optional(S.String()),
+      main: S.Optional(S.Boolean),
       library: S.Optional(S.String()),
       icon: S.Optional(S.String()),
       description: S.Optional(S.String()),

@@ -24,19 +24,19 @@ export const removegroup = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RemoveGroupOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RemoveGroupOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removegroup',
             payload: {
+              graph: graph.id,
               name: message.payload.name,
-              graph: message.payload.graph,
             },
           },
         ]

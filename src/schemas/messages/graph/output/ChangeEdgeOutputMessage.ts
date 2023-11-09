@@ -12,8 +12,8 @@ export const ChangeEdgeOutputMessageSchema = GraphOutputMessageBaseSchema
     payload: S.Struct({
       src: TargetNodeSchema,
       tgt: TargetNodeSchema,
-      metadata: MetadataEdgeSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataEdgeSchema),
     }),
   })
 

@@ -35,18 +35,18 @@ export const removeedge = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<RemoveEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<RemoveEdgeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'removeedge',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               src: message.payload.src,
               tgt: message.payload.tgt,
             },

@@ -10,7 +10,7 @@ export const RemoveInitialInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
     command: S.Literal<['removeinitial']>('removeinitial'),
     payload: S.Struct({
-      src: IIPValueSchema,
+      src: S.Optional(IIPValueSchema),
       tgt: TargetNodeSchema,
       graph: GraphIDSchema,
     }),

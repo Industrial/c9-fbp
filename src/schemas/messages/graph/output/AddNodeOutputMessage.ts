@@ -11,8 +11,8 @@ export const AddNodeOutputMessageSchema = GraphOutputMessageBaseSchema
     payload: S.Struct({
       id: S.String(),
       component: S.String(),
-      metadata: MetadataNodeSchema,
       graph: GraphIDSchema,
+      metadata: S.Optional(MetadataNodeSchema),
     }),
   })
 

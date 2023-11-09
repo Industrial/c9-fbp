@@ -7,7 +7,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 export const GroupSchema = S.Struct({
   name: S.String(),
   nodes: S.Array(NodeIDSchema),
-  metadata: MetadataGroupSchema,
+  metadata: S.Optional(MetadataGroupSchema),
 })
 
 export type GroupInput = S.InputOf<typeof GroupSchema>

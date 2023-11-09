@@ -6,7 +6,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 export const EdgeSchema = S.Struct({
   src: TargetNodeSchema,
   tgt: TargetNodeSchema,
-  metadata: MetadataEdgeSchema,
+  metadata: S.Optional(MetadataEdgeSchema),
 })
 
 export type EdgeInput = S.InputOf<typeof EdgeSchema>

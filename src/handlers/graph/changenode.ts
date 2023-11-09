@@ -24,20 +24,20 @@ export const changenode = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<ChangeNodeOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<ChangeNodeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'changenode',
             payload: {
+              graph: graph.id,
               id: message.payload.id,
               metadata: message.payload.metadata,
-              graph: message.payload.graph,
             },
           },
         ]

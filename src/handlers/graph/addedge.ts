@@ -9,6 +9,7 @@ import {
   graphContainsNodeById,
   graphContainsOutportByPublic,
   graphWithEdge,
+  toGraphErrorInput,
 } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
@@ -34,29 +35,18 @@ export const addedge = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
-      // toGraphErrorInput,
-      (error): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
-        return [
-          {
-            protocol: 'graph',
-            command: 'error',
-            payload: {
-              message: error.message,
-            },
-          },
-        ]
-      },
-      (_graph): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorInput,
+      (graph): Array<AddEdgeOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addedge',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               metadata: message.payload.metadata,
               src: message.payload.src,
               tgt: message.payload.tgt,

@@ -24,18 +24,18 @@ export const changegroup = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<ChangeGroupOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<ChangeGroupOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'changegroup',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               metadata: message.payload.metadata,
               name: message.payload.name,
             },

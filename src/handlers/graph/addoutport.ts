@@ -28,18 +28,18 @@ export const addoutport = (
         })),
       )
     }),
-    TE.map((graph) => {
+    TE.chain((graph) => {
       return graphs.set(graph.id, graph)
     }),
     TE.match(
       toGraphErrorInput,
-      (_graph): Array<AddOutportOutputMessageInput | ErrorOutputMessageInput> => {
+      (graph): Array<AddOutportOutputMessageInput | ErrorOutputMessageInput> => {
         return [
           {
             protocol: 'graph',
             command: 'addoutport',
             payload: {
-              graph: message.payload.graph,
+              graph: graph.id,
               metadata: message.payload.metadata,
               public: message.payload.public,
               node: message.payload.node,
