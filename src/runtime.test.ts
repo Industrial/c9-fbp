@@ -42,6 +42,8 @@ import { RemoveInportOutputMessage } from '#/schemas/messages/graph/output/Remov
 import { RemoveOutportOutputMessage } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
 import { RemoveNodeOutputMessage } from '#/schemas/messages/graph/output/RemoveNodeOutputMessage.ts'
 import { RenameGroupOutputMessage } from '#/schemas/messages/graph/output/RenameGroupOutputMessage.ts'
+import { RenameInportOutputMessage } from '#/schemas/messages/graph/output/RenameInportOutputMessage.ts'
+import { RenameOutportOutputMessage } from '#/schemas/messages/graph/output/RenameOutportOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1903,7 +1905,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When the Inport does not exist on the node', () => {
+        describe('When passed RemoveInport and the Inport does not exist on the node', () => {
           it('should return a InportNotFound ErrorOutputMessage', async () => {
             const input: RemoveInportInputMessageInput = {
               protocol: 'graph',
@@ -1924,7 +1926,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When the Inport exists on the node', () => {
+        describe('When passed RemoveInport and the Inport exists on the node', () => {
           beforeEach(async () => {
             const input: AddInportInputMessageInput = {
               protocol: 'graph',
@@ -2120,7 +2122,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When the Outport does not exist on the node', () => {
+        describe('When passed RemoveOutport and the Outport does not exist on the node', () => {
           it('should return a OutportNotFound ErrorOutputMessage', async () => {
             const input: RemoveOutportInputMessageInput = {
               protocol: 'graph',
@@ -2141,7 +2143,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When the Outport exists on the node', () => {
+        describe('When passed RemoveOutport and the Outport exists on the node', () => {
           beforeEach(async () => {
             const input: AddOutportInputMessageInput = {
               protocol: 'graph',
@@ -2324,31 +2326,125 @@ describe('Runtime', () => {
       })
 
       describe('RenameInport', () => {
-        // describe('RenameInport', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RenameInportInputMessageInput = {
+        // TODO: This event does not contain a NodeID, so I cannot check if the
+        // node exists. Create a Ticket in the NoFo ecosystem to check.
+        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
+        //     const input: RemoveInportInputMessageInput = {
         //       protocol: 'graph',
-        //       command: 'renameinport',
+        //       command: 'removeinport',
         //       payload: {
         //         graph: 'foo',
-        //         from: 'someport',
-        //         to: 'someotherport',
+        //         public: 'someport',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
+        //     const output: ErrorOutputMessage = {
+        //       protocol: 'graph',
+        //       command: 'error',
+        //       payload: {
+        //         message: 'NodeNotFound',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(socketInstance, input, [output])
         //   })
+        // })
+
+        // describe('When passed RemoveInport and the node exists on the graph', () => {
+        beforeEach(async () => {
+          const input: AddNodeInputMessageInput = {
+            protocol: 'graph',
+            command: 'addnode',
+            payload: {
+              graph: 'foo',
+              id: 'somenode',
+              component: 'somecomponent',
+              metadata: {},
+            },
+          }
+          const output: AddNodeOutputMessage = {
+            protocol: 'graph',
+            command: 'addnode',
+            payload: {
+              graph: 'foo',
+              id: 'somenode',
+              component: 'somecomponent',
+              metadata: {},
+            },
+          }
+          await assertOutputMatchesExpected(socketInstance, input, [output])
+        })
+
+        describe('When passed RenameInport and the Inport does not exist on the node', () => {
+          it('should return a InportNotFound ErrorOutputMessage', async () => {
+            const input: RenameInportInputMessageInput = {
+              protocol: 'graph',
+              command: 'renameinport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'InportNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RenameInport and the Inport exists on the node', () => {
+          beforeEach(async () => {
+            const input: AddInportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addinport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: AddInportOutputMessage = {
+              protocol: 'graph',
+              command: 'addinport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+
+          it('should return a RenameInportOutputMessage', async () => {
+            const input: RenameInportInputMessageInput = {
+              protocol: 'graph',
+              command: 'renameinport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            const output: RenameInportOutputMessage = {
+              protocol: 'graph',
+              command: 'renameinport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
         // })
       })
 
@@ -2382,31 +2478,125 @@ describe('Runtime', () => {
       })
 
       describe('RenameOutport', () => {
-        // describe('RenameOutport', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RenameOutportInputMessageInput = {
+        // TODO: This event does not contain a NodeID, so I cannot check if the
+        // node exists. Create a Ticket in the NoFo ecosystem to check.
+        // describe('When passed RemoveOutport and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
+        //     const input: RemoveOutportInputMessageInput = {
         //       protocol: 'graph',
-        //       command: 'renameinport',
+        //       command: 'removeoutport',
         //       payload: {
         //         graph: 'foo',
-        //         from: 'someport',
-        //         to: 'someotherport',
+        //         public: 'someport',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
+        //     const output: ErrorOutputMessage = {
+        //       protocol: 'graph',
+        //       command: 'error',
+        //       payload: {
+        //         message: 'NodeNotFound',
+        //       },
+        //     }
+        //     await assertOutputMatchesExpected(socketInstance, input, [output])
         //   })
+        // })
+
+        // describe('When passed RemoveOutport and the node exists on the graph', () => {
+        beforeEach(async () => {
+          const input: AddNodeInputMessageInput = {
+            protocol: 'graph',
+            command: 'addnode',
+            payload: {
+              graph: 'foo',
+              id: 'somenode',
+              component: 'somecomponent',
+              metadata: {},
+            },
+          }
+          const output: AddNodeOutputMessage = {
+            protocol: 'graph',
+            command: 'addnode',
+            payload: {
+              graph: 'foo',
+              id: 'somenode',
+              component: 'somecomponent',
+              metadata: {},
+            },
+          }
+          await assertOutputMatchesExpected(socketInstance, input, [output])
+        })
+
+        describe('When passed RenameOutport and the Outport does not exist on the node', () => {
+          it('should return a OutportNotFound ErrorOutputMessage', async () => {
+            const input: RenameOutportInputMessageInput = {
+              protocol: 'graph',
+              command: 'renameoutport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            const output: ErrorOutputMessage = {
+              protocol: 'graph',
+              command: 'error',
+              payload: {
+                message: 'OutportNotFound',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
+
+        describe('When passed RenameOutport and the Outport exists on the node', () => {
+          beforeEach(async () => {
+            const input: AddOutportInputMessageInput = {
+              protocol: 'graph',
+              command: 'addoutport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            const output: AddOutportOutputMessage = {
+              protocol: 'graph',
+              command: 'addoutport',
+              payload: {
+                graph: 'foo',
+                node: 'somenode',
+                port: 'someport',
+                public: 'someport',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+
+          it('should return a RenameOutportOutputMessage', async () => {
+            const input: RenameOutportInputMessageInput = {
+              protocol: 'graph',
+              command: 'renameoutport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            const output: RenameOutportOutputMessage = {
+              protocol: 'graph',
+              command: 'renameoutport',
+              payload: {
+                graph: 'foo',
+                from: 'someport',
+                to: 'someotherport',
+              },
+            }
+            await assertOutputMatchesExpected(socketInstance, input, [output])
+          })
+        })
         // })
       })
     })

@@ -7,7 +7,7 @@ import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const RenameOutportInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
-    command: S.Literal<['renameinport']>('renameinport'),
+    command: S.Literal<['renameoutport']>('renameoutport'),
     payload: S.Struct({
       from: PortIDSchema,
       to: PortIDSchema,
