@@ -40,6 +40,7 @@ import { RemoveGroupOutputMessage } from '#/schemas/messages/graph/output/Remove
 import { RemoveInitialOutputMessage } from '#/schemas/messages/graph/output/RemoveInitialOutputMessage.ts'
 import { RemoveInportOutputMessage } from '#/schemas/messages/graph/output/RemoveInportOutputMessage.ts'
 import { RemoveOutportOutputMessage } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
+import { RemoveNodeOutputMessage } from '#/schemas/messages/graph/output/RemoveNodeOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -1972,6 +1973,75 @@ describe('Runtime', () => {
       })
 
       describe('RemoveNode', () => {
+        describe('When passed RemoveNode', () => {
+          describe('When the Node does not exist on the graph', () => {
+            it('should return a NodeNotFound ErrorOutputMessage', async () => {
+              const input: RemoveNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'removenode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                },
+              }
+              const output: ErrorOutputMessage = {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NodeNotFound',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+
+          describe('When the Node exists on the graph', () => {
+            beforeEach(async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+
+            it('should return a RemoveNodeOutputMessage', async () => {
+              const input: RemoveNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'removenode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                },
+              }
+              const output: RemoveNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'removenode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+        })
+
         // describe('RemoveNode', () => {
         //   it('should return an ErrorOutputMessage', async () => {
         //     const input: RemoveNodeInputMessageInput = {
