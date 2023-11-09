@@ -1,22 +1,22 @@
 import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import { ChangeEdgeInputMessage } from '#/schemas/messages/graph/input/ChangeEdgeInputMessage.ts'
-import { ChangeEdgeOutputMessageInput } from '#/schemas/messages/graph/output/ChangeEdgeOutputMessage.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
+import { ChangeEdgeGraphInputMessage } from '#/schemas/messages/graph/input/ChangeEdgeGraphInputMessage.ts'
+import { ChangeEdgeGraphOutputMessageInput } from '#/schemas/messages/graph/output/ChangeEdgeGraphOutputMessage.ts'
+import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import {
   graphContainsInportByPublic,
   graphContainsNodeById,
   graphContainsOutportByPublic,
   graphFindEdgeByTargetNode,
   graphWithEdge,
-  toGraphErrorInput,
+  toGraphErrorGraphInput,
 } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const changeedge = (
-  message: ChangeEdgeInputMessage,
-): TE.TaskEither<Error, Array<ChangeEdgeOutputMessageInput | ErrorOutputMessageInput>> => {
+  message: ChangeEdgeGraphInputMessage,
+): TE.TaskEither<Error, Array<ChangeEdgeGraphOutputMessageInput | ErrorGraphOutputMessageInput>> => {
   return pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
@@ -39,8 +39,8 @@ export const changeedge = (
       return graphs.set(graph.id, graph)
     }),
     TE.match(
-      toGraphErrorInput,
-      (graph): Array<ChangeEdgeOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorGraphInput,
+      (graph): Array<ChangeEdgeGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
         return [
           {
             protocol: 'graph',

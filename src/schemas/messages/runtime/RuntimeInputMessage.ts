@@ -1,12 +1,12 @@
 import * as S from 'schemata-ts'
-import { GetRuntimeInputMessageSchema } from '#/schemas/messages/runtime/input/GetRuntimeInputMessage.ts'
-import { PacketInputMessageSchema } from '#/schemas/messages/runtime/input/PacketInputMessage.ts'
+import { GetRuntimeRuntimeInputMessageSchema } from './input/GetRuntimeRuntimeInputMessage.ts'
+import { PacketRuntimeInputMessageSchema } from './input/PacketRuntimeInputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const RuntimeInputMessageSchema = S.Union(
-  GetRuntimeInputMessageSchema,
-  PacketInputMessageSchema,
+  GetRuntimeRuntimeInputMessageSchema,
+  PacketRuntimeInputMessageSchema,
 )
 
 export type RuntimeInputMessageInput = S.InputOf<typeof RuntimeInputMessageSchema>

@@ -1,16 +1,16 @@
 import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
+import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { IIP } from '#/schemas/messages/shared/IIP.ts'
-import { RemoveInitialInputMessage } from '#/schemas/messages/graph/input/RemoveInitialInputMessage.ts'
-import { RemoveInitialOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInitialOutputMessage.ts'
-import { graphContainsIIP, graphWithoutIIP, toGraphErrorInput } from '#/domain/graph.ts'
+import { RemoveInitialGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInitialGraphInputMessage.ts'
+import { RemoveInitialGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInitialGraphOutputMessage.ts'
+import { graphContainsIIP, graphWithoutIIP, toGraphErrorGraphInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const removeinitial = (
-  message: RemoveInitialInputMessage,
-): TE.TaskEither<Error, Array<RemoveInitialOutputMessageInput | ErrorOutputMessageInput>> => {
+  message: RemoveInitialGraphInputMessage,
+): TE.TaskEither<Error, Array<RemoveInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput>> => {
   const iip: IIP = {
     src: message.payload.src ?? {
       data: undefined,
@@ -39,8 +39,8 @@ export const removeinitial = (
       return graphs.set(graph.id, graph)
     }),
     TE.match(
-      toGraphErrorInput,
-      (graph): Array<RemoveInitialOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorGraphInput,
+      (graph): Array<RemoveInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
         return [
           {
             protocol: 'graph',

@@ -1,17 +1,17 @@
 import * as S from 'schemata-ts'
-import { ErrorOutputMessageSchema } from '#/schemas/messages/runtime/output/ErrorOutputMessage.ts'
-import { PacketOutputMessageSchema } from '#/schemas/messages/runtime/output/PacketOutputMessage.ts'
-import { PacketSentOutputMessageSchema } from '#/schemas/messages/runtime/output/PacketSentOutputMessage.ts'
-import { PortsOutputMessageSchema } from '#/schemas/messages/runtime/output/PortsOutputMessage.ts'
-import { RuntimeOutputMessageSchema as RuntimeRuntimeOutputMessageSchema } from '#/schemas/messages/runtime/output/RuntimeOutputMessage.ts'
+import { ErrorRuntimeOutputMessageSchema } from '#/schemas/messages/runtime/output/ErrorRuntimeOutputMessage.ts'
+import { PacketRuntimeOutputMessageSchema } from '#/schemas/messages/runtime/output/PacketRuntimeOutputMessage.ts'
+import { PacketSentRuntimeOutputMessageSchema } from '#/schemas/messages/runtime/output/PacketSentRuntimeOutputMessage.ts'
+import { PortsOutputRuntimeMessageSchema } from '#/schemas/messages/runtime/output/PortsRuntimeOutputMessage.ts'
+import { RuntimeRuntimeOutputMessageSchema as RuntimeRuntimeOutputMessageSchema } from '#/schemas/messages/runtime/output/RuntimeRuntimeOutputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const RuntimeOutputMessageSchema = S.Union(
-  ErrorOutputMessageSchema,
-  PacketOutputMessageSchema,
-  PacketSentOutputMessageSchema,
-  PortsOutputMessageSchema,
+  ErrorRuntimeOutputMessageSchema,
+  PacketRuntimeOutputMessageSchema,
+  PacketSentRuntimeOutputMessageSchema,
+  PortsOutputRuntimeMessageSchema,
   RuntimeRuntimeOutputMessageSchema,
 )
 

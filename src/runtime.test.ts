@@ -1,45 +1,45 @@
 import chai from 'chai'
-import { AddEdgeInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeInputMessage.ts'
-import { AddEdgeOutputMessage } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
-import { AddGroupInputMessageInput } from '#/schemas/messages/graph/input/AddGroupInputMessage.ts'
-import { AddGroupOutputMessage } from '#/schemas/messages/graph/output/AddGroupOutputMessage.ts'
-import { AddInitialInputMessageInput } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
-import { AddInitialOutputMessage } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
-import { AddInportInputMessageInput } from '#/schemas/messages/graph/input/AddInportInputMessage.ts'
-import { AddInportOutputMessage } from '#/schemas/messages/graph/output/AddInportOutputMessage.ts'
-import { AddNodeInputMessageInput } from '#/schemas/messages/graph/input/AddNodeInputMessage.ts'
-import { AddNodeOutputMessage } from '#/schemas/messages/graph/output/AddNodeOutputMessage.ts'
-import { AddOutportInputMessageInput } from '#/schemas/messages/graph/input/AddOutportInputMessage.ts'
-import { AddOutportOutputMessage } from '#/schemas/messages/graph/output/AddOutportOutputMessage.ts'
-import { ChangeEdgeInputMessageInput } from '#/schemas/messages/graph/input/ChangeEdgeInputMessage.ts'
-import { ChangeGroupInputMessageInput } from '#/schemas/messages/graph/input/ChangeGroupInputMessage.ts'
-import { ChangeGroupOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupOutputMessage.ts'
-import { ChangeNodeInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeInputMessage.ts'
-import { ChangeNodeOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
-import { ClearInputMessageInput } from '#/schemas/messages/graph/input/ClearInputMessage.ts'
-import { ErrorOutputMessage } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { GetRuntimeInputMessageInput } from '#/schemas/messages/runtime/input/GetRuntimeInputMessage.ts'
-import { RemoveEdgeInputMessageInput } from '#/schemas/messages/graph/input/RemoveEdgeInputMessage.ts'
-import { RemoveEdgeOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'
-import { RemoveGroupInputMessageInput } from '#/schemas/messages/graph/input/RemoveGroupInputMessage.ts'
-import { RemoveGroupOutputMessage } from '#/schemas/messages/graph/output/RemoveGroupOutputMessage.ts'
-import { RemoveInitialInputMessageInput } from '#/schemas/messages/graph/input/RemoveInitialInputMessage.ts'
-import { RemoveInitialOutputMessage } from '#/schemas/messages/graph/output/RemoveInitialOutputMessage.ts'
-import { RemoveInportInputMessageInput } from '#/schemas/messages/graph/input/RemoveInportInputMessage.ts'
-import { RemoveInportOutputMessage } from '#/schemas/messages/graph/output/RemoveInportOutputMessage.ts'
-import { RemoveNodeInputMessageInput } from '#/schemas/messages/graph/input/RemoveNodeInputMessage.ts'
-import { RemoveNodeOutputMessage } from '#/schemas/messages/graph/output/RemoveNodeOutputMessage.ts'
-import { RemoveOutportInputMessageInput } from '#/schemas/messages/graph/input/RemoveOutportInputMessage.ts'
-import { RemoveOutportOutputMessage } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
-import { RenameGroupInputMessageInput } from '#/schemas/messages/graph/input/RenameGroupInputMessage.ts'
-import { RenameGroupOutputMessage } from '#/schemas/messages/graph/output/RenameGroupOutputMessage.ts'
-import { RenameInportInputMessageInput } from '#/schemas/messages/graph/input/RenameInportInputMessage.ts'
-import { RenameInportOutputMessage } from '#/schemas/messages/graph/output/RenameInportOutputMessage.ts'
-import { RenameNodeInputMessageInput } from '#/schemas/messages/graph/input/RenameNodeInputMessage.ts'
-import { RenameNodeOutputMessage } from '#/schemas/messages/graph/output/RenameNodeOutputMessage.ts'
-import { RenameOutportInputMessageInput } from '#/schemas/messages/graph/input/RenameOutportInputMessage.ts'
-import { RenameOutportOutputMessage } from '#/schemas/messages/graph/output/RenameOutportOutputMessage.ts'
-import { RuntimeOutputMessage } from '#/schemas/messages/runtime/output/RuntimeOutputMessage.ts'
+import { AddEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeGraphInputMessage.ts'
+import { AddEdgeGraphOutputMessage } from '#/schemas/messages/graph/output/AddEdgeGraphOutputMessage.ts'
+import { AddGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/AddGroupGraphInputMessage.ts'
+import { AddGroupGraphOutputMessage } from '#/schemas/messages/graph/output/AddGroupGraphOutputMessage.ts'
+import { AddInitialGraphInputMessageInput } from '#/schemas/messages/graph/input/AddInitialGraphInputMessage.ts'
+import { AddInitialGraphOutputMessage } from '#/schemas/messages/graph/output/AddInitialGraphOutputMessage.ts'
+import { AddInportGraphInputMessageInput } from '#/schemas/messages/graph/input/AddInportGraphInputMessage.ts'
+import { AddInportGraphOutputMessage } from '#/schemas/messages/graph/output/AddInportGraphOutputMessage.ts'
+import { AddNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/AddNodeGraphInputMessage.ts'
+import { AddNodeGraphOutputMessage } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
+import { AddOutportGraphInputMessageInput } from '#/schemas/messages/graph/input/AddOutportGraphInputMessage.ts'
+import { AddOutportGraphOutputMessage } from '#/schemas/messages/graph/output/AddOutportGraphOutputMessage.ts'
+import { ChangeEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeEdgeGraphInputMessage.ts'
+import { ChangeGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeGroupGraphInputMessage.ts'
+import { ChangeGroupGraphOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupGraphOutputMessage.ts'
+import { ChangeNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeGraphInputMessage.ts'
+import { ChangeNodeGraphOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeGraphOutputMessage.ts'
+import { ClearGraphInputMessageInput } from '#/schemas/messages/graph/input/ClearGraphInputMessage.ts'
+import { ErrorGraphOutputMessage } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { GetRuntimeRuntimeInputMessageInput } from './schemas/messages/runtime/input/GetRuntimeRuntimeInputMessage.ts'
+import { RemoveEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveEdgeGraphInputMessage.ts'
+import { RemoveEdgeGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeGraphOutputMessage.ts'
+import { RemoveGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveGroupGraphInputMessage.ts'
+import { RemoveGroupGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveGroupGraphOutputMessage.ts'
+import { RemoveInitialGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveInitialGraphInputMessage.ts'
+import { RemoveInitialGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveInitialGraphOutputMessage.ts'
+import { RemoveInportGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveInportGraphInputMessage.ts'
+import { RemoveInportGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveInportGraphOutputMessage.ts'
+import { RemoveNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveNodeGraphInputMessage.ts'
+import { RemoveNodeGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveNodeGraphOutputMessage.ts'
+import { RemoveOutportGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveOutportGraphInputMessage.ts'
+import { RemoveOutportGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveOutportGraphOutputMessage.ts'
+import { RenameGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/RenameGroupGraphInputMessage.ts'
+import { RenameGroupGraphOutputMessage } from '#/schemas/messages/graph/output/RenameGroupGraphOutputMessage.ts'
+import { RenameInportGraphInputMessageInput } from '#/schemas/messages/graph/input/RenameInportGraphInputMessage.ts'
+import { RenameInportGraphOutputMessage } from '#/schemas/messages/graph/output/RenameInportGraphOutputMessage.ts'
+import { RenameNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/RenameNodeGraphInputMessage.ts'
+import { RenameNodeGraphOutputMessage } from '#/schemas/messages/graph/output/RenameNodeGraphOutputMessage.ts'
+import { RenameOutportGraphInputMessageInput } from '#/schemas/messages/graph/input/RenameOutportGraphInputMessage.ts'
+import { RenameOutportGraphOutputMessage } from '#/schemas/messages/graph/output/RenameOutportGraphOutputMessage.ts'
+import { RuntimeRuntimeOutputMessage } from './schemas/messages/runtime/output/RuntimeRuntimeOutputMessage.ts'
 import { UUID } from 'schemata-ts'
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
 import { startServer } from '#/server.ts'
@@ -141,12 +141,12 @@ describe('Runtime', () => {
   describe('Runtime Protocol', () => {
     describe('requesting runtime metadata', () => {
       it('should provide it back', async () => {
-        const input: GetRuntimeInputMessageInput = {
+        const input: GetRuntimeRuntimeInputMessageInput = {
           protocol: 'runtime',
           command: 'getruntime',
           payload: {},
         }
-        const output: RuntimeOutputMessage = {
+        const output: RuntimeRuntimeOutputMessage = {
           protocol: 'runtime',
           command: 'runtime',
           payload: {
@@ -176,9 +176,9 @@ describe('Runtime', () => {
   })
 
   describe('Graph Protocol', () => {
-    describe('When no Clear has been passed', () => {
-      it('should return a GraphNotFound ErrorOutputMessage', async () => {
-        const input: AddNodeInputMessageInput = {
+    describe('When no ClearGraph has been passed', () => {
+      it('should return a GraphNotFound ErrorGraphOutputMessage', async () => {
+        const input: AddNodeGraphInputMessageInput = {
           protocol: 'graph',
           command: 'addnode',
           payload: {
@@ -188,7 +188,7 @@ describe('Runtime', () => {
             metadata: {},
           },
         }
-        const output: ErrorOutputMessage = {
+        const output: ErrorGraphOutputMessage = {
           protocol: 'graph',
           command: 'error',
           payload: {
@@ -199,9 +199,9 @@ describe('Runtime', () => {
       })
     })
 
-    describe('When Clear has been passed', () => {
+    describe('When ClearGraph has been passed', () => {
       beforeEach(async () => {
-        const input: ClearInputMessageInput = {
+        const input: ClearGraphInputMessageInput = {
           protocol: 'graph',
           command: 'clear',
           payload: {
@@ -210,7 +210,7 @@ describe('Runtime', () => {
             main: true,
           },
         }
-        // Don't use the ClearOutputMessage type here because it includes
+        // Don't use the ClearGraphOutputMessage type here because it includes
         // undefined values which are not serialized/parsed by JSON.
         const output = {
           protocol: 'graph',
@@ -227,10 +227,10 @@ describe('Runtime', () => {
         await assertOutputMatchesExpected(socketInstance, input, [output])
       })
 
-      describe('AddEdge', () => {
-        describe('When passed AddEdge and a node on the edge does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: AddEdgeInputMessageInput = {
+      describe('AddEdgeGraph', () => {
+        describe('When passed AddEdgeGraph and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: AddEdgeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addedge',
               payload: {
@@ -246,7 +246,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -257,9 +257,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddEdge and all nodes on the edge exist on the graph', () => {
+        describe('When passed AddEdgeGraph and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
-            const firstInput: AddNodeInputMessageInput = {
+            const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -269,7 +269,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const firstOutput: AddNodeOutputMessage = {
+            const firstOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -280,7 +280,7 @@ describe('Runtime', () => {
               },
             }
             await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-            const secondInput: AddNodeInputMessageInput = {
+            const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -290,7 +290,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const secondOutput: AddNodeOutputMessage = {
+            const secondOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -304,8 +304,8 @@ describe('Runtime', () => {
           })
 
           describe('When a port on the edge does not exist on a node', () => {
-            it('should return a OutportNotFound ErrorOutputMessage', async () => {
-              const input: AddEdgeInputMessageInput = {
+            it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
+              const input: AddEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addedge',
                 payload: {
@@ -321,7 +321,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -334,7 +334,7 @@ describe('Runtime', () => {
 
           describe('When all ports on the edge exist on the nodes', () => {
             beforeEach(async () => {
-              const firstInput: AddOutportInputMessageInput = {
+              const firstInput: AddOutportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addoutport',
                 payload: {
@@ -345,7 +345,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const firstOutput: AddOutportOutputMessage = {
+              const firstOutput: AddOutportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addoutport',
                 payload: {
@@ -357,7 +357,7 @@ describe('Runtime', () => {
                 },
               }
               await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-              const secondInput: AddInportInputMessageInput = {
+              const secondInput: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -368,7 +368,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const secondOutput: AddInportOutputMessage = {
+              const secondOutput: AddInportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -382,8 +382,8 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
             })
 
-            it('should return a AddEdgeOutputMessage', async () => {
-              const input: AddEdgeInputMessageInput = {
+            it('should return a AddEdgeGraphOutputMessage', async () => {
+              const input: AddEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addedge',
                 payload: {
@@ -399,7 +399,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddEdgeOutputMessage = {
+              const output: AddEdgeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addedge',
                 payload: {
@@ -425,10 +425,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddGroup', () => {
-        describe('When passed AddGroup and a node in the group does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: AddGroupInputMessageInput = {
+      describe('AddGroupGraph', () => {
+        describe('When passed AddGroupGraph and a node in the group does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: AddGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addgroup',
               payload: {
@@ -440,7 +440,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -451,9 +451,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddGroup and all nodes in the group exist on the graph', () => {
+        describe('When passed AddGroupGraph and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
-            const firstInput: AddNodeInputMessageInput = {
+            const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -463,7 +463,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const firstOutput: AddNodeOutputMessage = {
+            const firstOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -474,7 +474,7 @@ describe('Runtime', () => {
               },
             }
             await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-            const secondInput: AddNodeInputMessageInput = {
+            const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -484,7 +484,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const secondOutput: AddNodeOutputMessage = {
+            const secondOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -497,8 +497,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
           })
 
-          it('should return a AddGroupOutputMessage', async () => {
-            const input: AddGroupInputMessageInput = {
+          it('should return a AddGroupGraphOutputMessage', async () => {
+            const input: AddGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addgroup',
               payload: {
@@ -513,7 +513,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: AddGroupOutputMessage = {
+            const output: AddGroupGraphOutputMessage = {
               protocol: 'graph',
               command: 'addgroup',
               payload: {
@@ -533,10 +533,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddInitial', () => {
-        describe('When passed AddInitial and a node on the edge does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: AddInitialInputMessageInput = {
+      describe('AddInitialGraph', () => {
+        describe('When passed AddInitialGraph and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: AddInitialGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addinitial',
               payload: {
@@ -551,7 +551,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -562,9 +562,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddInitial and all nodes in the group exist on the graph', () => {
+        describe('When passed AddInitialGraph and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
-            const input: AddNodeInputMessageInput = {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -574,7 +574,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddNodeOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -587,9 +587,9 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          describe('When passed AddInitial and an inport does not exist on the node', () => {
-            it('should return an InportNotFound ErrorOutputMessage', async () => {
-              const input: AddInitialInputMessageInput = {
+          describe('When passed AddInitialGraph and an inport does not exist on the node', () => {
+            it('should return an InportNotFound ErrorGraphOutputMessage', async () => {
+              const input: AddInitialGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinitial',
                 payload: {
@@ -604,7 +604,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -615,9 +615,9 @@ describe('Runtime', () => {
             })
           })
 
-          describe('When passed AddInitial and an inport exists on the node', () => {
+          describe('When passed AddInitialGraph and an inport exists on the node', () => {
             beforeEach(async () => {
-              const input: AddInportInputMessageInput = {
+              const input: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -628,7 +628,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddInportOutputMessage = {
+              const output: AddInportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -648,8 +648,8 @@ describe('Runtime', () => {
               )
             })
 
-            it('should return a AddInitialOutputMessage', async () => {
-              const input: AddInitialInputMessageInput = {
+            it('should return a AddInitialGraphOutputMessage', async () => {
+              const input: AddInitialGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinitial',
                 payload: {
@@ -664,7 +664,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddInitialOutputMessage = {
+              const output: AddInitialGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addinitial',
                 payload: {
@@ -689,10 +689,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddInport', () => {
-        describe('When passed AddInport and a node does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: AddInportInputMessageInput = {
+      describe('AddInportGraph', () => {
+        describe('When passed AddInportGraph and a node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -703,7 +703,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -714,9 +714,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddInport and the node exists on the graph', () => {
+        describe('When passed AddInportGraph and the node exists on the graph', () => {
           beforeEach(async () => {
-            const input: AddNodeInputMessageInput = {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -726,7 +726,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddNodeOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -739,8 +739,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a AddInportOutputMessage', async () => {
-            const input: AddInportInputMessageInput = {
+          it('should return a AddInportGraphOutputMessage', async () => {
+            const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -751,7 +751,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddInportOutputMessage = {
+            const output: AddInportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -767,10 +767,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddNode', () => {
-        describe('When passed AddNode', () => {
-          it('should return a AddNodeOutputMessage', async () => {
-            const input: AddNodeInputMessageInput = {
+      describe('AddNodeGraph', () => {
+        describe('When passed AddNodeGraph', () => {
+          it('should return a AddNodeGraphOutputMessage', async () => {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -780,7 +780,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddNodeOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -795,10 +795,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddOutport', () => {
-        describe('When passed AddOutport and a node does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: AddOutportInputMessageInput = {
+      describe('AddOutportGraph', () => {
+        describe('When passed AddOutportGraph and a node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -809,7 +809,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -820,9 +820,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddOutport and the node exists on the graph', () => {
+        describe('When passed AddOutportGraph and the node exists on the graph', () => {
           beforeEach(async () => {
-            const input: AddNodeInputMessageInput = {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -832,7 +832,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddNodeOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -845,8 +845,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a AddOutportOutputMessage', async () => {
-            const input: AddOutportInputMessageInput = {
+          it('should return a AddOutportGraphOutputMessage', async () => {
+            const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -857,7 +857,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddOutportOutputMessage = {
+            const output: AddOutportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -873,10 +873,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('ChangeEdge', () => {
-        describe('When passed ChangeEdge and a node on the edge does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: ChangeEdgeInputMessageInput = {
+      describe('ChangeEdgeGraph', () => {
+        describe('When passed ChangeEdgeGraph and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: ChangeEdgeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'changeedge',
               payload: {
@@ -892,7 +892,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -903,9 +903,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeEdge and all nodes on the edge exist on the graph', () => {
+        describe('When passed ChangeEdgeGraph and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
-            const firstInput: AddNodeInputMessageInput = {
+            const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -915,7 +915,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const firstOutput: AddNodeOutputMessage = {
+            const firstOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -926,7 +926,7 @@ describe('Runtime', () => {
               },
             }
             await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-            const secondInput: AddNodeInputMessageInput = {
+            const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -936,7 +936,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const secondOutput: AddNodeOutputMessage = {
+            const secondOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -950,8 +950,8 @@ describe('Runtime', () => {
           })
 
           describe('When a port on the edge does not exist on a node', () => {
-            it('should return a OutportNotFound ErrorOutputMessage', async () => {
-              const input: ChangeEdgeInputMessageInput = {
+            it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
+              const input: ChangeEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'changeedge',
                 payload: {
@@ -967,7 +967,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -980,7 +980,7 @@ describe('Runtime', () => {
 
           describe('When all ports on the edge exist on the nodes', () => {
             beforeEach(async () => {
-              const firstInput: AddOutportInputMessageInput = {
+              const firstInput: AddOutportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addoutport',
                 payload: {
@@ -991,7 +991,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const firstOutput: AddOutportOutputMessage = {
+              const firstOutput: AddOutportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addoutport',
                 payload: {
@@ -1003,7 +1003,7 @@ describe('Runtime', () => {
                 },
               }
               await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-              const secondInput: AddInportInputMessageInput = {
+              const secondInput: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -1014,7 +1014,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const secondOutput: AddInportOutputMessage = {
+              const secondOutput: AddInportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -1028,8 +1028,8 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
             })
 
-            it('should return a AddEdgeOutputMessage', async () => {
-              const input: AddEdgeInputMessageInput = {
+            it('should return a AddEdgeGraphOutputMessage', async () => {
+              const input: AddEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addedge',
                 payload: {
@@ -1045,7 +1045,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddEdgeOutputMessage = {
+              const output: AddEdgeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addedge',
                 payload: {
@@ -1072,10 +1072,10 @@ describe('Runtime', () => {
       })
 
       // TODO: nodes don't exist on the group, so can't check for node existence?
-      describe('ChangeGroup', () => {
-        describe('When passed ChangeGroup and the group does not exist on the graph', () => {
-          it('should return a GroupNotFound ErrorOutputMessage', async () => {
-            const input: ChangeGroupInputMessageInput = {
+      describe('ChangeGroupGraph', () => {
+        describe('When passed ChangeGroupGraph and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
+            const input: ChangeGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'changegroup',
               payload: {
@@ -1086,7 +1086,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1097,10 +1097,10 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeGroup and the group exists on the graph', () => {
+        describe('When passed ChangeGroupGraph and the group exists on the graph', () => {
           beforeEach(async () => {
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1110,7 +1110,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1123,7 +1123,7 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })()
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1133,7 +1133,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1146,7 +1146,7 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })()
             await (async () => {
-              const input: AddGroupInputMessageInput = {
+              const input: AddGroupGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -1161,7 +1161,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: AddGroupOutputMessage = {
+              const output: AddGroupGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -1180,8 +1180,8 @@ describe('Runtime', () => {
             })()
           })
 
-          it('should return a AddGroupOutputMessage', async () => {
-            const input: ChangeGroupInputMessageInput = {
+          it('should return a AddGroupGraphOutputMessage', async () => {
+            const input: ChangeGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'changegroup',
               payload: {
@@ -1192,7 +1192,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ChangeGroupOutputMessage = {
+            const output: ChangeGroupGraphOutputMessage = {
               protocol: 'graph',
               command: 'changegroup',
               payload: {
@@ -1208,10 +1208,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('ChangeNode', () => {
-        describe('When passed ChangeNode and the node does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: ChangeNodeInputMessageInput = {
+      describe('ChangeNodeGraph', () => {
+        describe('When passed ChangeNodeGraph and the node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: ChangeNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'changenode',
               payload: {
@@ -1220,7 +1220,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1231,9 +1231,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeNode and the node exists on the graph', () => {
+        describe('When passed ChangeNodeGraph and the node exists on the graph', () => {
           beforeEach(async () => {
-            const input: AddNodeInputMessageInput = {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1243,7 +1243,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddNodeOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1256,8 +1256,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a ChangeNodeOutputMessage', async () => {
-            const input: ChangeNodeInputMessageInput = {
+          it('should return a ChangeNodeGraphOutputMessage', async () => {
+            const input: ChangeNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'changenode',
               payload: {
@@ -1268,7 +1268,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ChangeNodeOutputMessage = {
+            const output: ChangeNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'changenode',
               payload: {
@@ -1284,10 +1284,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveEdge', () => {
-        describe('When passed RemoveEdge and a node on the edge does not exist on the graph', () => {
-          it('should return a NodeNotFound ErrorOutputMessage', async () => {
-            const input: RemoveEdgeInputMessageInput = {
+      describe('RemoveEdgeGraph', () => {
+        describe('When passed RemoveEdgeGraph and a node on the edge does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+            const input: RemoveEdgeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeedge',
               payload: {
@@ -1302,7 +1302,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1313,9 +1313,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveEdge and all nodes on the edge exist on the graph', () => {
+        describe('When passed RemoveEdgeGraph and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
-            const firstInput: AddNodeInputMessageInput = {
+            const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1325,7 +1325,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const firstOutput: AddNodeOutputMessage = {
+            const firstOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1336,7 +1336,7 @@ describe('Runtime', () => {
               },
             }
             await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
-            const secondInput: AddNodeInputMessageInput = {
+            const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1346,7 +1346,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const secondOutput: AddNodeOutputMessage = {
+            const secondOutput: AddNodeGraphOutputMessage = {
               protocol: 'graph',
               command: 'addnode',
               payload: {
@@ -1360,8 +1360,8 @@ describe('Runtime', () => {
           })
 
           describe('When a port on the edge does not exist on a node', () => {
-            it('should return a OutportNotFound ErrorOutputMessage', async () => {
-              const input: RemoveEdgeInputMessageInput = {
+            it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
+              const input: RemoveEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'removeedge',
                 payload: {
@@ -1376,7 +1376,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -1390,7 +1390,7 @@ describe('Runtime', () => {
           describe('When all ports on the edge exist on the nodes', () => {
             beforeEach(async () => {
               await (async () => {
-                const input: AddOutportInputMessageInput = {
+                const input: AddOutportGraphInputMessageInput = {
                   protocol: 'graph',
                   command: 'addoutport',
                   payload: {
@@ -1401,7 +1401,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                const output: AddOutportOutputMessage = {
+                const output: AddOutportGraphOutputMessage = {
                   protocol: 'graph',
                   command: 'addoutport',
                   payload: {
@@ -1416,7 +1416,7 @@ describe('Runtime', () => {
               })()
 
               await (async () => {
-                const input: AddInportInputMessageInput = {
+                const input: AddInportGraphInputMessageInput = {
                   protocol: 'graph',
                   command: 'addinport',
                   payload: {
@@ -1427,7 +1427,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                const output: AddInportOutputMessage = {
+                const output: AddInportGraphOutputMessage = {
                   protocol: 'graph',
                   command: 'addinport',
                   payload: {
@@ -1442,7 +1442,7 @@ describe('Runtime', () => {
               })()
 
               await (async () => {
-                const input: AddEdgeInputMessageInput = {
+                const input: AddEdgeGraphInputMessageInput = {
                   protocol: 'graph',
                   command: 'addedge',
                   payload: {
@@ -1458,7 +1458,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                const output: AddEdgeOutputMessage = {
+                const output: AddEdgeGraphOutputMessage = {
                   protocol: 'graph',
                   command: 'addedge',
                   payload: {
@@ -1482,8 +1482,8 @@ describe('Runtime', () => {
               })()
             })
 
-            it('should return a RemoveEdgeOutputMessage', async () => {
-              const input: RemoveEdgeInputMessageInput = {
+            it('should return a RemoveEdgeGraphOutputMessage', async () => {
+              const input: RemoveEdgeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'removeedge',
                 payload: {
@@ -1498,7 +1498,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: RemoveEdgeOutputMessage = {
+              const output: RemoveEdgeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'removeedge',
                 payload: {
@@ -1519,10 +1519,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveGroup', () => {
-        describe('When passed RemoveGroup and the group does not exist on the graph', () => {
-          it('should return a GroupNotFound ErrorOutputMessage', async () => {
-            const input: RemoveGroupInputMessageInput = {
+      describe('RemoveGroupGraph', () => {
+        describe('When passed RemoveGroupGraph and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
+            const input: RemoveGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removegroup',
               payload: {
@@ -1530,7 +1530,7 @@ describe('Runtime', () => {
                 name: 'somename',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1541,10 +1541,10 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveGroup and the group exists on the graph', () => {
+        describe('When passed RemoveGroupGraph and the group exists on the graph', () => {
           beforeEach(async () => {
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1554,7 +1554,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1567,7 +1567,7 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })()
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1577,7 +1577,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1590,7 +1590,7 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })()
             await (async () => {
-              const input: AddGroupInputMessageInput = {
+              const input: AddGroupGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -1605,7 +1605,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: AddGroupOutputMessage = {
+              const output: AddGroupGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -1624,8 +1624,8 @@ describe('Runtime', () => {
             })()
           })
 
-          it('should return a RemoveGroupOutputMessage', async () => {
-            const input: RemoveGroupInputMessageInput = {
+          it('should return a RemoveGroupGraphOutputMessage', async () => {
+            const input: RemoveGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removegroup',
               payload: {
@@ -1633,7 +1633,7 @@ describe('Runtime', () => {
                 name: 'somegroup',
               },
             }
-            const output: RemoveGroupOutputMessage = {
+            const output: RemoveGroupGraphOutputMessage = {
               protocol: 'graph',
               command: 'removegroup',
               payload: {
@@ -1646,10 +1646,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveInitial', () => {
-        describe('When passed RemoveInitial and a node on the edge does not exist on the graph', () => {
-          it('should return a IIPNotFound ErrorOutputMessage', async () => {
-            const input: RemoveInitialInputMessageInput = {
+      describe('RemoveInitialGraph', () => {
+        describe('When passed RemoveInitialGraph and a node on the edge does not exist on the graph', () => {
+          it('should return a IIPNotFound ErrorGraphOutputMessage', async () => {
+            const input: RemoveInitialGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeinitial',
               payload: {
@@ -1661,7 +1661,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1672,10 +1672,10 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveInitial and all nodes in the group exist on the graph', () => {
+        describe('When passed RemoveInitialGraph and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1685,7 +1685,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -1698,7 +1698,7 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })()
             await (async () => {
-              const input: AddInportInputMessageInput = {
+              const input: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -1709,7 +1709,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddInportOutputMessage = {
+              const output: AddInportGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addinport',
                 payload: {
@@ -1724,9 +1724,9 @@ describe('Runtime', () => {
             })()
           })
 
-          describe('When passed RemoveInitial and an inport does not exist on the node', () => {
-            it('should return an InportNotFound ErrorOutputMessage', async () => {
-              const input: AddInitialInputMessageInput = {
+          describe('When passed RemoveInitialGraph and an inport does not exist on the node', () => {
+            it('should return an InportNotFound ErrorGraphOutputMessage', async () => {
+              const input: AddInitialGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinitial',
                 payload: {
@@ -1741,7 +1741,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -1752,10 +1752,10 @@ describe('Runtime', () => {
             })
           })
 
-          describe('When passed RemoveInitial and an inport exists on the node', () => {
+          describe('When passed RemoveInitialGraph and an inport exists on the node', () => {
             beforeEach(async () => {
               await (async () => {
-                const input: AddInportInputMessageInput = {
+                const input: AddInportGraphInputMessageInput = {
                   protocol: 'graph',
                   command: 'addinport',
                   payload: {
@@ -1766,7 +1766,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                const output: AddInportOutputMessage = {
+                const output: AddInportGraphOutputMessage = {
                   protocol: 'graph',
                   command: 'addinport',
                   payload: {
@@ -1780,7 +1780,7 @@ describe('Runtime', () => {
                 await assertOutputMatchesExpected(socketInstance, input, [output])
               })()
               await (async () => {
-                const input: AddInitialInputMessageInput = {
+                const input: AddInitialGraphInputMessageInput = {
                   protocol: 'graph',
                   command: 'addinitial',
                   payload: {
@@ -1795,7 +1795,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                const output: AddInitialOutputMessage = {
+                const output: AddInitialGraphOutputMessage = {
                   protocol: 'graph',
                   command: 'addinitial',
                   payload: {
@@ -1818,8 +1818,8 @@ describe('Runtime', () => {
               })()
             })
 
-            it('should return a RemoveInitialOutputMessage', async () => {
-              const input: RemoveInitialInputMessageInput = {
+            it('should return a RemoveInitialGraphOutputMessage', async () => {
+              const input: RemoveInitialGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'removeinitial',
                 payload: {
@@ -1831,7 +1831,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: RemoveInitialOutputMessage = {
+              const output: RemoveInitialGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'removeinitial',
                 payload: {
@@ -1849,12 +1849,12 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveInport', () => {
+      describe('RemoveInportGraph', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
-        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: RemoveInportInputMessageInput = {
+        // describe('When passed RemoveInportGraph and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+        //     const input: RemoveInportGraphInputMessageInput = {
         //       protocol: 'graph',
         //       command: 'removeinport',
         //       payload: {
@@ -1862,7 +1862,7 @@ describe('Runtime', () => {
         //         public: 'someport',
         //       },
         //     }
-        //     const output: ErrorOutputMessage = {
+        //     const output: ErrorGraphOutputMessage = {
         //       protocol: 'graph',
         //       command: 'error',
         //       payload: {
@@ -1873,9 +1873,9 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveInport and the node exists on the graph', () => {
+        // describe('When passed RemoveInportGraph and the node exists on the graph', () => {
         beforeEach(async () => {
-          const input: AddNodeInputMessageInput = {
+          const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -1885,7 +1885,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          const output: AddNodeOutputMessage = {
+          const output: AddNodeGraphOutputMessage = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -1898,9 +1898,9 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When passed RemoveInport and the Inport does not exist on the node', () => {
-          it('should return a InportNotFound ErrorOutputMessage', async () => {
-            const input: RemoveInportInputMessageInput = {
+        describe('When passed RemoveInportGraph and the Inport does not exist on the node', () => {
+          it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
+            const input: RemoveInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeinport',
               payload: {
@@ -1908,7 +1908,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -1919,9 +1919,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveInport and the Inport exists on the node', () => {
+        describe('When passed RemoveInportGraph and the Inport exists on the node', () => {
           beforeEach(async () => {
-            const input: AddInportInputMessageInput = {
+            const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -1932,7 +1932,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddInportOutputMessage = {
+            const output: AddInportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -1946,8 +1946,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a RemoveInportOutputMessage', async () => {
-            const input: RemoveInportInputMessageInput = {
+          it('should return a RemoveInportGraphOutputMessage', async () => {
+            const input: RemoveInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeinport',
               payload: {
@@ -1955,7 +1955,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            const output: RemoveInportOutputMessage = {
+            const output: RemoveInportGraphOutputMessage = {
               protocol: 'graph',
               command: 'removeinport',
               payload: {
@@ -1969,11 +1969,11 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RemoveNode', () => {
-        describe('When passed RemoveNode', () => {
+      describe('RemoveNodeGraph', () => {
+        describe('When passed RemoveNodeGraph', () => {
           describe('When the Node does not exist on the graph', () => {
-            it('should return a NodeNotFound ErrorOutputMessage', async () => {
-              const input: RemoveNodeInputMessageInput = {
+            it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+              const input: RemoveNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'removenode',
                 payload: {
@@ -1981,7 +1981,7 @@ describe('Runtime', () => {
                   id: 'somenode',
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -1994,7 +1994,7 @@ describe('Runtime', () => {
 
           describe('When the Node exists on the graph', () => {
             beforeEach(async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2004,7 +2004,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2017,8 +2017,8 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })
 
-            it('should return a RemoveNodeOutputMessage', async () => {
-              const input: RemoveNodeInputMessageInput = {
+            it('should return a RemoveNodeGraphOutputMessage', async () => {
+              const input: RemoveNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'removenode',
                 payload: {
@@ -2026,7 +2026,7 @@ describe('Runtime', () => {
                   id: 'somenode',
                 },
               }
-              const output: RemoveNodeOutputMessage = {
+              const output: RemoveNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'removenode',
                 payload: {
@@ -2040,12 +2040,12 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveOutport', () => {
+      describe('RemoveOutportGraph', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveOutport and a node does not exist on the graph', () => {
-        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: RemoveOutportInputMessageInput = {
+        // describe('When passed RemoveOutportGraph and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+        //     const input: RemoveOutportGraphInputMessageInput = {
         //       protocol: 'graph',
         //       command: 'removeoutport',
         //       payload: {
@@ -2053,7 +2053,7 @@ describe('Runtime', () => {
         //         public: 'someport',
         //       },
         //     }
-        //     const output: ErrorOutputMessage = {
+        //     const output: ErrorGraphOutputMessage = {
         //       protocol: 'graph',
         //       command: 'error',
         //       payload: {
@@ -2064,9 +2064,9 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveOutport and the node exists on the graph', () => {
+        // describe('When passed RemoveOutportGraph and the node exists on the graph', () => {
         beforeEach(async () => {
-          const input: AddNodeInputMessageInput = {
+          const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2076,7 +2076,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          const output: AddNodeOutputMessage = {
+          const output: AddNodeGraphOutputMessage = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2089,9 +2089,9 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When passed RemoveOutport and the Outport does not exist on the node', () => {
-          it('should return a OutportNotFound ErrorOutputMessage', async () => {
-            const input: RemoveOutportInputMessageInput = {
+        describe('When passed RemoveOutportGraph and the Outport does not exist on the node', () => {
+          it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
+            const input: RemoveOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeoutport',
               payload: {
@@ -2099,7 +2099,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -2110,9 +2110,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveOutport and the Outport exists on the node', () => {
+        describe('When passed RemoveOutportGraph and the Outport exists on the node', () => {
           beforeEach(async () => {
-            const input: AddOutportInputMessageInput = {
+            const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -2123,7 +2123,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddOutportOutputMessage = {
+            const output: AddOutportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -2137,8 +2137,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a RemoveOutportOutputMessage', async () => {
-            const input: RemoveOutportInputMessageInput = {
+          it('should return a RemoveOutportGraphOutputMessage', async () => {
+            const input: RemoveOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeoutport',
               payload: {
@@ -2146,7 +2146,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            const output: RemoveOutportOutputMessage = {
+            const output: RemoveOutportGraphOutputMessage = {
               protocol: 'graph',
               command: 'removeoutport',
               payload: {
@@ -2160,10 +2160,10 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RenameGroup', () => {
-        describe('When passed RenameGroup and the group does not exist on the graph', () => {
-          it('should return a GroupNotFound ErrorOutputMessage', async () => {
-            const input: RenameGroupInputMessageInput = {
+      describe('RenameGroupGraph', () => {
+        describe('When passed RenameGroupGraph and the group does not exist on the graph', () => {
+          it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
+            const input: RenameGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renamegroup',
               payload: {
@@ -2172,7 +2172,7 @@ describe('Runtime', () => {
                 to: 'someothergroup',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -2183,10 +2183,10 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameGroup and the group exist on the graph', () => {
+        describe('When passed RenameGroupGraph and the group exist on the graph', () => {
           beforeEach(async () => {
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2196,7 +2196,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2210,7 +2210,7 @@ describe('Runtime', () => {
             })()
 
             await (async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2220,7 +2220,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2234,7 +2234,7 @@ describe('Runtime', () => {
             })()
 
             await (async () => {
-              const input: AddGroupInputMessageInput = {
+              const input: AddGroupGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -2249,7 +2249,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              const output: AddGroupOutputMessage = {
+              const output: AddGroupGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addgroup',
                 payload: {
@@ -2268,8 +2268,8 @@ describe('Runtime', () => {
             })()
           })
 
-          it('should return a RenameGroupOutputMessage', async () => {
-            const input: RenameGroupInputMessageInput = {
+          it('should return a RenameGroupGraphOutputMessage', async () => {
+            const input: RenameGroupGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renamegroup',
               payload: {
@@ -2278,7 +2278,7 @@ describe('Runtime', () => {
                 to: 'someothergroup',
               },
             }
-            const output: RenameGroupOutputMessage = {
+            const output: RenameGroupGraphOutputMessage = {
               protocol: 'graph',
               command: 'renamegroup',
               payload: {
@@ -2292,12 +2292,12 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RenameInport', () => {
+      describe('RenameInportGraph', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
-        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: RemoveInportInputMessageInput = {
+        // describe('When passed RemoveInportGraph and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+        //     const input: RemoveInportGraphInputMessageInput = {
         //       protocol: 'graph',
         //       command: 'removeinport',
         //       payload: {
@@ -2305,7 +2305,7 @@ describe('Runtime', () => {
         //         public: 'someport',
         //       },
         //     }
-        //     const output: ErrorOutputMessage = {
+        //     const output: ErrorGraphOutputMessage = {
         //       protocol: 'graph',
         //       command: 'error',
         //       payload: {
@@ -2316,9 +2316,9 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveInport and the node exists on the graph', () => {
+        // describe('When passed RemoveInportGraph and the node exists on the graph', () => {
         beforeEach(async () => {
-          const input: AddNodeInputMessageInput = {
+          const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2328,7 +2328,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          const output: AddNodeOutputMessage = {
+          const output: AddNodeGraphOutputMessage = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2341,9 +2341,9 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When passed RenameInport and the Inport does not exist on the node', () => {
-          it('should return a InportNotFound ErrorOutputMessage', async () => {
-            const input: RenameInportInputMessageInput = {
+        describe('When passed RenameInportGraph and the Inport does not exist on the node', () => {
+          it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
+            const input: RenameInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renameinport',
               payload: {
@@ -2352,7 +2352,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -2363,9 +2363,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameInport and the Inport exists on the node', () => {
+        describe('When passed RenameInportGraph and the Inport exists on the node', () => {
           beforeEach(async () => {
-            const input: AddInportInputMessageInput = {
+            const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -2376,7 +2376,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddInportOutputMessage = {
+            const output: AddInportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addinport',
               payload: {
@@ -2390,8 +2390,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a RenameInportOutputMessage', async () => {
-            const input: RenameInportInputMessageInput = {
+          it('should return a RenameInportGraphOutputMessage', async () => {
+            const input: RenameInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renameinport',
               payload: {
@@ -2400,7 +2400,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            const output: RenameInportOutputMessage = {
+            const output: RenameInportGraphOutputMessage = {
               protocol: 'graph',
               command: 'renameinport',
               payload: {
@@ -2415,11 +2415,11 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RenameNode', () => {
-        describe('When passed RenameNode', () => {
+      describe('RenameNodeGraph', () => {
+        describe('When passed RenameNodeGraph', () => {
           describe('When the Node does not exist on the graph', () => {
-            it('should return a NodeNotFound ErrorOutputMessage', async () => {
-              const input: RenameNodeInputMessageInput = {
+            it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+              const input: RenameNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'renamenode',
                 payload: {
@@ -2428,7 +2428,7 @@ describe('Runtime', () => {
                   to: 'someothernode',
                 },
               }
-              const output: ErrorOutputMessage = {
+              const output: ErrorGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'error',
                 payload: {
@@ -2441,7 +2441,7 @@ describe('Runtime', () => {
 
           describe('When the Node exists on the graph', () => {
             beforeEach(async () => {
-              const input: AddNodeInputMessageInput = {
+              const input: AddNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2451,7 +2451,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddNodeOutputMessage = {
+              const output: AddNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'addnode',
                 payload: {
@@ -2464,8 +2464,8 @@ describe('Runtime', () => {
               await assertOutputMatchesExpected(socketInstance, input, [output])
             })
 
-            it('should return a RenameNodeOutputMessage', async () => {
-              const input: RenameNodeInputMessageInput = {
+            it('should return a RenameNodeGraphOutputMessage', async () => {
+              const input: RenameNodeGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'renamenode',
                 payload: {
@@ -2474,7 +2474,7 @@ describe('Runtime', () => {
                   to: 'someothernode',
                 },
               }
-              const output: RenameNodeOutputMessage = {
+              const output: RenameNodeGraphOutputMessage = {
                 protocol: 'graph',
                 command: 'renamenode',
                 payload: {
@@ -2489,12 +2489,12 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RenameOutport', () => {
+      describe('RenameOutportGraph', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveOutport and a node does not exist on the graph', () => {
-        //   it('should return a NodeNotFound ErrorOutputMessage', async () => {
-        //     const input: RemoveOutportInputMessageInput = {
+        // describe('When passed RemoveOutportGraph and a node does not exist on the graph', () => {
+        //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
+        //     const input: RemoveOutportGraphInputMessageInput = {
         //       protocol: 'graph',
         //       command: 'removeoutport',
         //       payload: {
@@ -2502,7 +2502,7 @@ describe('Runtime', () => {
         //         public: 'someport',
         //       },
         //     }
-        //     const output: ErrorOutputMessage = {
+        //     const output: ErrorGraphOutputMessage = {
         //       protocol: 'graph',
         //       command: 'error',
         //       payload: {
@@ -2513,9 +2513,9 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveOutport and the node exists on the graph', () => {
+        // describe('When passed RemoveOutportGraph and the node exists on the graph', () => {
         beforeEach(async () => {
-          const input: AddNodeInputMessageInput = {
+          const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2525,7 +2525,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          const output: AddNodeOutputMessage = {
+          const output: AddNodeGraphOutputMessage = {
             protocol: 'graph',
             command: 'addnode',
             payload: {
@@ -2538,9 +2538,9 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(socketInstance, input, [output])
         })
 
-        describe('When passed RenameOutport and the Outport does not exist on the node', () => {
-          it('should return a OutportNotFound ErrorOutputMessage', async () => {
-            const input: RenameOutportInputMessageInput = {
+        describe('When passed RenameOutportGraph and the Outport does not exist on the node', () => {
+          it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
+            const input: RenameOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renameoutport',
               payload: {
@@ -2549,7 +2549,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            const output: ErrorOutputMessage = {
+            const output: ErrorGraphOutputMessage = {
               protocol: 'graph',
               command: 'error',
               payload: {
@@ -2560,9 +2560,9 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameOutport and the Outport exists on the node', () => {
+        describe('When passed RenameOutportGraph and the Outport exists on the node', () => {
           beforeEach(async () => {
-            const input: AddOutportInputMessageInput = {
+            const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -2573,7 +2573,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: AddOutportOutputMessage = {
+            const output: AddOutportGraphOutputMessage = {
               protocol: 'graph',
               command: 'addoutport',
               payload: {
@@ -2587,8 +2587,8 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(socketInstance, input, [output])
           })
 
-          it('should return a RenameOutportOutputMessage', async () => {
-            const input: RenameOutportInputMessageInput = {
+          it('should return a RenameOutportGraphOutputMessage', async () => {
+            const input: RenameOutportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'renameoutport',
               payload: {
@@ -2597,7 +2597,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            const output: RenameOutportOutputMessage = {
+            const output: RenameOutportGraphOutputMessage = {
               protocol: 'graph',
               command: 'renameoutport',
               payload: {

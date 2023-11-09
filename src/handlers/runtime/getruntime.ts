@@ -1,11 +1,11 @@
 import * as TE from 'fp-ts/TaskEither.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/runtime/output/ErrorOutputMessage.ts'
-import { GetRuntimeInputMessage } from '#/schemas/messages/runtime/input/GetRuntimeInputMessage.ts'
-import { RuntimeOutputMessageInput } from '#/schemas/messages/runtime/output/RuntimeOutputMessage.ts'
+import { ErrorRuntimeOutputMessage } from '#/schemas/messages/runtime/output/ErrorRuntimeOutputMessage.ts'
+import { GetRuntimeRuntimeInputMessage } from '#/schemas/messages/runtime/input/GetRuntimeRuntimeInputMessage.ts'
+import { RuntimeRuntimeOutputMessageInput } from '#/schemas/messages/runtime/output/RuntimeRuntimeOutputMessage.ts'
 
 export const getruntime = (
-  _message: GetRuntimeInputMessage,
-): TE.TaskEither<Error, Array<RuntimeOutputMessageInput | ErrorOutputMessageInput>> => {
+  _message: GetRuntimeRuntimeInputMessage,
+): TE.TaskEither<Error, Array<RuntimeRuntimeOutputMessageInput | ErrorRuntimeOutputMessage>> => {
   return TE.right([{
     protocol: 'runtime',
     command: 'runtime',

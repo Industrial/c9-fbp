@@ -12,7 +12,7 @@ import { TranscodeErrors } from 'schemata-ts/TranscodeError'
 import { drawErrorTree } from 'schemata-ts/Transcoder'
 import { pipe } from 'fp-ts/function.ts'
 
-export const logError = (error: Error) => {
+export const logErrorGraph = (error: Error) => {
   const errorMessage = Deno.inspect(error, {
     colors: true,
     breakLength: 80,
@@ -41,7 +41,10 @@ export const getOutputMessagesForInputMessage = (
   return outputMessageInputs
 }
 
-export const transcodeError = (inputMessageInput: InputMessageInput | OutputMessageInput, errors: TranscodeErrors) => {
+export const transcodeErrorGraph = (
+  inputMessageInput: InputMessageInput | OutputMessageInput,
+  errors: TranscodeErrors,
+) => {
   return new Error(`${JSON.stringify(inputMessageInput)}: ${drawErrorTree(errors)}`)
 }
 
@@ -52,7 +55,7 @@ export const decodeInputMessage = (inputMessageInput: InputMessageInput): E.Eith
       InputMessage
     >,
     E.mapLeft((errors) => {
-      return transcodeError(inputMessageInput, errors)
+      return transcodeErrorGraph(inputMessageInput, errors)
     }),
   )
 }
@@ -77,7 +80,7 @@ export const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.E
       OutputMessage
     >,
     E.mapLeft((errors) => {
-      return transcodeError(outputMessageInput, errors)
+      return transcodeErrorGraph(outputMessageInput, errors)
     }),
   )
 }
@@ -159,7 +162,7 @@ export const startServer = (hostname: string, port: number): Deno.Server => {
         TE.chain(sendOutputMessages(socket)),
         TE.match(
           (error) => {
-            logError(error as Error)
+            logErrorGraph(error as Error)
           },
           () => {
           },

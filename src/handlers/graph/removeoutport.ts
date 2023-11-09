@@ -1,15 +1,15 @@
 import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { RemoveOutportInputMessage } from '#/schemas/messages/graph/input/RemoveOutportInputMessage.ts'
-import { RemoveOutportOutputMessageInput } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
-import { graphFindOutportByPublic, graphWithoutOutport, toGraphErrorInput } from '#/domain/graph.ts'
+import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { RemoveOutportGraphInputMessage } from '#/schemas/messages/graph/input/RemoveOutportGraphInputMessage.ts'
+import { RemoveOutportGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveOutportGraphOutputMessage.ts'
+import { graphFindOutportByPublic, graphWithoutOutport, toGraphErrorGraphInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const removeoutport = (
-  message: RemoveOutportInputMessage,
-): TE.TaskEither<Error, Array<RemoveOutportOutputMessageInput | ErrorOutputMessageInput>> => {
+  message: RemoveOutportGraphInputMessage,
+): TE.TaskEither<Error, Array<RemoveOutportGraphOutputMessageInput | ErrorGraphOutputMessageInput>> => {
   return pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
@@ -28,8 +28,8 @@ export const removeoutport = (
       return graphs.set(graph.id, graph)
     }),
     TE.match(
-      toGraphErrorInput,
-      (graph): Array<RemoveOutportOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorGraphInput,
+      (graph): Array<RemoveOutportGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
         return [
           {
             protocol: 'graph',

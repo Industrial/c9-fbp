@@ -1,15 +1,20 @@
 import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
-import { AddInitialInputMessage } from '#/schemas/messages/graph/input/AddInitialInputMessage.ts'
-import { AddInitialOutputMessageInput } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { graphContainsInportByPublic, graphContainsNodeById, graphWithIIP, toGraphErrorInput } from '#/domain/graph.ts'
+import { AddInitialGraphInputMessage } from '#/schemas/messages/graph/input/AddInitialGraphInputMessage.ts'
+import { AddInitialGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddInitialGraphOutputMessage.ts'
+import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import {
+  graphContainsInportByPublic,
+  graphContainsNodeById,
+  graphWithIIP,
+  toGraphErrorGraphInput,
+} from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const addinitial = (
-  message: AddInitialInputMessage,
-): TE.TaskEither<Error, Array<AddInitialOutputMessageInput | ErrorOutputMessageInput>> => {
+  message: AddInitialGraphInputMessage,
+): TE.TaskEither<Error, Array<AddInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput>> => {
   return pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
@@ -31,8 +36,8 @@ export const addinitial = (
       return graphs.set(graph.id, graph)
     }),
     TE.match(
-      toGraphErrorInput,
-      (graph): Array<AddInitialOutputMessageInput | ErrorOutputMessageInput> => {
+      toGraphErrorGraphInput,
+      (graph): Array<AddInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
         return [
           {
             protocol: 'graph',

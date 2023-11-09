@@ -1,50 +1,50 @@
 import * as S from 'schemata-ts'
-import { AddEdgeOutputMessageSchema } from '#/schemas/messages/graph/output/AddEdgeOutputMessage.ts'
-import { AddGroupOutputMessageSchema } from '#/schemas/messages/graph/output/AddGroupOutputMessage.ts'
-import { AddInitialOutputMessageSchema } from '#/schemas/messages/graph/output/AddInitialOutputMessage.ts'
-import { AddInportOutputMessageSchema } from '#/schemas/messages/graph/output/AddInportOutputMessage.ts'
-import { AddNodeOutputMessageSchema } from '#/schemas/messages/graph/output/AddNodeOutputMessage.ts'
-import { AddOutportOutputMessageSchema } from '#/schemas/messages/graph/output/AddOutportOutputMessage.ts'
-import { ChangeEdgeOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeEdgeOutputMessage.ts'
-import { ChangeGroupOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeGroupOutputMessage.ts'
-import { ChangeNodeOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeNodeOutputMessage.ts'
-import { ClearOutputMessageSchema } from '#/schemas/messages/graph/output/ClearOutputMessage.ts'
-import { ErrorOutputMessageSchema } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
-import { RemoveEdgeOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveEdgeOutputMessage.ts'
-import { RemoveGroupOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveGroupOutputMessage.ts'
-import { RemoveInitialOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveInitialOutputMessage.ts'
-import { RemoveInportOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveInportOutputMessage.ts'
-import { RemoveNodeOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveNodeOutputMessage.ts'
-import { RemoveOutportOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveOutportOutputMessage.ts'
-import { RenameGroupOutputMessageSchema } from '#/schemas/messages/graph/output/RenameGroupOutputMessage.ts'
-import { RenameInportOutputMessageSchema } from '#/schemas/messages/graph/output/RenameInportOutputMessage.ts'
-import { RenameNodeOutputMessageSchema } from '#/schemas/messages/graph/output/RenameNodeOutputMessage.ts'
-import { RenameOutportOutputMessageSchema } from '#/schemas/messages/graph/output/RenameOutportOutputMessage.ts'
+import { AddEdgeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddEdgeGraphOutputMessage.ts'
+import { AddGroupGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddGroupGraphOutputMessage.ts'
+import { AddInitialGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddInitialGraphOutputMessage.ts'
+import { AddInportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddInportGraphOutputMessage.ts'
+import { AddNodeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
+import { AddOutportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/AddOutportGraphOutputMessage.ts'
+import { ChangeEdgeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeEdgeGraphOutputMessage.ts'
+import { ChangeGroupGraphOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeGroupGraphOutputMessage.ts'
+import { ChangeNodeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/ChangeNodeGraphOutputMessage.ts'
+import { ClearGraphOutputMessageSchema } from '#/schemas/messages/graph/output/ClearGraphOutputMessage.ts'
+import { ErrorGraphOutputMessageSchema } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { RemoveEdgeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveEdgeGraphOutputMessage.ts'
+import { RemoveGroupGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveGroupGraphOutputMessage.ts'
+import { RemoveInitialGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveInitialGraphOutputMessage.ts'
+import { RemoveInportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveInportGraphOutputMessage.ts'
+import { RemoveNodeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveNodeGraphOutputMessage.ts'
+import { RemoveOutportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RemoveOutportGraphOutputMessage.ts'
+import { RenameGroupGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RenameGroupGraphOutputMessage.ts'
+import { RenameInportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RenameInportGraphOutputMessage.ts'
+import { RenameNodeGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RenameNodeGraphOutputMessage.ts'
+import { RenameOutportGraphOutputMessageSchema } from '#/schemas/messages/graph/output/RenameOutportGraphOutputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const GraphOutputMessageSchema = S.Union(
-  AddEdgeOutputMessageSchema,
-  AddGroupOutputMessageSchema,
-  AddInitialOutputMessageSchema,
-  AddInportOutputMessageSchema,
-  AddNodeOutputMessageSchema,
-  AddOutportOutputMessageSchema,
-  ChangeEdgeOutputMessageSchema,
-  ChangeGroupOutputMessageSchema,
-  ChangeNodeOutputMessageSchema,
-  ClearOutputMessageSchema,
-  ErrorOutputMessageSchema,
-  RemoveEdgeOutputMessageSchema,
-  RemoveGroupOutputMessageSchema,
-  RemoveInitialOutputMessageSchema,
-  RemoveInportOutputMessageSchema,
-  RemoveNodeOutputMessageSchema,
-  RemoveOutportOutputMessageSchema,
-  RenameGroupOutputMessageSchema,
-  RenameInportOutputMessageSchema,
-  RenameNodeOutputMessageSchema,
-  RenameOutportOutputMessageSchema,
+  AddEdgeGraphOutputMessageSchema,
+  AddGroupGraphOutputMessageSchema,
+  AddInitialGraphOutputMessageSchema,
+  AddInportGraphOutputMessageSchema,
+  AddNodeGraphOutputMessageSchema,
+  AddOutportGraphOutputMessageSchema,
+  ChangeEdgeGraphOutputMessageSchema,
+  ChangeGroupGraphOutputMessageSchema,
+  ChangeNodeGraphOutputMessageSchema,
+  ClearGraphOutputMessageSchema,
+  ErrorGraphOutputMessageSchema,
+  RemoveEdgeGraphOutputMessageSchema,
+  RemoveGroupGraphOutputMessageSchema,
+  RemoveInitialGraphOutputMessageSchema,
+  RemoveInportGraphOutputMessageSchema,
+  RemoveNodeGraphOutputMessageSchema,
+  RemoveOutportGraphOutputMessageSchema,
+  RenameGroupGraphOutputMessageSchema,
+  RenameInportGraphOutputMessageSchema,
+  RenameNodeGraphOutputMessageSchema,
+  RenameOutportGraphOutputMessageSchema,
 )
 
 export type GraphOutputMessageInput = S.InputOf<typeof GraphOutputMessageSchema>

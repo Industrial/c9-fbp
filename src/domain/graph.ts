@@ -7,7 +7,7 @@ import * as iipDomain from '#/domain/iip.ts'
 import * as nodeDomain from '#/domain/node.ts'
 import * as portDomain from '#/domain/port.ts'
 import { Edge } from '#/schemas/messages/shared/Edge.ts'
-import { ErrorOutputMessageInput } from '#/schemas/messages/graph/output/ErrorOutputMessage.ts'
+import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { Graph } from '#/schemas/messages/shared/Graph.ts'
 import { Group } from '#/schemas/messages/shared/Group.ts'
 import { IIP } from '#/schemas/messages/shared/IIP.ts'
@@ -17,7 +17,7 @@ import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
 import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
 
-export const toGraphErrorInput = <T>(error: Error): ReadonlyArray<T | ErrorOutputMessageInput> => {
+export const toGraphErrorGraphInput = <T>(error: Error): ReadonlyArray<T | ErrorGraphOutputMessageInput> => {
   return [
     {
       protocol: 'graph',
