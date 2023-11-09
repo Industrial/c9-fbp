@@ -14,8 +14,8 @@ export const removeinport = (
     graphs.get(message.payload.graph),
     TE.chain((graph) => {
       return pipe(
-        graph,
-        graphFindInportByPublic(message.payload.public),
+        E.right(graph),
+        E.chain(graphFindInportByPublic(message.payload.public)),
         TE.fromEitherK(E.chain((inport) => {
           return pipe(
             graph,
