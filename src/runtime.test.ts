@@ -44,6 +44,7 @@ import { RemoveNodeOutputMessage } from '#/schemas/messages/graph/output/RemoveN
 import { RenameGroupOutputMessage } from '#/schemas/messages/graph/output/RenameGroupOutputMessage.ts'
 import { RenameInportOutputMessage } from '#/schemas/messages/graph/output/RenameInportOutputMessage.ts'
 import { RenameOutportOutputMessage } from '#/schemas/messages/graph/output/RenameOutportOutputMessage.ts'
+import { RenameNodeOutputMessage } from '#/schemas/messages/graph/output/RenameNodeOutputMessage.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -2045,32 +2046,6 @@ describe('Runtime', () => {
             })
           })
         })
-
-        // describe('RemoveNode', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RemoveNodeInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'removenode',
-        //       payload: {
-        //         graph: 'foo',
-        //         id: 'foo',
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
       })
 
       describe('RemoveOutport', () => {
@@ -2449,32 +2424,77 @@ describe('Runtime', () => {
       })
 
       describe('RenameNode', () => {
-        // describe('RenameNode', () => {
-        //   it('should return an ErrorOutputMessage', async () => {
-        //     const input: RenameNodeInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'renamenode',
-        //       payload: {
-        //         graph: 'foo',
-        //         from: 'foo',
-        //         to: 'bar',
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(
-        //       socketInstance,
-        //       input,
-        //       [
-        //         {
-        //           protocol: 'graph',
-        //           command: 'error',
-        //           payload: {
-        //             message: 'NotFound',
-        //           },
-        //         },
-        //       ],
-        //     )
-        //   })
-        // })
+        describe('When passed RenameNode', () => {
+          describe('When the Node does not exist on the graph', () => {
+            it('should return a NodeNotFound ErrorOutputMessage', async () => {
+              const input: RenameNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'renamenode',
+                payload: {
+                  graph: 'foo',
+                  from: 'somenode',
+                  to: 'someothernode',
+                },
+              }
+              const output: ErrorOutputMessage = {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'NodeNotFound',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+
+          describe('When the Node exists on the graph', () => {
+            beforeEach(async () => {
+              const input: AddNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+
+            it('should return a RenameNodeOutputMessage', async () => {
+              const input: RenameNodeInputMessageInput = {
+                protocol: 'graph',
+                command: 'renamenode',
+                payload: {
+                  graph: 'foo',
+                  from: 'somenode',
+                  to: 'someothernode',
+                },
+              }
+              const output: RenameNodeOutputMessage = {
+                protocol: 'graph',
+                command: 'renamenode',
+                payload: {
+                  graph: 'foo',
+                  from: 'somenode',
+                  to: 'someothernode',
+                },
+              }
+              await assertOutputMatchesExpected(socketInstance, input, [output])
+            })
+          })
+        })
       })
 
       describe('RenameOutport', () => {
