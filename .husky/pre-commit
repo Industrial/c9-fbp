@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 deno task test:coverage
-deno task lint-staged
+deno task commit:lint-staged
