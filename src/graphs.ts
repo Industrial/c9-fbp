@@ -8,7 +8,7 @@ import { pipe } from 'fp-ts/function.ts'
 
 let graphs: Record<GraphID, Graph> = {}
 
-const main = (): Graph => {
+export const main = (): Graph => {
   return {
     id: 'main',
     main: true,
