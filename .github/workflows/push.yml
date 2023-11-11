@@ -13,6 +13,8 @@ jobs:
       - run: deno task fmt:check
       - run: deno task lint
       - run: deno task test:coverage
+      - name: Setup LCOV
+        uses: hrishikesh-kadam/setup-lcov@v1
       - name: Report code coverage
         uses: zgosalvez/github-actions-report-lcov@v3
         with:
