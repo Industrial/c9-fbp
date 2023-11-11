@@ -1,3 +1,6 @@
 {
-  "*.ts": "deno task lint"
+  "*.{js,jsx,ts,tsx}": [
+    "deno fmt",
+    "deno lint"
+  ]
 }
