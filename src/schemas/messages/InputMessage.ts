@@ -1,15 +1,7 @@
 import * as S from 'schemata-ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  RuntimeInputMessage,
-  RuntimeInputMessageInput,
-  RuntimeInputMessageSchema,
-} from '#/schemas/messages/runtime/RuntimeInputMessage.ts'
-import {
-  GraphInputMessage,
-  GraphInputMessageInput,
-  GraphInputMessageSchema,
-} from '#/schemas/messages/graph/GraphInputMessage.ts'
+import { RuntimeInputMessageSchema } from '#/schemas/messages/runtime/RuntimeInputMessage.ts'
+import { GraphInputMessageSchema } from '#/schemas/messages/graph/GraphInputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 
 export const InputMessageSchema = S.Union(
@@ -17,15 +9,11 @@ export const InputMessageSchema = S.Union(
   RuntimeInputMessageSchema,
 )
 
-export type InputMessageInput =
-  | GraphInputMessageInput
-  | RuntimeInputMessageInput
+export type InputMessageInput = S.InputOf<typeof InputMessageSchema>
 
-export type InputMessage =
-  | GraphInputMessage
-  | RuntimeInputMessage
+export type InputMessage = S.OutputOf<typeof InputMessageSchema>
 
-export const InputMessageTranscoder = deriveTranscoder<InputMessageInput, InputMessage>(InputMessageSchema)
+export const InputMessageTranscoder = deriveTranscoder(InputMessageSchema)
 
 export const InputMessageInputGuard = deriveInputGuard(InputMessageSchema)
 
