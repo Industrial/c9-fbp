@@ -1,4 +1,3 @@
-import chai from 'chai'
 import { AddEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeGraphInputMessage.ts'
 import { AddEdgeGraphOutputMessage } from '#/schemas/messages/graph/output/AddEdgeGraphOutputMessage.ts'
 import { AddGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/AddGroupGraphInputMessage.ts'
@@ -42,99 +41,24 @@ import { RenameOutportGraphOutputMessage } from '#/schemas/messages/graph/output
 import { RuntimeRuntimeOutputMessage } from './schemas/messages/runtime/output/RuntimeRuntimeOutputMessage.ts'
 import { UUID } from 'schemata-ts'
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
-import { startServer } from '#/server.ts'
-
-chai.config.truncateThreshold = 0
-
-const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
-const hostname = config.host as string
-const port = config.port as number
-
-let serverInstance: Deno.Server | undefined
-let socketInstance: WebSocket
-
-const createServer = async () => {
-  serverInstance = startServer(hostname, port)
-}
-
-const destroyServer = async () => {
-  await serverInstance?.shutdown()
-  serverInstance = undefined
-}
-
-const createClient = async () => {
-  socketInstance = new WebSocket(`ws://${hostname}:${port}`)
-}
-
-const whenClientHasOpened = async (socketInstance: WebSocket) => {
-  return await new Promise<void>((resolve) => {
-    socketInstance.onopen = () => {
-      resolve()
-      socketInstance.onopen = null
-    }
-  })
-}
-
-const whenClientHasClosed = async (socketInstance: WebSocket) => {
-  return await new Promise<void>((resolve) => {
-    socketInstance.onclose = () => {
-      resolve()
-      socketInstance.onclose = null
-    }
-    socketInstance.close()
-  })
-}
-
-const whenMessageIsReceived = async (socketInstance: WebSocket): Promise<MessageEvent<unknown>> => {
-  return await new Promise((resolve, reject) => {
-    socketInstance.onmessage = (event) => {
-      resolve(event)
-      socketInstance.onmessage = null
-      socketInstance.onerror = null
-    }
-
-    socketInstance.onerror = (event) => {
-      reject(event)
-      socketInstance.onmessage = null
-      socketInstance.onerror = null
-    }
-  })
-}
-
-const assertOutputMatchesExpected = async (
-  socketInstance: WebSocket,
-  actual: Record<string, unknown>,
-  expected: Array<Record<string, unknown>>,
-) => {
-  if (expected.length === 0) {
-    return
-  }
-
-  const resultPromise = whenMessageIsReceived(socketInstance)
-  socketInstance.send(JSON.stringify(actual))
-
-  const result = await resultPromise
-  const resultJSON = JSON.parse(result.data as string)
-  const currentExpectation = expected.slice(0, 1)[0]
-
-  const removeUndefineds = (x: unknown) => {
-    return JSON.parse(JSON.stringify(x))
-  }
-
-  chai.expect(removeUndefineds(resultJSON)).to.deep.equal(removeUndefineds(currentExpectation))
-
-  await assertOutputMatchesExpected(socketInstance, actual, expected.slice(1))
-}
+import {
+  assertOutputMatchesExpected,
+  createClient,
+  createServer,
+  destroyServer,
+  whenClientHasClosed,
+  whenClientHasOpened,
+} from '#/test/server.ts'
 
 describe('Runtime', () => {
   beforeEach(async () => {
     await createServer()
     await createClient()
-    await whenClientHasOpened(socketInstance)
+    await whenClientHasOpened()
   })
 
   afterEach(async () => {
-    await whenClientHasClosed(socketInstance)
+    await whenClientHasClosed()
     await destroyServer()
   })
 
@@ -170,7 +94,7 @@ describe('Runtime', () => {
             version: 'derp',
           },
         }
-        await assertOutputMatchesExpected(socketInstance, input, [output])
+        await assertOutputMatchesExpected(input, [output])
       })
     })
   })
@@ -195,7 +119,7 @@ describe('Runtime', () => {
             message: 'GraphNotFound',
           },
         }
-        await assertOutputMatchesExpected(socketInstance, input, [output])
+        await assertOutputMatchesExpected(input, [output])
       })
     })
 
@@ -224,7 +148,7 @@ describe('Runtime', () => {
             // description: undefined,
           },
         }
-        await assertOutputMatchesExpected(socketInstance, input, [output])
+        await assertOutputMatchesExpected(input, [output])
       })
 
       describe('AddEdgeGraph', () => {
@@ -253,7 +177,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -279,7 +203,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+            await assertOutputMatchesExpected(firstInput, [firstOutput])
             const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
@@ -300,7 +224,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+            await assertOutputMatchesExpected(secondInput, [secondOutput])
           })
 
           describe('When a port on the edge does not exist on a node', () => {
@@ -328,7 +252,7 @@ describe('Runtime', () => {
                   message: 'OutportNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -356,7 +280,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+              await assertOutputMatchesExpected(firstInput, [firstOutput])
               const secondInput: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
@@ -379,7 +303,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+              await assertOutputMatchesExpected(secondInput, [secondOutput])
             })
 
             it('should return a AddEdgeGraphOutputMessage', async () => {
@@ -419,7 +343,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -447,7 +371,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -473,7 +397,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+            await assertOutputMatchesExpected(firstInput, [firstOutput])
             const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
@@ -494,7 +418,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+            await assertOutputMatchesExpected(secondInput, [secondOutput])
           })
 
           it('should return a AddGroupGraphOutputMessage', async () => {
@@ -528,7 +452,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -558,7 +482,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -584,7 +508,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           describe('When passed AddInitialGraph and an inport does not exist on the node', () => {
@@ -611,7 +535,7 @@ describe('Runtime', () => {
                   message: 'InportNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -639,13 +563,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(
-                socketInstance,
-                input,
-                [
-                  output,
-                ],
-              )
+              await assertOutputMatchesExpected(input, [output])
             })
 
             it('should return a AddInitialGraphOutputMessage', async () => {
@@ -683,7 +601,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -710,7 +628,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -736,7 +654,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a AddInportGraphOutputMessage', async () => {
@@ -762,7 +680,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -790,7 +708,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -816,7 +734,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -842,7 +760,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a AddOutportGraphOutputMessage', async () => {
@@ -868,7 +786,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -899,7 +817,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -925,7 +843,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+            await assertOutputMatchesExpected(firstInput, [firstOutput])
             const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
@@ -946,7 +864,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+            await assertOutputMatchesExpected(secondInput, [secondOutput])
           })
 
           describe('When a port on the edge does not exist on a node', () => {
@@ -974,7 +892,7 @@ describe('Runtime', () => {
                   message: 'OutportNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -1002,7 +920,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+              await assertOutputMatchesExpected(firstInput, [firstOutput])
               const secondInput: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
@@ -1025,7 +943,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+              await assertOutputMatchesExpected(secondInput, [secondOutput])
             })
 
             it('should return a AddEdgeGraphOutputMessage', async () => {
@@ -1065,7 +983,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -1093,7 +1011,7 @@ describe('Runtime', () => {
                 message: 'GroupNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1120,7 +1038,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1143,7 +1061,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
             await (async () => {
               const input: AddGroupGraphInputMessageInput = {
@@ -1176,7 +1094,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
           })
 
@@ -1203,7 +1121,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -1227,7 +1145,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1253,7 +1171,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a ChangeNodeGraphOutputMessage', async () => {
@@ -1279,7 +1197,7 @@ describe('Runtime', () => {
                 },
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -1309,7 +1227,7 @@ describe('Runtime', () => {
                 message: 'NodeNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1335,7 +1253,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, firstInput, [firstOutput])
+            await assertOutputMatchesExpected(firstInput, [firstOutput])
             const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
@@ -1356,7 +1274,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, secondInput, [secondOutput])
+            await assertOutputMatchesExpected(secondInput, [secondOutput])
           })
 
           describe('When a port on the edge does not exist on a node', () => {
@@ -1383,7 +1301,7 @@ describe('Runtime', () => {
                   message: 'OutportNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -1412,7 +1330,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                await assertOutputMatchesExpected(socketInstance, input, [output])
+                await assertOutputMatchesExpected(input, [output])
               })()
 
               await (async () => {
@@ -1438,7 +1356,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                await assertOutputMatchesExpected(socketInstance, input, [output])
+                await assertOutputMatchesExpected(input, [output])
               })()
 
               await (async () => {
@@ -1478,7 +1396,7 @@ describe('Runtime', () => {
                     },
                   },
                 }
-                await assertOutputMatchesExpected(socketInstance, input, [output])
+                await assertOutputMatchesExpected(input, [output])
               })()
             })
 
@@ -1513,7 +1431,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -1537,7 +1455,7 @@ describe('Runtime', () => {
                 message: 'GroupNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1564,7 +1482,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1587,7 +1505,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
             await (async () => {
               const input: AddGroupGraphInputMessageInput = {
@@ -1620,7 +1538,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
           })
 
@@ -1641,7 +1559,7 @@ describe('Runtime', () => {
                 name: 'somegroup',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -1668,7 +1586,7 @@ describe('Runtime', () => {
                 message: 'IIPNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1695,7 +1613,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
             await (async () => {
               const input: AddInportGraphInputMessageInput = {
@@ -1720,7 +1638,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
           })
 
@@ -1748,7 +1666,7 @@ describe('Runtime', () => {
                   message: 'InportNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -1777,7 +1695,7 @@ describe('Runtime', () => {
                     metadata: {},
                   },
                 }
-                await assertOutputMatchesExpected(socketInstance, input, [output])
+                await assertOutputMatchesExpected(input, [output])
               })()
               await (async () => {
                 const input: AddInitialGraphInputMessageInput = {
@@ -1814,7 +1732,7 @@ describe('Runtime', () => {
                     },
                   },
                 }
-                await assertOutputMatchesExpected(socketInstance, input, [output])
+                await assertOutputMatchesExpected(input, [output])
               })()
             })
 
@@ -1843,7 +1761,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -1869,7 +1787,7 @@ describe('Runtime', () => {
         //         message: 'NodeNotFound',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(socketInstance, input, [output])
+        //     await assertOutputMatchesExpected(input, [output])
         //   })
         // })
 
@@ -1895,7 +1813,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          await assertOutputMatchesExpected(socketInstance, input, [output])
+          await assertOutputMatchesExpected(input, [output])
         })
 
         describe('When passed RemoveInportGraph and the Inport does not exist on the node', () => {
@@ -1915,7 +1833,7 @@ describe('Runtime', () => {
                 message: 'InportNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -1943,7 +1861,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a RemoveInportGraphOutputMessage', async () => {
@@ -1963,7 +1881,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
         // })
@@ -1988,7 +1906,7 @@ describe('Runtime', () => {
                   message: 'NodeNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -2014,7 +1932,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
 
             it('should return a RemoveNodeGraphOutputMessage', async () => {
@@ -2034,7 +1952,7 @@ describe('Runtime', () => {
                   id: 'somenode',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -2060,7 +1978,7 @@ describe('Runtime', () => {
         //         message: 'NodeNotFound',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(socketInstance, input, [output])
+        //     await assertOutputMatchesExpected(input, [output])
         //   })
         // })
 
@@ -2086,7 +2004,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          await assertOutputMatchesExpected(socketInstance, input, [output])
+          await assertOutputMatchesExpected(input, [output])
         })
 
         describe('When passed RemoveOutportGraph and the Outport does not exist on the node', () => {
@@ -2106,7 +2024,7 @@ describe('Runtime', () => {
                 message: 'OutportNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -2134,7 +2052,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a RemoveOutportGraphOutputMessage', async () => {
@@ -2154,7 +2072,7 @@ describe('Runtime', () => {
                 public: 'someport',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
         // })
@@ -2179,7 +2097,7 @@ describe('Runtime', () => {
                 message: 'GroupNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -2206,7 +2124,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
 
             await (async () => {
@@ -2230,7 +2148,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
 
             await (async () => {
@@ -2264,7 +2182,7 @@ describe('Runtime', () => {
                   },
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })()
           })
 
@@ -2287,7 +2205,7 @@ describe('Runtime', () => {
                 to: 'someothergroup',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
       })
@@ -2312,7 +2230,7 @@ describe('Runtime', () => {
         //         message: 'NodeNotFound',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(socketInstance, input, [output])
+        //     await assertOutputMatchesExpected(input, [output])
         //   })
         // })
 
@@ -2338,7 +2256,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          await assertOutputMatchesExpected(socketInstance, input, [output])
+          await assertOutputMatchesExpected(input, [output])
         })
 
         describe('When passed RenameInportGraph and the Inport does not exist on the node', () => {
@@ -2359,7 +2277,7 @@ describe('Runtime', () => {
                 message: 'InportNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -2387,7 +2305,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a RenameInportGraphOutputMessage', async () => {
@@ -2409,7 +2327,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
         // })
@@ -2435,7 +2353,7 @@ describe('Runtime', () => {
                   message: 'NodeNotFound',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
 
@@ -2461,7 +2379,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
 
             it('should return a RenameNodeGraphOutputMessage', async () => {
@@ -2483,7 +2401,7 @@ describe('Runtime', () => {
                   to: 'someothernode',
                 },
               }
-              await assertOutputMatchesExpected(socketInstance, input, [output])
+              await assertOutputMatchesExpected(input, [output])
             })
           })
         })
@@ -2509,7 +2427,7 @@ describe('Runtime', () => {
         //         message: 'NodeNotFound',
         //       },
         //     }
-        //     await assertOutputMatchesExpected(socketInstance, input, [output])
+        //     await assertOutputMatchesExpected(input, [output])
         //   })
         // })
 
@@ -2535,7 +2453,7 @@ describe('Runtime', () => {
               metadata: {},
             },
           }
-          await assertOutputMatchesExpected(socketInstance, input, [output])
+          await assertOutputMatchesExpected(input, [output])
         })
 
         describe('When passed RenameOutportGraph and the Outport does not exist on the node', () => {
@@ -2556,7 +2474,7 @@ describe('Runtime', () => {
                 message: 'OutportNotFound',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
 
@@ -2584,7 +2502,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
 
           it('should return a RenameOutportGraphOutputMessage', async () => {
@@ -2606,7 +2524,7 @@ describe('Runtime', () => {
                 to: 'someotherport',
               },
             }
-            await assertOutputMatchesExpected(socketInstance, input, [output])
+            await assertOutputMatchesExpected(input, [output])
           })
         })
         // })
