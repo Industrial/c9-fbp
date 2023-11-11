@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# This circumvents ENOTTY
-#exec < /dev/tty && deno task commit:commitizen || true
-exec < /dev/tty && npx cz --hook || true

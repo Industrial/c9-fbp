@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "commit:commitizen": "deno run -A npm:commitizen/cz",
+    "commit": "deno run -A npm:commitizen/cz",
     "commit:commitlint": "deno run -A npm:commitlint --edit \"\"",
     "commit:husky:install": "deno run -A npm:husky install",
     "commit:lint-staged": "deno run -A npm:lint-staged",
@@ -11,8 +11,8 @@
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
     "install": "deno task install:commitlint && deno task install:commitizen && deno task install:fbp-protocol",
-    "install:commitlint": "deno eval 'import * as x from \"npm:/@commitlint/config-conventional\"'",
     "install:commitizen": "deno eval 'import * as x from \"npm:/cz-conventional-changelog\"'",
+    "install:commitlint": "deno eval 'import * as x from \"npm:/@commitlint/config-conventional\"'",
     "install:fbp-protocol": "cd fbp-protocol && pnpm i && rm pnpm-lock.yaml",
     "lint": "deno lint",
     "lint:watch": "deno task lint --watch",
