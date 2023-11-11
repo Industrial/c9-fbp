@@ -6,7 +6,6 @@
     "commit:lint-staged": "deno run -A npm:lint-staged",
     "dev": "deno run --instable -A --watch src/runtime.ts",
     "fbp-init": "deno run -A npm:fbp-protocol/fbp-init --name c9-fbp --port 3569 --command \"deno task runtime\"",
-    "fbp-install": "",
     "fbp-test": "fbp-protocol/node_modules/.bin/_mocha fbp-protocol/test/*.js --reporter spec",
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
