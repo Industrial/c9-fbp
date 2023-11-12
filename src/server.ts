@@ -132,6 +132,23 @@ export const sendOutputMessages = (socket: WebSocket) => {
   }
 }
 
+export const handleMessage = (message: string, socket: WebSocket): void => {
+  pipe(
+    TE.right(message),
+    TE.chain(parseInputMessage),
+    TE.chain(getOutputMessagesForInputMessage),
+    TE.chain(decodeOutputMessages),
+    TE.chain(sendOutputMessages(socket)),
+    TE.match(
+      (error) => {
+        logErrorGraph(error as Error)
+      },
+      () => {
+      },
+    ),
+  )()
+}
+
 export const startServer = (hostname: string, port: number): Deno.Server => {
   return Deno.serve({
     hostname,
@@ -153,25 +170,8 @@ export const startServer = (hostname: string, port: number): Deno.Server => {
       // idleTimeout: 1,
     })
 
-    const handleMessage = (message: string): void => {
-      pipe(
-        TE.right(message),
-        TE.chain(parseInputMessage),
-        TE.chain(getOutputMessagesForInputMessage),
-        TE.chain(decodeOutputMessages),
-        TE.chain(sendOutputMessages(socket)),
-        TE.match(
-          (error) => {
-            logErrorGraph(error as Error)
-          },
-          () => {
-          },
-        ),
-      )()
-    }
-
     socket.addEventListener('message', (event: MessageEvent<string>) => {
-      handleMessage(event.data)
+      handleMessage(event.data, socket)
     })
 
     return response

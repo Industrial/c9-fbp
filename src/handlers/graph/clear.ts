@@ -10,6 +10,8 @@ export const clear = (
   message: ClearGraphInputMessage,
 ): TE.TaskEither<Error, ClearGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
   return pipe(
+    // TODO: This is a factory function and duplication. This logic should be in
+    // one place (src/domain/graph.ts).
     graphs.set(message.payload.id, {
       id: message.payload.id,
       description: message.payload.description,
@@ -23,6 +25,14 @@ export const clear = (
       inports: [],
       nodes: [],
       outports: [],
+      network: {
+        isDebugging: false,
+        isRunning: false,
+        hasStarted: false,
+        // TODO: Solve this type error with schemata-ts across the board.
+        // @ts-expect-error error
+        startTime: new Date().toISOString(),
+      },
     }),
     TE.match(
       toGraphErrorGraphInput,
