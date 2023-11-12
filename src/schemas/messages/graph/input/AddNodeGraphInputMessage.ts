@@ -11,7 +11,7 @@ export const AddNodeGraphInputMessageSchema = GraphInputMessageBaseSchema
     payload: S.Struct({
       id: S.String(),
       component: S.String(),
-      graph: S.Optional(GraphIDSchema),
+      graph: GraphIDSchema,
       metadata: S.Optional(MetadataNodeSchema),
     }),
   })

@@ -1,7 +1,7 @@
 import * as S from 'schemata-ts'
+import { ComponentInputMessageBaseSchema } from '#/schemas/messages/component/ComponentInputMessageBase.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import { ComponentInputMessageBaseSchema } from '#/schemas/messages/component/ComponentInputMessageBase.ts'
 
 export const SourceComponentInputMessageSchema = ComponentInputMessageBaseSchema
   .extend({

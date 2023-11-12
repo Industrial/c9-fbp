@@ -1,27 +1,17 @@
 import * as S from 'schemata-ts'
+import { ComponentOutputMessageSchema } from '#/schemas/messages/component/ComponentOutputMessage.ts'
+import { GraphOutputMessageSchema } from '#/schemas/messages/graph/GraphOutputMessage.ts'
+import { RuntimeOutputMessageSchema } from '#/schemas/messages/runtime/RuntimeOutputMessage.ts'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
-import {
-  RuntimeOutputMessage,
-  RuntimeOutputMessageInput,
-  RuntimeOutputMessageSchema,
-} from '#/schemas/messages/runtime/RuntimeOutputMessage.ts'
-import {
-  GraphOutputMessage,
-  GraphOutputMessageInput,
-  GraphOutputMessageSchema,
-} from '#/schemas/messages/graph/GraphOutputMessage.ts'
 
 export const OutputMessageSchema = S.Union(
+  ComponentOutputMessageSchema,
   GraphOutputMessageSchema,
   RuntimeOutputMessageSchema,
 )
 
-export type OutputMessageInput =
-  | GraphOutputMessageInput
-  | RuntimeOutputMessageInput
+export type OutputMessageInput = S.InputOf<typeof OutputMessageSchema>
 
-export type OutputMessage =
-  | GraphOutputMessage
-  | RuntimeOutputMessage
+export type OutputMessage = S.OutputOf<typeof OutputMessageSchema>
 
 export const OutputMessageTranscoder = deriveTranscoder(OutputMessageSchema)

@@ -645,8 +645,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddNodeGraph', () => {
-        describe('When passed AddNodeGraph', () => {
+      describe('AddNode', () => {
+        describe('When passed AddNode', () => {
           it('should return a AddNodeGraphOutputMessage', async () => {
             const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -1086,8 +1086,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('ChangeNodeGraph', () => {
-        describe('When passed ChangeNodeGraph and the node does not exist on the graph', () => {
+      describe('ChangeNode', () => {
+        describe('When passed ChangeNode and the node does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: ChangeNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -1109,7 +1109,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeNodeGraph and the node exists on the graph', () => {
+        describe('When passed ChangeNode and the node exists on the graph', () => {
           beforeEach(async () => {
             const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -1847,8 +1847,8 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RemoveNodeGraph', () => {
-        describe('When passed RemoveNodeGraph', () => {
+      describe('RemoveNode', () => {
+        describe('When passed RemoveNode', () => {
           describe('When the Node does not exist on the graph', () => {
             it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
               const input: RemoveNodeGraphInputMessageInput = {
@@ -2293,8 +2293,8 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RenameNodeGraph', () => {
-        describe('When passed RenameNodeGraph', () => {
+      describe('RenameNode', () => {
+        describe('When passed RenameNode', () => {
           describe('When the Node does not exist on the graph', () => {
             it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
               const input: RenameNodeGraphInputMessageInput = {
