@@ -1,6 +1,6 @@
 import * as S from 'schemata-ts'
 import { ComponentComponentOutputMessageSchema } from '#/schemas/messages/component/output/ComponentComponentOutputMessage.ts'
-import { ComponentsReadyComponentOutputMessageSchema } from '#/schemas/messages/component/output/ComponentsReadyComponentReadyOutputMessage.ts'
+import { ComponentsReadyComponentOutputMessageSchema } from '#/schemas/messages/component/output/ComponentsReadyComponentOutputMessage.ts'
 import { ErrorComponentOutputMessageSchema } from '#/schemas/messages/component/output/ErrorComponentOutputMessage.ts'
 import { SourceComponentOutputMessageSchema } from '#/schemas/messages/component/output/SourceComponentOutputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'

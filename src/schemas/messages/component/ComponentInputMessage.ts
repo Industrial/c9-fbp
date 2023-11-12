@@ -1,13 +1,13 @@
 import * as S from 'schemata-ts'
 import { GetSourceComponentInputMessageSchema } from '#/schemas/messages/component/input/GetSourceComponentInputMessage.ts'
-import { ListComponentInputMessageGuard } from '#/schemas/messages/component/input/ListComponentInputMessage.ts'
+import { ListComponentInputMessageSchema } from '#/schemas/messages/component/input/ListComponentInputMessage.ts'
 import { SourceComponentInputMessageSchema } from '#/schemas/messages/component/input/SourceComponentInputMessage.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const ComponentInputMessageSchema = S.Union(
   GetSourceComponentInputMessageSchema,
-  ListComponentInputMessageGuard,
+  ListComponentInputMessageSchema,
   SourceComponentInputMessageSchema,
 )
 
