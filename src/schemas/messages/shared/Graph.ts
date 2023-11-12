@@ -14,6 +14,14 @@ export const GraphSchema = S.Struct({
   description: S.Optional(S.String()),
   icon: S.Optional(S.String()),
   library: S.Optional(S.String()),
+  network: S.Struct({
+    startTime: S.DateFromIsoString({
+      requireTime: 'TimeAndOffset',
+    }),
+    isDebugging: S.Boolean,
+    isRunning: S.Boolean,
+    hasStarted: S.Boolean,
+  }),
   edges: S.Array(EdgeSchema),
   groups: S.Array(GroupSchema),
   iips: S.Array(IIPSchema),

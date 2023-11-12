@@ -1193,48 +1193,53 @@ describe('Runtime', () => {
 
         describe('When passed RemoveEdgeGraph and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
-            const firstInput: AddNodeGraphInputMessageInput = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'somenode',
-                component: 'somecomponent',
-                metadata: {},
-              },
-            }
-            const firstOutput: AddNodeGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'somenode',
-                component: 'somecomponent',
-                metadata: {},
-              },
-            }
-            await assertOutputMatchesExpected(firstInput, [firstOutput])
-            const secondInput: AddNodeGraphInputMessageInput = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'someothernode',
-                component: 'someothercomponent',
-                metadata: {},
-              },
-            }
-            const secondOutput: AddNodeGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'someothernode',
-                component: 'someothercomponent',
-                metadata: {},
-              },
-            }
-            await assertOutputMatchesExpected(secondInput, [secondOutput])
+            await (async () => {
+              const input: AddNodeGraphInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeGraphOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'somenode',
+                  component: 'somecomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(input, [output])
+            })()
+
+            await (async () => {
+              const input: AddNodeGraphInputMessageInput = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              const output: AddNodeGraphOutputMessage = {
+                protocol: 'graph',
+                command: 'addnode',
+                payload: {
+                  graph: 'foo',
+                  id: 'someothernode',
+                  component: 'someothercomponent',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesExpected(input, [output])
+            })()
           })
 
           describe('When a port on the edge does not exist on a node', () => {

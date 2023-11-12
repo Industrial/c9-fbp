@@ -20,7 +20,22 @@
       "attachSimplePort": 9229
     },
     {
-      "name": "Test",
+      "name": "Test: Current File",
+      "request": "launch",
+      "type": "node",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--unstable",
+        "--inspect-brk",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Test: All",
       "request": "launch",
       "type": "node",
       "program": "${workspaceFolder}/src/**/*.test.ts",

@@ -8,6 +8,8 @@ import { pipe } from 'fp-ts/function.ts'
 
 let graphs: Record<GraphID, Graph> = {}
 
+// TODO: This is a factory function and duplication. This logic should be in one
+// place (src/domain/graph.ts).
 export const main = (): Graph => {
   return {
     id: 'main',
@@ -22,6 +24,14 @@ export const main = (): Graph => {
     library: undefined,
     description: undefined,
     icon: undefined,
+    network: {
+      isDebugging: false,
+      isRunning: true,
+      hasStarted: true,
+      // TODO: Solve this type error with schemata-ts across the board.
+      // @ts-expect-error error
+      startTime: new Date().toISOString(),
+    },
   }
 }
 

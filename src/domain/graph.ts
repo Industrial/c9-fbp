@@ -13,9 +13,9 @@ import { Group } from '#/schemas/messages/shared/Group.ts'
 import { IIP } from '#/schemas/messages/shared/IIP.ts'
 import { Node } from '#/schemas/messages/shared/Node.ts'
 import { Port } from '#/schemas/messages/shared/Port.ts'
+import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
 import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
-import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
 
 export const toGraphErrorGraphInput = <T>(error: Error): ReadonlyArray<T | ErrorGraphOutputMessageInput> => {
   return [
@@ -424,6 +424,59 @@ export const graphWithOutport = (port: Port) => {
         RA.filter(portDomain.arePortsNotEqual(port)),
         RA.append(port),
       ),
+    }
+
+    return E.right(newGraph)
+  }
+}
+
+export const graphHasNetworkStarted = () => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    return pipe(
+      graph.network.hasStarted,
+      E.fromPredicate(
+        (hasStarted) => {
+          return hasStarted
+        },
+        () => {
+          return new Error('NotStarted')
+        },
+      ),
+      E.map(() => {
+        return graph
+      }),
+    )
+  }
+}
+
+export const graphWithNetworkStart = () => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    const newGraph: Graph = {
+      ...graph,
+      network: {
+        isDebugging: graph.network.isDebugging,
+        isRunning: true,
+        hasStarted: true,
+        // TODO: Solve this type error with schemata-ts across the board.
+        // @ts-expect-error error
+        startTime: new Date().toISOString(),
+      },
+    }
+
+    return E.right(newGraph)
+  }
+}
+
+export const graphWithNetworkStop = () => {
+  return (graph: Graph): E.Either<Error, Graph> => {
+    const newGraph: Graph = {
+      ...graph,
+      network: {
+        isDebugging: graph.network.isDebugging,
+        isRunning: false,
+        hasStarted: false,
+        startTime: graph.network.startTime,
+      },
     }
 
     return E.right(newGraph)

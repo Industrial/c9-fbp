@@ -4,15 +4,15 @@ import { EdgesNetworkOutputMessageInput } from '#/schemas/messages/network/outpu
 import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/output/ErrorNetworkOutputMessage.ts'
 
 export const edges = (
-  _message: EdgesNetworkInputMessage,
+  message: EdgesNetworkInputMessage,
 ): TE.TaskEither<Error, Array<EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> => {
   return TE.right([
     {
       protocol: 'network',
       command: 'error',
       payload: {
-        message: 'foo',
-        graph: 'foo',
+        message: 'NotImplemented',
+        graph: message.payload.graph,
         stack: undefined,
       },
     },
