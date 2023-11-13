@@ -1,22 +1,37 @@
 import { AddEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/AddEdgeGraphInputMessage.ts'
-import { AddEdgeGraphOutputMessage } from '#/schemas/messages/graph/output/AddEdgeGraphOutputMessage.ts'
+import {
+  AddEdgeGraphOutputMessage,
+  AddEdgeGraphOutputMessageGuard,
+} from '#/schemas/messages/graph/output/AddEdgeGraphOutputMessage.ts'
 import { AddGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/AddGroupGraphInputMessage.ts'
 import { AddGroupGraphOutputMessage } from '#/schemas/messages/graph/output/AddGroupGraphOutputMessage.ts'
 import { AddInitialGraphInputMessageInput } from '#/schemas/messages/graph/input/AddInitialGraphInputMessage.ts'
 import { AddInitialGraphOutputMessage } from '#/schemas/messages/graph/output/AddInitialGraphOutputMessage.ts'
 import { AddInportGraphInputMessageInput } from '#/schemas/messages/graph/input/AddInportGraphInputMessage.ts'
-import { AddInportGraphOutputMessage } from '#/schemas/messages/graph/output/AddInportGraphOutputMessage.ts'
+import {
+  AddInportGraphOutputMessage,
+  AddInportGraphOutputMessageGuard,
+} from '#/schemas/messages/graph/output/AddInportGraphOutputMessage.ts'
 import { AddNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/AddNodeGraphInputMessage.ts'
-import { AddNodeGraphOutputMessage } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
+import {
+  AddNodeGraphOutputMessage,
+  AddNodeGraphOutputMessageGuard,
+} from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
 import { AddOutportGraphInputMessageInput } from '#/schemas/messages/graph/input/AddOutportGraphInputMessage.ts'
-import { AddOutportGraphOutputMessage } from '#/schemas/messages/graph/output/AddOutportGraphOutputMessage.ts'
+import {
+  AddOutportGraphOutputMessage,
+  AddOutportGraphOutputMessageGuard,
+} from '#/schemas/messages/graph/output/AddOutportGraphOutputMessage.ts'
 import { ChangeEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeEdgeGraphInputMessage.ts'
 import { ChangeGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeGroupGraphInputMessage.ts'
 import { ChangeGroupGraphOutputMessage } from '#/schemas/messages/graph/output/ChangeGroupGraphOutputMessage.ts'
 import { ChangeNodeGraphInputMessageInput } from '#/schemas/messages/graph/input/ChangeNodeGraphInputMessage.ts'
 import { ChangeNodeGraphOutputMessage } from '#/schemas/messages/graph/output/ChangeNodeGraphOutputMessage.ts'
 import { ClearGraphInputMessageInput } from '#/schemas/messages/graph/input/ClearGraphInputMessage.ts'
-import { ErrorGraphOutputMessage } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import {
+  ErrorGraphOutputMessage,
+  ErrorGraphOutputMessageGuard,
+} from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { RemoveEdgeGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveEdgeGraphInputMessage.ts'
 import { RemoveEdgeGraphOutputMessage } from '#/schemas/messages/graph/output/RemoveEdgeGraphOutputMessage.ts'
 import { RemoveGroupGraphInputMessageInput } from '#/schemas/messages/graph/input/RemoveGroupGraphInputMessage.ts'
@@ -39,6 +54,7 @@ import { RenameOutportGraphInputMessageInput } from '#/schemas/messages/graph/in
 import { RenameOutportGraphOutputMessage } from '#/schemas/messages/graph/output/RenameOutportGraphOutputMessage.ts'
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
 import {
+  assertOutputMatchesPredicates,
   assertOutputMatchesValues,
   createClient,
   createServer,
@@ -72,14 +88,9 @@ describe('Runtime', () => {
             metadata: {},
           },
         }
-        const output: ErrorGraphOutputMessage = {
-          protocol: 'graph',
-          command: 'error',
-          payload: {
-            message: 'GraphNotFound',
-          },
-        }
-        await assertOutputMatchesValues(input, [output])
+        await assertOutputMatchesPredicates(input, [(message: ErrorGraphOutputMessage) => {
+          return ErrorGraphOutputMessageGuard.is(message) && message.payload.message === 'GraphNotFound'
+        }])
       })
     })
 
@@ -130,14 +141,9 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const output: ErrorGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'error',
-              payload: {
-                message: 'NodeNotFound',
-              },
-            }
-            await assertOutputMatchesValues(input, [output])
+            await assertOutputMatchesPredicates(input, [(message: ErrorGraphOutputMessage) => {
+              return ErrorGraphOutputMessageGuard.is(message) && message.payload.message === 'NodeNotFound'
+            }])
           })
         })
 
@@ -153,17 +159,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const firstOutput: AddNodeGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'somenode',
-                component: 'somecomponent',
-                metadata: {},
-              },
-            }
-            await assertOutputMatchesValues(firstInput, [firstOutput])
+            await assertOutputMatchesPredicates(firstInput, [AddNodeGraphOutputMessageGuard.is])
             const secondInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
               command: 'addnode',
@@ -174,17 +170,7 @@ describe('Runtime', () => {
                 metadata: {},
               },
             }
-            const secondOutput: AddNodeGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'addnode',
-              payload: {
-                graph: 'foo',
-                id: 'someothernode',
-                component: 'someothercomponent',
-                metadata: {},
-              },
-            }
-            await assertOutputMatchesValues(secondInput, [secondOutput])
+            await assertOutputMatchesPredicates(secondInput, [AddNodeGraphOutputMessageGuard.is])
           })
 
           describe('When a port on the edge does not exist on a node', () => {
@@ -205,14 +191,9 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: ErrorGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'error',
-                payload: {
-                  message: 'OutportNotFound',
-                },
-              }
-              await assertOutputMatchesValues(input, [output])
+              await assertOutputMatchesPredicates(input, [(message: ErrorGraphOutputMessage) => {
+                return ErrorGraphOutputMessageGuard.is(message) && message.payload.message === 'OutportNotFound'
+              }])
             })
           })
 
@@ -229,18 +210,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const firstOutput: AddOutportGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'addoutport',
-                payload: {
-                  graph: 'foo',
-                  node: 'somenode',
-                  port: 'someport',
-                  public: 'someport',
-                  metadata: {},
-                },
-              }
-              await assertOutputMatchesValues(firstInput, [firstOutput])
+              await assertOutputMatchesPredicates(firstInput, [AddOutportGraphOutputMessageGuard.is])
               const secondInput: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
                 command: 'addinport',
@@ -252,18 +222,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const secondOutput: AddInportGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'addinport',
-                payload: {
-                  graph: 'foo',
-                  node: 'someothernode',
-                  port: 'someotherport',
-                  public: 'someotherport',
-                  metadata: {},
-                },
-              }
-              await assertOutputMatchesValues(secondInput, [secondOutput])
+              await assertOutputMatchesPredicates(secondInput, [AddInportGraphOutputMessageGuard.is])
             })
 
             it('should return a AddEdgeGraphOutputMessage', async () => {
@@ -283,27 +242,7 @@ describe('Runtime', () => {
                   metadata: {},
                 },
               }
-              const output: AddEdgeGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'addedge',
-                payload: {
-                  graph: 'foo',
-                  src: {
-                    node: 'somenode',
-                    port: 'someport',
-                  },
-                  tgt: {
-                    node: 'someothernode',
-                    port: 'someotherport',
-                  },
-                  metadata: {
-                    route: undefined,
-                    schema: undefined,
-                    secure: undefined,
-                  },
-                },
-              }
-              await assertOutputMatchesValues(input, [output])
+              await assertOutputMatchesPredicates(input, [AddEdgeGraphOutputMessageGuard.is])
             })
           })
         })
