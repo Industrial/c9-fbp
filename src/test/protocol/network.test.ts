@@ -4,10 +4,7 @@ import { ErrorGraphOutputMessage } from '#/schemas/messages/graph/output/ErrorGr
 import { ErrorNetworkOutputMessage } from '#/schemas/messages/network/output/ErrorNetworkOutputMessage.ts'
 import { GetStatusNetworkInputMessageInput } from '#/schemas/messages/network/input/GetStatusNetworkInputMessage.ts'
 import { StartNetworkInputMessageInput } from '#/schemas/messages/network/input/StartNetworkInputMessage.ts'
-import {
-  StartedNetworkOutputMessage,
-  StartedNetworkOutputMessageGuard,
-} from '#/schemas/messages/network/output/StartedNetworkOutputMessage.ts'
+import { StartedNetworkOutputMessageGuard } from '#/schemas/messages/network/output/StartedNetworkOutputMessage.ts'
 import { StatusNetworkOutputMessageGuard } from '#/schemas/messages/network/output/StatusNetworkOutputMessage.ts'
 import { StopNetworkInputMessageInput } from '#/schemas/messages/network/input/StopNetworkInputMessage.ts'
 import { StoppedNetworkOutputMessageGuard } from '#/schemas/messages/network/output/StoppedNetworkOutputMessage.ts'
