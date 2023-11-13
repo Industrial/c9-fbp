@@ -7,6 +7,7 @@ describe('domain/graph', () => {
     describe('When passed two graphs that have different id\'s', () => {
       it('should return false', () => {
         const expected = false
+        const startTime = new Date().toISOString()
         const actual = areGraphsEqual({
           id: 'a',
           description: '',
@@ -22,9 +23,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })({
           id: 'b',
           description: '',
@@ -40,9 +42,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })
 
         assertEquals(actual, expected)
@@ -52,6 +55,7 @@ describe('domain/graph', () => {
     describe('When passed two graphs that have equal id\'s', () => {
       it('should return true', () => {
         const expected = true
+        const startTime = new Date().toISOString()
         const actual = areGraphsEqual({
           id: 'a',
           description: '',
@@ -67,9 +71,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })({
           id: 'a',
           description: '',
@@ -85,9 +90,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })
 
         assertEquals(actual, expected)
@@ -99,6 +105,7 @@ describe('domain/graph', () => {
     describe('When passed two graphs that have different id\'s', () => {
       it('should return true', () => {
         const expected = true
+        const startTime = new Date().toISOString()
         const actual = areGraphsNotEqual({
           id: 'a',
           description: '',
@@ -114,9 +121,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })({
           id: 'b',
           description: '',
@@ -132,9 +140,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })
 
         assertEquals(actual, expected)
@@ -144,6 +153,7 @@ describe('domain/graph', () => {
     describe('When passed two graphs that have equal id\'s', () => {
       it('should return false', () => {
         const expected = false
+        const startTime = new Date().toISOString()
         const actual = areGraphsNotEqual({
           id: 'a',
           description: '',
@@ -159,9 +169,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })({
           id: 'a',
           description: '',
@@ -177,9 +188,10 @@ describe('domain/graph', () => {
             hasStarted: false,
             isDebugging: false,
             isRunning: false,
-            //@ts-expect-error error
-            startTime: '',
+            startTime,
           },
+          nodes: [],
+          outports: [],
         })
 
         assertEquals(actual, expected)

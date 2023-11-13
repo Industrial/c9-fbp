@@ -28,8 +28,6 @@ export const main = (): Graph => {
       isDebugging: false,
       isRunning: true,
       hasStarted: true,
-      // TODO: Solve this type error with schemata-ts across the board.
-      // @ts-expect-error error
       startTime: new Date().toISOString(),
     },
   }

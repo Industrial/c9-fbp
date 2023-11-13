@@ -1,5 +1,6 @@
 import chai from 'chai'
 import { startServer } from '#/server.ts'
+import { Predicate } from 'fp-ts/Predicate.ts'
 
 chai.config.truncateThreshold = 0
 
@@ -58,7 +59,7 @@ export const whenMessageIsReceived = async (): Promise<MessageEvent<unknown>> =>
   })
 }
 
-export const assertOutputMatchesExpected = async (
+export const assertOutputMatchesValues = async (
   actual: Record<string, unknown>,
   expected: Array<Record<string, unknown>>,
 ) => {
@@ -79,5 +80,25 @@ export const assertOutputMatchesExpected = async (
 
   chai.expect(removeUndefineds(resultJSON)).to.deep.equal(removeUndefineds(currentExpectation))
 
-  await assertOutputMatchesExpected(actual, expected.slice(1))
+  await assertOutputMatchesValues(actual, expected.slice(1))
+}
+
+export const assertOutputMatchesPredicates = async <A>(
+  actual: Record<string, unknown>,
+  expected: Array<Predicate<A>>,
+) => {
+  if (expected.length === 0) {
+    return
+  }
+
+  const resultPromise = whenMessageIsReceived()
+  socketInstance.send(JSON.stringify(actual))
+
+  const result = await resultPromise
+  const resultJSON = JSON.parse(result.data as string)
+  const currentExpectation = expected.slice(0, 1)[0]
+
+  chai.expect(currentExpectation(resultJSON)).to.be.true
+
+  await assertOutputMatchesPredicates(actual, expected.slice(1))
 }

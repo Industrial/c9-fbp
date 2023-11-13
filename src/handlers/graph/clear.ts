@@ -29,8 +29,6 @@ export const clear = (
         isDebugging: false,
         isRunning: false,
         hasStarted: false,
-        // TODO: Solve this type error with schemata-ts across the board.
-        // @ts-expect-error error
         startTime: new Date().toISOString(),
       },
     }),

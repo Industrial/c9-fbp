@@ -5,6 +5,7 @@ import { GroupSchema } from '#/schemas/messages/shared/Group.ts'
 import { IIPSchema } from '#/schemas/messages/shared/IIP.ts'
 import { NodeSchema } from '#/schemas/messages/shared/Node.ts'
 import { PortSchema } from '#/schemas/messages/shared/Port.ts'
+import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const GraphSchema = S.Struct({
@@ -15,12 +16,10 @@ export const GraphSchema = S.Struct({
   icon: S.Optional(S.String()),
   library: S.Optional(S.String()),
   network: S.Struct({
-    startTime: S.DateFromIsoString({
-      requireTime: 'TimeAndOffset',
-    }),
     isDebugging: S.Boolean,
     isRunning: S.Boolean,
     hasStarted: S.Boolean,
+    startTime: S.String(),
   }),
   edges: S.Array(EdgeSchema),
   groups: S.Array(GroupSchema),
@@ -35,3 +34,7 @@ export type GraphInput = S.InputOf<typeof GraphSchema>
 export type Graph = S.OutputOf<typeof GraphSchema>
 
 export const GraphTranscoder = deriveTranscoder<GraphInput, Graph>(GraphSchema)
+
+export const GraphInputGuard = deriveInputGuard(GraphSchema)
+
+export const GraphGuard = deriveGuard(GraphSchema)

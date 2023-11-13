@@ -3,7 +3,7 @@ import { RuntimeRuntimeOutputMessage } from '#/schemas/messages/runtime/output/R
 import { UUID } from 'schemata-ts'
 import { afterEach, beforeEach, describe, it } from 'std/testing/bdd.ts'
 import {
-  assertOutputMatchesExpected,
+  assertOutputMatchesValues,
   createClient,
   createServer,
   destroyServer,
@@ -55,7 +55,7 @@ describe('Runtime', () => {
             version: 'derp',
           },
         }
-        await assertOutputMatchesExpected(input, [output])
+        await assertOutputMatchesValues(input, [output])
       })
     })
   })

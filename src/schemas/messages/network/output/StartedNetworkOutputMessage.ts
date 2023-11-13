@@ -8,9 +8,7 @@ export const StartedNetworkOutputMessageSchema = NetworkOutputMessageBaseSchema
   .extend({
     command: S.Literal<['started']>('started'),
     payload: S.Struct({
-      time: S.DateFromIsoString({
-        requireTime: 'TimeAndOffset',
-      }),
+      time: S.String(),
       graph: GraphIDSchema,
       started: S.Boolean,
       running: S.Boolean,

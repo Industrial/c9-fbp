@@ -457,8 +457,6 @@ export const graphWithNetworkStart = () => {
         isDebugging: graph.network.isDebugging,
         isRunning: true,
         hasStarted: true,
-        // TODO: Solve this type error with schemata-ts across the board.
-        // @ts-expect-error error
         startTime: new Date().toISOString(),
       },
     }
