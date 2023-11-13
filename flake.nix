@@ -42,6 +42,8 @@
 
           # fbp-protocol
           jekyll
+
+          lcov
         ];
       };
     }
