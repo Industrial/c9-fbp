@@ -111,8 +111,8 @@ describe('Runtime', () => {
         await assertOutputMatchesExpected(input, [output])
       })
 
-      describe('AddEdgeGraph', () => {
-        describe('When passed AddEdgeGraph and a node on the edge does not exist on the graph', () => {
+      describe('AddEdge', () => {
+        describe('When passed AddEdge and a node on the edge does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: AddEdgeGraphInputMessageInput = {
               protocol: 'graph',
@@ -141,7 +141,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddEdgeGraph and all nodes on the edge exist on the graph', () => {
+        describe('When passed AddEdge and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
             const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -309,8 +309,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddGroupGraph', () => {
-        describe('When passed AddGroupGraph and a node in the group does not exist on the graph', () => {
+      describe('AddGroup', () => {
+        describe('When passed AddGroup and a node in the group does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: AddGroupGraphInputMessageInput = {
               protocol: 'graph',
@@ -335,7 +335,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddGroupGraph and all nodes in the group exist on the graph', () => {
+        describe('When passed AddGroup and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
             const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -417,8 +417,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddInitialGraph', () => {
-        describe('When passed AddInitialGraph and a node on the edge does not exist on the graph', () => {
+      describe('AddInitial', () => {
+        describe('When passed AddInitial and a node on the edge does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: AddInitialGraphInputMessageInput = {
               protocol: 'graph',
@@ -446,7 +446,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddInitialGraph and all nodes in the group exist on the graph', () => {
+        describe('When passed AddInitial and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
             const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -471,7 +471,7 @@ describe('Runtime', () => {
             await assertOutputMatchesExpected(input, [output])
           })
 
-          describe('When passed AddInitialGraph and an inport does not exist on the node', () => {
+          describe('When passed AddInitial and an inport does not exist on the node', () => {
             it('should return an InportNotFound ErrorGraphOutputMessage', async () => {
               const input: AddInitialGraphInputMessageInput = {
                 protocol: 'graph',
@@ -499,7 +499,7 @@ describe('Runtime', () => {
             })
           })
 
-          describe('When passed AddInitialGraph and an inport exists on the node', () => {
+          describe('When passed AddInitial and an inport exists on the node', () => {
             beforeEach(async () => {
               const input: AddInportGraphInputMessageInput = {
                 protocol: 'graph',
@@ -567,8 +567,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddInportGraph', () => {
-        describe('When passed AddInportGraph and a node does not exist on the graph', () => {
+      describe('AddInport', () => {
+        describe('When passed AddInport and a node does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
@@ -592,7 +592,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddInportGraph and the node exists on the graph', () => {
+        describe('When passed AddInport and the node exists on the graph', () => {
           beforeEach(async () => {
             const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -673,8 +673,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('AddOutportGraph', () => {
-        describe('When passed AddOutportGraph and a node does not exist on the graph', () => {
+      describe('AddOutport', () => {
+        describe('When passed AddOutport and a node does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
@@ -698,7 +698,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed AddOutportGraph and the node exists on the graph', () => {
+        describe('When passed AddOutport and the node exists on the graph', () => {
           beforeEach(async () => {
             const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -751,8 +751,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('ChangeEdgeGraph', () => {
-        describe('When passed ChangeEdgeGraph and a node on the edge does not exist on the graph', () => {
+      describe('ChangeEdge', () => {
+        describe('When passed ChangeEdge and a node on the edge does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: ChangeEdgeGraphInputMessageInput = {
               protocol: 'graph',
@@ -781,7 +781,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeEdgeGraph and all nodes on the edge exist on the graph', () => {
+        describe('When passed ChangeEdge and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
             const firstInput: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
@@ -950,8 +950,8 @@ describe('Runtime', () => {
       })
 
       // TODO: nodes don't exist on the group, so can't check for node existence?
-      describe('ChangeGroupGraph', () => {
-        describe('When passed ChangeGroupGraph and the group does not exist on the graph', () => {
+      describe('ChangeGroup', () => {
+        describe('When passed ChangeGroup and the group does not exist on the graph', () => {
           it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
             const input: ChangeGroupGraphInputMessageInput = {
               protocol: 'graph',
@@ -975,7 +975,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed ChangeGroupGraph and the group exists on the graph', () => {
+        describe('When passed ChangeGroup and the group exists on the graph', () => {
           beforeEach(async () => {
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1162,8 +1162,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveEdgeGraph', () => {
-        describe('When passed RemoveEdgeGraph and a node on the edge does not exist on the graph', () => {
+      describe('RemoveEdge', () => {
+        describe('When passed RemoveEdge and a node on the edge does not exist on the graph', () => {
           it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveEdgeGraphInputMessageInput = {
               protocol: 'graph',
@@ -1191,7 +1191,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveEdgeGraph and all nodes on the edge exist on the graph', () => {
+        describe('When passed RemoveEdge and all nodes on the edge exist on the graph', () => {
           beforeEach(async () => {
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1402,8 +1402,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveGroupGraph', () => {
-        describe('When passed RemoveGroupGraph and the group does not exist on the graph', () => {
+      describe('RemoveGroup', () => {
+        describe('When passed RemoveGroup and the group does not exist on the graph', () => {
           it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveGroupGraphInputMessageInput = {
               protocol: 'graph',
@@ -1424,7 +1424,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveGroupGraph and the group exists on the graph', () => {
+        describe('When passed RemoveGroup and the group exists on the graph', () => {
           beforeEach(async () => {
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1529,8 +1529,8 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveInitialGraph', () => {
-        describe('When passed RemoveInitialGraph and a node on the edge does not exist on the graph', () => {
+      describe('RemoveInitial', () => {
+        describe('When passed RemoveInitial and a node on the edge does not exist on the graph', () => {
           it('should return a IIPNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveInitialGraphInputMessageInput = {
               protocol: 'graph',
@@ -1555,7 +1555,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveInitialGraph and all nodes in the group exist on the graph', () => {
+        describe('When passed RemoveInitial and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -1607,7 +1607,7 @@ describe('Runtime', () => {
             })()
           })
 
-          describe('When passed RemoveInitialGraph and an inport does not exist on the node', () => {
+          describe('When passed RemoveInitial and an inport does not exist on the node', () => {
             it('should return an InportNotFound ErrorGraphOutputMessage', async () => {
               const input: AddInitialGraphInputMessageInput = {
                 protocol: 'graph',
@@ -1635,7 +1635,7 @@ describe('Runtime', () => {
             })
           })
 
-          describe('When passed RemoveInitialGraph and an inport exists on the node', () => {
+          describe('When passed RemoveInitial and an inport exists on the node', () => {
             beforeEach(async () => {
               await (async () => {
                 const input: AddInportGraphInputMessageInput = {
@@ -1732,10 +1732,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveInportGraph', () => {
+      describe('RemoveInport', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveInportGraph and a node does not exist on the graph', () => {
+        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
         //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
         //     const input: RemoveInportGraphInputMessageInput = {
         //       protocol: 'graph',
@@ -1756,7 +1756,7 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveInportGraph and the node exists on the graph', () => {
+        // describe('When passed RemoveInport and the node exists on the graph', () => {
         beforeEach(async () => {
           const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
@@ -1781,7 +1781,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(input, [output])
         })
 
-        describe('When passed RemoveInportGraph and the Inport does not exist on the node', () => {
+        describe('When passed RemoveInport and the Inport does not exist on the node', () => {
           it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveInportGraphInputMessageInput = {
               protocol: 'graph',
@@ -1802,7 +1802,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveInportGraph and the Inport exists on the node', () => {
+        describe('When passed RemoveInport and the Inport exists on the node', () => {
           beforeEach(async () => {
             const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
@@ -1923,10 +1923,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RemoveOutportGraph', () => {
+      describe('RemoveOutport', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveOutportGraph and a node does not exist on the graph', () => {
+        // describe('When passed RemoveOutport and a node does not exist on the graph', () => {
         //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
         //     const input: RemoveOutportGraphInputMessageInput = {
         //       protocol: 'graph',
@@ -1947,7 +1947,7 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveOutportGraph and the node exists on the graph', () => {
+        // describe('When passed RemoveOutport and the node exists on the graph', () => {
         beforeEach(async () => {
           const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
@@ -1972,7 +1972,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(input, [output])
         })
 
-        describe('When passed RemoveOutportGraph and the Outport does not exist on the node', () => {
+        describe('When passed RemoveOutport and the Outport does not exist on the node', () => {
           it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveOutportGraphInputMessageInput = {
               protocol: 'graph',
@@ -1993,7 +1993,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RemoveOutportGraph and the Outport exists on the node', () => {
+        describe('When passed RemoveOutport and the Outport exists on the node', () => {
           beforeEach(async () => {
             const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
@@ -2043,8 +2043,8 @@ describe('Runtime', () => {
         // })
       })
 
-      describe('RenameGroupGraph', () => {
-        describe('When passed RenameGroupGraph and the group does not exist on the graph', () => {
+      describe('RenameGroup', () => {
+        describe('When passed RenameGroup and the group does not exist on the graph', () => {
           it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
             const input: RenameGroupGraphInputMessageInput = {
               protocol: 'graph',
@@ -2066,7 +2066,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameGroupGraph and the group exist on the graph', () => {
+        describe('When passed RenameGroup and the group exist on the graph', () => {
           beforeEach(async () => {
             await (async () => {
               const input: AddNodeGraphInputMessageInput = {
@@ -2175,10 +2175,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RenameInportGraph', () => {
+      describe('RenameInport', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveInportGraph and a node does not exist on the graph', () => {
+        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
         //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
         //     const input: RemoveInportGraphInputMessageInput = {
         //       protocol: 'graph',
@@ -2199,7 +2199,7 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveInportGraph and the node exists on the graph', () => {
+        // describe('When passed RemoveInport and the node exists on the graph', () => {
         beforeEach(async () => {
           const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
@@ -2224,7 +2224,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(input, [output])
         })
 
-        describe('When passed RenameInportGraph and the Inport does not exist on the node', () => {
+        describe('When passed RenameInport and the Inport does not exist on the node', () => {
           it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
             const input: RenameInportGraphInputMessageInput = {
               protocol: 'graph',
@@ -2246,7 +2246,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameInportGraph and the Inport exists on the node', () => {
+        describe('When passed RenameInport and the Inport exists on the node', () => {
           beforeEach(async () => {
             const input: AddInportGraphInputMessageInput = {
               protocol: 'graph',
@@ -2372,10 +2372,10 @@ describe('Runtime', () => {
         })
       })
 
-      describe('RenameOutportGraph', () => {
+      describe('RenameOutport', () => {
         // TODO: This event does not contain a NodeID, so I cannot check if the
         // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveOutportGraph and a node does not exist on the graph', () => {
+        // describe('When passed RemoveOutport and a node does not exist on the graph', () => {
         //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
         //     const input: RemoveOutportGraphInputMessageInput = {
         //       protocol: 'graph',
@@ -2396,7 +2396,7 @@ describe('Runtime', () => {
         //   })
         // })
 
-        // describe('When passed RemoveOutportGraph and the node exists on the graph', () => {
+        // describe('When passed RemoveOutport and the node exists on the graph', () => {
         beforeEach(async () => {
           const input: AddNodeGraphInputMessageInput = {
             protocol: 'graph',
@@ -2421,7 +2421,7 @@ describe('Runtime', () => {
           await assertOutputMatchesExpected(input, [output])
         })
 
-        describe('When passed RenameOutportGraph and the Outport does not exist on the node', () => {
+        describe('When passed RenameOutport and the Outport does not exist on the node', () => {
           it('should return a OutportNotFound ErrorGraphOutputMessage', async () => {
             const input: RenameOutportGraphInputMessageInput = {
               protocol: 'graph',
@@ -2443,7 +2443,7 @@ describe('Runtime', () => {
           })
         })
 
-        describe('When passed RenameOutportGraph and the Outport exists on the node', () => {
+        describe('When passed RenameOutport and the Outport exists on the node', () => {
           beforeEach(async () => {
             const input: AddOutportGraphInputMessageInput = {
               protocol: 'graph',
