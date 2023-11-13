@@ -8,7 +8,7 @@ export const StoppedNetworkOutputMessageSchema = NetworkOutputMessageBaseSchema
   .extend({
     command: S.Literal<['stopped']>('stopped'),
     payload: S.Struct({
-      time: S.DateFromString(),
+      time: S.String(),
       uptime: S.Number,
       graph: GraphIDSchema,
       running: S.Boolean,
