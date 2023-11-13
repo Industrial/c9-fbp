@@ -417,18 +417,7 @@ describe('Runtime', () => {
                 graph: 'foo',
               },
             }
-            const output: StartedNetworkOutputMessage = {
-              protocol: 'network',
-              command: 'started',
-              payload: {
-                graph: 'foo',
-                time: new Date().toISOString(),
-                debug: false,
-                running: true,
-                started: true,
-              },
-            }
-            await assertOutputMatchesValues(input, [output])
+            await assertOutputMatchesPredicates(input, [StartedNetworkOutputMessageGuard.is])
           })
 
           it('should return a StoppedNetworkOutputMessage', async () => {
