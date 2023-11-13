@@ -149,31 +149,46 @@ export const handleMessage = (message: string, socket: WebSocket): void => {
   )()
 }
 
+export const handleError = (error: unknown): Response => {
+  return new Response((error as Error).message, {
+    status: 500,
+  })
+}
+
+export const handleListen = () => {
+  // console.log('listening?')
+}
+
+export const handleRequest = (req: Request): Response => {
+  if (req.headers.get('upgrade') != 'websocket') {
+    return new Response(null, {
+      status: 501,
+    })
+  }
+
+  // const secWebsocketKey = req.headers.get('Sec-Websocket-Key')
+  const secWebsocketProtocol = req.headers.get('Sec-Websocket-Protocol')
+  // const secWebsocketVersion = req.headers.get('Sec-Websocket-Version')
+  // const secWebsocketAccept = base64.encodeBase64(`${secWebsocketKey}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`)
+
+  const { socket, response } = Deno.upgradeWebSocket(req, {
+    protocol: secWebsocketProtocol ?? '',
+    // idleTimeout: 1,
+  })
+
+  socket.addEventListener('message', (event: MessageEvent<string>) => {
+    handleMessage(event.data, socket)
+  })
+
+  return response
+}
+
 export const startServer = (hostname: string, port: number): Deno.Server => {
   return Deno.serve({
     hostname,
     port,
-  }, (req) => {
-    if (req.headers.get('upgrade') != 'websocket') {
-      return new Response(null, {
-        status: 501,
-      })
-    }
-
-    // const secWebsocketKey = req.headers.get('Sec-Websocket-Key')
-    const secWebsocketProtocol = req.headers.get('Sec-Websocket-Protocol')
-    // const secWebsocketVersion = req.headers.get('Sec-Websocket-Version')
-    // const secWebsocketAccept = base64.encodeBase64(`${secWebsocketKey}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`)
-
-    const { socket, response } = Deno.upgradeWebSocket(req, {
-      protocol: secWebsocketProtocol ?? '',
-      // idleTimeout: 1,
-    })
-
-    socket.addEventListener('message', (event: MessageEvent<string>) => {
-      handleMessage(event.data, socket)
-    })
-
-    return response
-  })
+    onError: handleError,
+    onListen: handleListen,
+    reusePort: true,
+  }, handleRequest)
 }
