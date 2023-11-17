@@ -24,7 +24,7 @@ export type Node = {
   state: Record<string, unknown>
 }
 
-export const createNode = (
+export const create = (
   id: Node['id'],
   component: Node['component'],
   inports: Node['inports'],
@@ -95,7 +95,7 @@ export const deserialize = (
     }),
   )
 
-  return createNode(
+  return create(
     node.id,
     node.component,
     inports,

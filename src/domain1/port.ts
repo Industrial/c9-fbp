@@ -2,15 +2,10 @@ import * as IIPDomain from '#/domain1/iip.ts'
 import * as IIPSchema from '#/schemas/messages/shared/IIP.ts'
 import * as PortSchema from '#/schemas/messages/shared/Port.ts'
 import { IIP } from '#/domain1/iip.ts'
-import { Node, NodeID } from '#/domain1/node.ts'
+import { Node } from '#/domain1/node.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
 
 export type PortID = string
-
-export type PortTarget = {
-  nodeId: NodeID
-  portId: PortID
-}
 
 export type Port = {
   id: PortID
@@ -26,7 +21,7 @@ const portTransformer: Transformer<Value, Value> = {
   },
 }
 
-export const createPort = (
+export const create = (
   id: Port['id'],
   publicName: Port['public'],
   metadata: Port['metadata'],
@@ -58,13 +53,13 @@ export const deserialize = (
   iip?: IIPSchema.IIP,
 ): Port => {
   return iip
-    ? createPort(
+    ? create(
       port.port,
       port.public,
       port.metadata ?? {},
       IIPDomain.deserialize(iip),
     )
-    : createPort(
+    : create(
       port.port,
       port.public,
       port.metadata ?? {},

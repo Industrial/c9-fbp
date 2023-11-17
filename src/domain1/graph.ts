@@ -28,7 +28,7 @@ export type Graph = {
   }
 }
 
-export const createGraph = (
+export const create = (
   id: Graph['id'],
   name: Graph['name'],
   nodes: Graph['nodes'],
@@ -154,7 +154,7 @@ export const deserialize = (graph: GraphSchema.Graph): Graph => {
     }),
   )
 
-  return createGraph(
+  return create(
     graph.id,
     graph.name,
     nodes,
