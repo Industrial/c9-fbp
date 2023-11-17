@@ -8,8 +8,8 @@ const config = JSON.parse(await Deno.readTextFile('./fbp-config.json'))
 const hostname = config.host as string
 const port = config.port as number
 
-let serverInstance: Deno.Server | undefined
-let socketInstance: WebSocket
+export let serverInstance: Deno.Server | undefined
+export let socketInstance: WebSocket
 
 export const createServer = async () => {
   serverInstance = startServer(hostname, port)
@@ -98,7 +98,9 @@ export const assertOutputMatchesPredicates = async <A>(
   const resultJSON = JSON.parse(result.data as string)
   const currentExpectation = expected.slice(0, 1)[0]
 
-  chai.expect(currentExpectation(resultJSON)).to.be.true
+  if (!currentExpectation(resultJSON)) {
+    throw new Error(`Predicate returned false: ${JSON.stringify(resultJSON)}`)
+  }
 
   await assertOutputMatchesPredicates(actual, expected.slice(1))
 }

@@ -3,7 +3,7 @@ import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const MetadataEdgeSchema = S.Struct({
-  route: S.Optional(S.Int()),
+  route: S.Optional(S.Float()),
   schema: S.Optional(S.String()),
   secure: S.Optional(S.Boolean),
 })
