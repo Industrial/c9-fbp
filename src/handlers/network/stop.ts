@@ -2,6 +2,7 @@ import * as E from 'fp-ts/Either.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/output/ErrorNetworkOutputMessage.ts'
+import { Float } from 'schemata-ts/float'
 import { StopNetworkInputMessage } from '#/schemas/messages/network/input/StopNetworkInputMessage.ts'
 import { StoppedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StoppedNetworkOutputMessage.ts'
 import { graphHasNetworkStarted, graphWithNetworkStop } from '#/domain/graph.ts'
@@ -50,9 +51,7 @@ export const stop = (
               running: graph.network.isRunning,
               started: graph.network.hasStarted,
               time: graph.network.startTime,
-              // TODO: Solve this type error with schemata-ts across the board.
-              // @ts-expect-error error
-              uptime: new Date().valueOf() - new Date(graph.network.startTime).valueOf(),
+              uptime: (new Date().valueOf() - new Date(graph.network.startTime).valueOf() as Float),
             },
           },
         ]

@@ -25,7 +25,7 @@ export const addinitial = (
         E.chain(graphWithIIP({
           src: message.payload.src,
           tgt: message.payload.tgt,
-          metadata: message.payload.metadata,
+          metadata: message.payload.metadata ?? {},
         })),
         TE.fromEitherK(E.map((graph) => {
           return graph
