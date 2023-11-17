@@ -1,12 +1,12 @@
 import * as E from 'fp-ts/Either.ts'
+import * as EdgeDomain from '#/domain1/edge.ts'
+import * as GraphDomain from '#/domain1/graph.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as S from 'fp-ts/string.ts'
-import * as edgeDomain from '#/domain/edge.ts'
 import * as groupDomain from '#/domain/group.ts'
 import * as iipDomain from '#/domain/iip.ts'
 import * as nodeDomain from '#/domain/node.ts'
 import * as portDomain from '#/domain/port.ts'
-import { Edge } from '#/schemas/messages/shared/Edge.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { Graph } from '#/schemas/messages/shared/Graph.ts'
 import { Group } from '#/schemas/messages/shared/Group.ts'
@@ -137,18 +137,25 @@ export const graphWithNode = (node: Node) => {
 }
 
 export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
-  return (graph: Graph): E.Either<Error, Edge> => {
+  return (graph: GraphDomain.Graph): E.Either<Error, EdgeDomain.Edge> => {
     return pipe(
       graph.edges,
-      findFirstByPredicateE(edgeDomain.areEdgesEqual({
-        src,
-        tgt,
-        metadata: {
-          route: undefined,
-          schema: undefined,
-          secure: undefined,
-        },
-      })),
+      findFirstByPredicateE((edge) => {
+        return EdgeDomain.eq.equals(
+          edge,
+          EdgeDomain.create(
+            src.node,
+            src.port,
+            tgt.node,
+            tgt.port,
+            {
+              route: undefined,
+              schema: undefined,
+              secure: undefined,
+            },
+          ),
+        )
+      }),
       E.mapLeft(() => {
         return new Error('EdgeNotFound')
       }),
@@ -156,11 +163,13 @@ export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
   }
 }
 
-export const graphContainsEdge = (edge: Edge) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const graphContainsEdge = (edge: EdgeDomain.Edge) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return pipe(
       graph.edges,
-      findFirstByPredicateE(edgeDomain.areEdgesNotEqual(edge)),
+      findFirstByPredicateE((entry) => {
+        return EdgeDomain.eq.equals(edge, entry)
+      }),
       E.map(() => {
         return graph
       }),
@@ -171,25 +180,29 @@ export const graphContainsEdge = (edge: Edge) => {
   }
 }
 
-export const graphWithoutEdge = (edge: Edge) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const graphWithoutEdge = (edge: EdgeDomain.Edge) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       edges: pipe(
         graph.edges,
-        RA.filter(edgeDomain.areEdgesNotEqual(edge)),
+        RA.filter((entry) => {
+          return EdgeDomain.eq.equals(edge, entry)
+        }),
       ),
     })
   }
 }
 
-export const graphWithEdge = (edge: Edge) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const graphWithEdge = (edge: EdgeDomain.Edge) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       edges: pipe(
         graph.edges,
-        RA.filter(edgeDomain.areEdgesNotEqual(edge)),
+        RA.filter((entry) => {
+          return EdgeDomain.eq.equals(entry, edge)
+        }),
         RA.append(edge),
       ),
     })

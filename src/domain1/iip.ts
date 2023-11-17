@@ -7,7 +7,7 @@ export type IIP = {
   metadata: Record<string, unknown>
 }
 
-export const createIIP = (
+export const create = (
   data: IIP['data'],
   metadata: IIP['metadata'],
 ): IIP => {
@@ -33,7 +33,7 @@ export const serialize = (iip: IIP, node: Node, port: Port): IIPSchema.IIP => {
 }
 
 export const deserialize = (iip: IIPSchema.IIP): IIP => {
-  return createIIP(
+  return create(
     iip.src.data,
     iip.metadata,
   )

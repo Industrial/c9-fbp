@@ -1,5 +1,13 @@
 import * as EdgeSchema from '#/schemas/messages/shared/Edge.ts'
-import { PortTarget } from '#/domain1/port.ts'
+import * as Eq from 'fp-ts/Eq.ts'
+import { NodeID } from '#/domain1/node.ts'
+import { PortID } from '#/domain1/port.ts'
+import { pipe } from 'fp-ts/function.ts'
+
+export type PortTarget = {
+  nodeId: NodeID
+  portId: PortID
+}
 
 export type Edge = {
   src: PortTarget
@@ -7,7 +15,7 @@ export type Edge = {
   metadata: Record<string, unknown>
 }
 
-export const createEdge = (
+export const create = (
   sourceNode: Edge['src']['nodeId'],
   sourcePort: Edge['src']['portId'],
   targetNode: Edge['tgt']['nodeId'],
@@ -44,7 +52,7 @@ export const serialize = (edge: Edge): EdgeSchema.Edge => {
 }
 
 export const deserialize = (edge: EdgeSchema.Edge): Edge => {
-  return createEdge(
+  return create(
     edge.src.node,
     edge.src.port,
     edge.tgt.node,
@@ -52,3 +60,12 @@ export const deserialize = (edge: EdgeSchema.Edge): Edge => {
     edge.metadata ?? {},
   )
 }
+
+export const eqPortTarget = Eq.fromEquals<PortTarget>((a, b) => {
+  return a.nodeId === b.nodeId && a.portId === b.portId
+})
+
+export const eq: Eq.Eq<Edge> = pipe(
+  Eq.tuple(eqPortTarget, eqPortTarget),
+  Eq.contramap<readonly [PortTarget, PortTarget], Edge>((port) => [port.src, port.tgt]),
+)

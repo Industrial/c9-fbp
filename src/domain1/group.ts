@@ -7,7 +7,7 @@ export type Group = {
   metadata: Record<string, unknown>
 }
 
-export const createGroup = (
+export const create = (
   name: Group['name'],
   nodes: Group['nodes'],
   description?: Group['metadata']['description'],
@@ -36,7 +36,7 @@ export const serialize = (group: Group): GroupSchema.Group => {
 }
 
 export const deserialize = (group: GroupSchema.Group) => {
-  return createGroup(
+  return create(
     group.name,
     group.nodes,
     group.metadata?.description,
