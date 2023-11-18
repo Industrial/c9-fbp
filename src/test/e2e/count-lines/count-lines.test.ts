@@ -283,7 +283,7 @@ describe('e2e/count-lines', () => {
           graph: 'main',
           src: {
             node: 'Count',
-            port: 'out',
+            port: 'count',
           },
           tgt: {
             node: 'Display',
@@ -325,8 +325,8 @@ describe('e2e/count-lines', () => {
       await assertOutputMatchesPredicates(input, [StartedNetworkOutputMessageGuard.is])
     })()
 
-    const messageEvent = await whenMessageIsReceived()
+    // const messageEvent = await whenMessageIsReceived()
 
-    console.log('messageEvent', messageEvent)
+    // console.log('messageEvent', messageEvent)
   })
 })
