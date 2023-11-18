@@ -252,7 +252,7 @@ export const withoutNode = (node: NodeDomain.Node) => {
       nodes: pipe(
         graph.nodes,
         RA.filter((entry) => {
-          return NodeDomain.eq.equals(entry, node)
+          return !NodeDomain.eq.equals(entry, node)
         }),
       ),
     })
@@ -266,7 +266,7 @@ export const withNode = (node: NodeDomain.Node) => {
       nodes: pipe(
         graph.nodes,
         RA.filter((entry) => {
-          return NodeDomain.eq.equals(entry, node)
+          return !NodeDomain.eq.equals(entry, node)
         }),
         RA.append(node),
       ),
@@ -308,7 +308,7 @@ export const withoutEdge = (edge: EdgeDomain.Edge) => {
       edges: pipe(
         graph.edges,
         RA.filter((entry) => {
-          return EdgeDomain.eq.equals(edge, entry)
+          return !EdgeDomain.eq.equals(edge, entry)
         }),
       ),
     })
@@ -322,7 +322,7 @@ export const withEdge = (edge: EdgeDomain.Edge) => {
       edges: pipe(
         graph.edges,
         RA.filter((entry) => {
-          return EdgeDomain.eq.equals(entry, edge)
+          return !EdgeDomain.eq.equals(entry, edge)
         }),
         RA.append(edge),
       ),
@@ -399,15 +399,26 @@ export const withIIPByNodeIdAndPortId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.findInportById(portId),
-          E.chain((port) =>
+          E.right(oldNode),
+          E.chain(NodeDomain.findInportById(portId)),
+          E.chain((oldPort) =>
             pipe(
-              port,
-              PortDomain.withIIP(iip),
-              E.map(() => graph),
+              E.right(oldPort),
+              E.chain(PortDomain.withIIP(iip)),
+              E.chain((newPort) =>
+                pipe(
+                  oldNode,
+                  NodeDomain.withInport(newPort),
+                )
+              ),
+            )
+          ),
+          E.chain((newNode) =>
+            pipe(
+              graph,
+              GraphDomain.withNode(newNode),
             )
           ),
           E.map(() => graph),
@@ -421,15 +432,26 @@ export const withoutIIPByNodeIdAndPortId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.findInportById(portId),
-          E.chain((port) =>
+          E.right(oldNode),
+          E.chain(NodeDomain.findInportById(portId)),
+          E.chain((oldPort) =>
             pipe(
-              port,
-              PortDomain.withoutIIP(),
-              E.map(() => graph),
+              E.right(oldPort),
+              E.chain(PortDomain.withoutIIP()),
+              E.chain((newPort) =>
+                pipe(
+                  oldNode,
+                  NodeDomain.withInport(newPort),
+                )
+              ),
+            )
+          ),
+          E.chain((newNode) =>
+            pipe(
+              graph,
+              GraphDomain.withNode(newNode),
             )
           ),
           E.map(() => graph),
@@ -458,11 +480,16 @@ export const withInportByNodeId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.withInport(port),
-          E.map(() => graph),
+          E.right(oldNode),
+          E.chain(NodeDomain.withInport(port)),
+          E.chain((newNode) => {
+            return pipe(
+              graph,
+              GraphDomain.withNode(newNode),
+            )
+          }),
         )
       ),
     )
@@ -473,11 +500,42 @@ export const withoutInportByNodeId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.withoutInport(port),
-          E.map(() => graph),
+          E.right(oldNode),
+          E.chain(NodeDomain.withoutInport(port)),
+          E.chain((newNode) => {
+            return pipe(
+              graph,
+              GraphDomain.withNode(newNode),
+            )
+          }),
+        )
+      ),
+    )
+
+export const withoutInportByNodeIdAndPortId =
+  (nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((oldNode) =>
+        pipe(
+          E.right(oldNode),
+          E.chain(NodeDomain.findInportById(portId)),
+          E.chain((port) =>
+            pipe(
+              E.right(oldNode),
+              E.chain(NodeDomain.withoutInport(port)),
+              E.chain((newNode) => {
+                return pipe(
+                  graph,
+                  GraphDomain.withNode(newNode),
+                )
+              }),
+            )
+          ),
         )
       ),
     )
@@ -503,11 +561,16 @@ export const withOutportByNodeId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.withInport(port),
-          E.map(() => graph),
+          E.right(oldNode),
+          E.chain(NodeDomain.withOutport(port)),
+          E.chain((newNode) => {
+            return pipe(
+              graph,
+              GraphDomain.withNode(newNode),
+            )
+          }),
         )
       ),
     )
@@ -518,11 +581,42 @@ export const withoutOutportByNodeId =
     pipe(
       graph,
       GraphDomain.findNodeById(nodeId),
-      E.chain((node) =>
+      E.chain((oldNode) =>
         pipe(
-          node,
-          NodeDomain.withoutInport(port),
-          E.map(() => graph),
+          E.right(oldNode),
+          E.chain(NodeDomain.withoutOutport(port)),
+          E.chain((newNode) => {
+            return pipe(
+              graph,
+              GraphDomain.withNode(newNode),
+            )
+          }),
+        )
+      ),
+    )
+
+export const withoutOutportByNodeIdAndPortId =
+  (nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((oldNode) =>
+        pipe(
+          E.right(oldNode),
+          E.chain(NodeDomain.findOutportById(portId)),
+          E.chain((port) =>
+            pipe(
+              E.right(oldNode),
+              E.chain(NodeDomain.withoutOutport(port)),
+              E.chain((newNode) => {
+                return pipe(
+                  graph,
+                  GraphDomain.withNode(newNode),
+                )
+              }),
+            )
+          ),
         )
       ),
     )

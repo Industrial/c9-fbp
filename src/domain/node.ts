@@ -116,7 +116,7 @@ export const findInportById = (id: PortDomain.Port['id']) => {
     return pipe(
       node.inports,
       findFirstByPropertyE('id', id),
-      E.mapLeft(() => new Error('PortNotFound')),
+      E.mapLeft(() => new Error('InportNotFound')),
     )
   }
 }
@@ -161,7 +161,7 @@ export const findOutportById = (id: PortDomain.Port['id']) => {
     return pipe(
       node.outports,
       findFirstByPropertyE('id', id),
-      E.mapLeft(() => new Error('PortNotFound')),
+      E.mapLeft(() => new Error('OutportNotFound')),
     )
   }
 }

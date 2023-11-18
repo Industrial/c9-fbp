@@ -1,6 +1,5 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
-import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
@@ -16,9 +15,10 @@ export const removeoutport = (
     TE.chain((graph) =>
       pipe(
         E.right(graph),
+        E.chain(GraphDomain.containsOutportByNodeIdAndPortId(message.payload.node, message.payload.public)),
         E.chain(
-          GraphDomain.withoutOutportByNodeId(
-            PortDomain.create(message.payload.public, message.payload.public, {}),
+          GraphDomain.withoutOutportByNodeIdAndPortId(
+            message.payload.node,
             message.payload.public,
           ),
         ),

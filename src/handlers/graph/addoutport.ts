@@ -18,7 +18,7 @@ export const addoutport = (
         E.right(graph),
         E.chain(GraphDomain.containsNodeById(message.payload.node)),
         E.chain(
-          GraphDomain.withInportByNodeId(
+          GraphDomain.withOutportByNodeId(
             PortDomain.create(message.payload.port, message.payload.public, message.payload.metadata ?? {}),
             message.payload.node,
           ),

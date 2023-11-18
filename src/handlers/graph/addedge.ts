@@ -17,7 +17,7 @@ export const addedge = (
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.src.node, message.payload.src.port)),
+        E.chain(GraphDomain.containsOutportByNodeIdAndPortId(message.payload.src.node, message.payload.src.port)),
         E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.tgt.node, message.payload.tgt.port)),
         E.chain(GraphDomain.withEdge(EdgeDomain.create(
           message.payload.src.node,

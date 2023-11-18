@@ -17,6 +17,7 @@ export const renameinport = (
     TE.chain((graph) =>
       pipe(
         E.right(graph),
+        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.node, message.payload.from)),
         E.chain(GraphDomain.findNodeById(message.payload.node)),
         E.chain((node) =>
           pipe(
