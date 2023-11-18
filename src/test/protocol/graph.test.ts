@@ -888,7 +888,6 @@ describe('Runtime', () => {
         })
       })
 
-      // TODO: nodes don't exist on the group, so can't check for node existence?
       describe('ChangeGroup', () => {
         describe('When passed ChangeGroup and the group does not exist on the graph', () => {
           it('should return a GroupNotFound ErrorGraphOutputMessage', async () => {
