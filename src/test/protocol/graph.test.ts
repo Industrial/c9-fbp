@@ -1470,7 +1470,7 @@ describe('Runtime', () => {
 
       describe('RemoveInitial', () => {
         describe('When passed RemoveInitial and a node on the edge does not exist on the graph', () => {
-          it('should return a IIPNotFound ErrorGraphOutputMessage', async () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveInitialGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeinitial',
@@ -1487,7 +1487,7 @@ describe('Runtime', () => {
               protocol: 'graph',
               command: 'error',
               payload: {
-                message: 'IIPNotFound',
+                message: 'NodeNotFound',
               },
             }
             await assertOutputMatchesValues(input, [output])
@@ -1496,61 +1496,34 @@ describe('Runtime', () => {
 
         describe('When passed RemoveInitial and all nodes in the group exist on the graph', () => {
           beforeEach(async () => {
-            await (async () => {
-              const input: AddNodeGraphInputMessageInput = {
-                protocol: 'graph',
-                command: 'addnode',
-                payload: {
-                  graph: 'foo',
-                  id: 'somenode',
-                  component: 'somecomponent',
-                  metadata: {},
-                },
-              }
-              const output: AddNodeGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'addnode',
-                payload: {
-                  graph: 'foo',
-                  id: 'somenode',
-                  component: 'somecomponent',
-                  metadata: {},
-                },
-              }
-              await assertOutputMatchesValues(input, [output])
-            })()
-            await (async () => {
-              const input: AddInportGraphInputMessageInput = {
-                protocol: 'graph',
-                command: 'addinport',
-                payload: {
-                  graph: 'foo',
-                  node: 'somenode',
-                  port: 'someport',
-                  public: 'someotherport',
-                  metadata: {},
-                },
-              }
-              const output: AddInportGraphOutputMessage = {
-                protocol: 'graph',
-                command: 'addinport',
-                payload: {
-                  graph: 'foo',
-                  node: 'somenode',
-                  port: 'someport',
-                  public: 'someotherport',
-                  metadata: {},
-                },
-              }
-              await assertOutputMatchesValues(input, [output])
-            })()
+            const input: AddNodeGraphInputMessageInput = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            const output: AddNodeGraphOutputMessage = {
+              protocol: 'graph',
+              command: 'addnode',
+              payload: {
+                graph: 'foo',
+                id: 'somenode',
+                component: 'somecomponent',
+                metadata: {},
+              },
+            }
+            await assertOutputMatchesValues(input, [output])
           })
 
           describe('When passed RemoveInitial and an inport does not exist on the node', () => {
             it('should return an InportNotFound ErrorGraphOutputMessage', async () => {
-              const input: AddInitialGraphInputMessageInput = {
+              const input: RemoveInitialGraphInputMessageInput = {
                 protocol: 'graph',
-                command: 'addinitial',
+                command: 'removeinitial',
                 payload: {
                   graph: 'foo',
                   src: {
@@ -1560,7 +1533,6 @@ describe('Runtime', () => {
                     node: 'somenode',
                     port: 'someport',
                   },
-                  metadata: {},
                 },
               }
               const output: ErrorGraphOutputMessage = {
@@ -1672,56 +1644,8 @@ describe('Runtime', () => {
       })
 
       describe('RemoveInport', () => {
-        // TODO: This event does not contain a NodeID, so I cannot check if the
-        // node exists. Create a Ticket in the NoFo ecosystem to check.
-        // describe('When passed RemoveInport and a node does not exist on the graph', () => {
-        //   it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
-        //     const input: RemoveInportGraphInputMessageInput = {
-        //       protocol: 'graph',
-        //       command: 'removeinport',
-        //       payload: {
-        //         graph: 'foo',
-        //         public: 'someport',
-        //       },
-        //     }
-        //     const output: ErrorGraphOutputMessage = {
-        //       protocol: 'graph',
-        //       command: 'error',
-        //       payload: {
-        //         message: 'NodeNotFound',
-        //       },
-        //     }
-        //     await assertOutputMatchesExpected(input, [output])
-        //   })
-        // })
-
-        // describe('When passed RemoveInport and the node exists on the graph', () => {
-        beforeEach(async () => {
-          const input: AddNodeGraphInputMessageInput = {
-            protocol: 'graph',
-            command: 'addnode',
-            payload: {
-              graph: 'foo',
-              id: 'somenode',
-              component: 'somecomponent',
-              metadata: {},
-            },
-          }
-          const output: AddNodeGraphOutputMessage = {
-            protocol: 'graph',
-            command: 'addnode',
-            payload: {
-              graph: 'foo',
-              id: 'somenode',
-              component: 'somecomponent',
-              metadata: {},
-            },
-          }
-          await assertOutputMatchesValues(input, [output])
-        })
-
-        describe('When passed RemoveInport and the Inport does not exist on the node', () => {
-          it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
+        describe('When passed RemoveInport and a node does not exist on the graph', () => {
+          it('should return a NodeNotFound ErrorGraphOutputMessage', async () => {
             const input: RemoveInportGraphInputMessageInput = {
               protocol: 'graph',
               command: 'removeinport',
@@ -1735,63 +1659,110 @@ describe('Runtime', () => {
               protocol: 'graph',
               command: 'error',
               payload: {
-                message: 'InportNotFound',
+                message: 'NodeNotFound',
               },
             }
             await assertOutputMatchesValues(input, [output])
           })
         })
 
-        describe('When passed RemoveInport and the Inport exists on the node', () => {
+        describe('When passed RemoveInport and the node exists on the graph', () => {
           beforeEach(async () => {
-            const input: AddInportGraphInputMessageInput = {
+            const input: AddNodeGraphInputMessageInput = {
               protocol: 'graph',
-              command: 'addinport',
+              command: 'addnode',
               payload: {
                 graph: 'foo',
-                node: 'somenode',
-                port: 'someport',
-                public: 'someport',
+                id: 'somenode',
+                component: 'somecomponent',
                 metadata: {},
               },
             }
-            const output: AddInportGraphOutputMessage = {
+            const output: AddNodeGraphOutputMessage = {
               protocol: 'graph',
-              command: 'addinport',
+              command: 'addnode',
               payload: {
                 graph: 'foo',
-                node: 'somenode',
-                port: 'someport',
-                public: 'someport',
+                id: 'somenode',
+                component: 'somecomponent',
                 metadata: {},
               },
             }
             await assertOutputMatchesValues(input, [output])
           })
 
-          it('should return a RemoveInportGraphOutputMessage', async () => {
-            const input: RemoveInportGraphInputMessageInput = {
-              protocol: 'graph',
-              command: 'removeinport',
-              payload: {
-                graph: 'foo',
-                node: 'somenode',
-                public: 'someport',
-              },
-            }
-            const output: RemoveInportGraphOutputMessage = {
-              protocol: 'graph',
-              command: 'removeinport',
-              payload: {
-                graph: 'foo',
-                node: 'somenode',
-                public: 'someport',
-              },
-            }
-            await assertOutputMatchesValues(input, [output])
+          describe('When passed RemoveInport and the Inport does not exist on the node', () => {
+            it('should return a InportNotFound ErrorGraphOutputMessage', async () => {
+              const input: RemoveInportGraphInputMessageInput = {
+                protocol: 'graph',
+                command: 'removeinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  public: 'someport',
+                },
+              }
+              const output: ErrorGraphOutputMessage = {
+                protocol: 'graph',
+                command: 'error',
+                payload: {
+                  message: 'InportNotFound',
+                },
+              }
+              await assertOutputMatchesValues(input, [output])
+            })
+          })
+
+          describe('When passed RemoveInport and the Inport exists on the node', () => {
+            beforeEach(async () => {
+              const input: AddInportGraphInputMessageInput = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someport',
+                  metadata: {},
+                },
+              }
+              const output: AddInportGraphOutputMessage = {
+                protocol: 'graph',
+                command: 'addinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  port: 'someport',
+                  public: 'someport',
+                  metadata: {},
+                },
+              }
+              await assertOutputMatchesValues(input, [output])
+            })
+
+            it('should return a RemoveInportGraphOutputMessage', async () => {
+              const input: RemoveInportGraphInputMessageInput = {
+                protocol: 'graph',
+                command: 'removeinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  public: 'someport',
+                },
+              }
+              const output: RemoveInportGraphOutputMessage = {
+                protocol: 'graph',
+                command: 'removeinport',
+                payload: {
+                  graph: 'foo',
+                  node: 'somenode',
+                  public: 'someport',
+                },
+              }
+              await assertOutputMatchesValues(input, [output])
+            })
           })
         })
-        // })
       })
 
       describe('RemoveNode', () => {

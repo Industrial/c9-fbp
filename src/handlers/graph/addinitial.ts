@@ -16,8 +16,6 @@ export const addinitial = (
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsNodeById(message.payload.tgt.node)),
-        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.tgt.node, message.payload.tgt.port)),
         E.chain(
           GraphDomain.withIIPByNodeIdAndPortId(
             IIPDomain.create(message.payload.src.data, message.payload.metadata ?? {}),

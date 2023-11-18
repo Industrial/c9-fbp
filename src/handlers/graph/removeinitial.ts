@@ -15,7 +15,6 @@ export const removeinitial = (
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsNodeById(message.payload.tgt.node)),
         E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.tgt.node, message.payload.tgt.port)),
         E.chain((graph) =>
           pipe(
