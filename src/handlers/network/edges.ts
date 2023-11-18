@@ -5,8 +5,8 @@ import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/outpu
 
 export const edges = (
   message: EdgesNetworkInputMessage,
-): TE.TaskEither<Error, Array<EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> => {
-  return TE.right([
+): TE.TaskEither<Error, Array<EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+  TE.right([
     {
       protocol: 'network',
       command: 'error',
@@ -17,4 +17,3 @@ export const edges = (
       },
     },
   ])
-}

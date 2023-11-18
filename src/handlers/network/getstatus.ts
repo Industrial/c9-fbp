@@ -8,39 +8,34 @@ import { pipe } from 'fp-ts/function.ts'
 
 export const getstatus = (
   message: GetStatusNetworkInputMessage,
-): TE.TaskEither<Error, Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> => {
-  return pipe(
+): TE.TaskEither<Error, Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+  pipe(
     graphs.get(message.payload.graph),
     TE.match(
-      (error): Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => {
-        return [
-          {
-            protocol: 'network',
-            command: 'error',
-            payload: {
-              graph: message.payload.graph,
-              message: error.message,
-              stack: undefined,
-            },
+      (error): Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
+        {
+          protocol: 'network',
+          command: 'error',
+          payload: {
+            graph: message.payload.graph,
+            message: error.message,
+            stack: undefined,
           },
-        ]
-      },
-      (graph): Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => {
-        return [
-          {
-            protocol: 'network',
-            command: 'status',
-            payload: {
-              graph: graph.id,
-              debug: graph.network.isDebugging,
-              running: graph.network.isRunning,
-              started: graph.network.hasStarted,
-              uptime: (new Date().valueOf() - new Date(graph.network.startTime).valueOf()) as Float,
-            },
+        },
+      ],
+      (graph): Array<StatusNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
+        {
+          protocol: 'network',
+          command: 'status',
+          payload: {
+            graph: graph.id,
+            debug: graph.network.isDebugging,
+            running: graph.network.isRunning,
+            started: graph.network.hasStarted,
+            uptime: (new Date().valueOf() - new Date(graph.network.startTime).valueOf()) as Float,
           },
-        ]
-      },
+        },
+      ],
     ),
     TE.fromTask,
   )
-}

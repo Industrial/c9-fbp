@@ -5,8 +5,8 @@ import { GetSourceComponentInputMessage } from '#/schemas/messages/component/inp
 
 export const getsource = (
   _message: GetSourceComponentInputMessage,
-): TE.TaskEither<Error, Array<SourceComponentOutputMessage | ErrorComponentOutputMessageInput>> => {
-  return TE.right([
+): TE.TaskEither<Error, Array<SourceComponentOutputMessage | ErrorComponentOutputMessageInput>> =>
+  TE.right([
     {
       protocol: 'component',
       command: 'error',
@@ -15,4 +15,3 @@ export const getsource = (
       },
     },
   ])
-}

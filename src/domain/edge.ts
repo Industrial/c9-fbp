@@ -21,22 +21,20 @@ export const create = (
   targetNode: Edge['tgt']['nodeId'],
   targetPort: Edge['tgt']['portId'],
   metadata: Edge['metadata'],
-): Edge => {
-  return {
-    src: {
-      nodeId: sourceNode,
-      portId: sourcePort,
-    },
-    tgt: {
-      nodeId: targetNode,
-      portId: targetPort,
-    },
-    metadata,
-  }
-}
+): Edge => ({
+  src: {
+    nodeId: sourceNode,
+    portId: sourcePort,
+  },
+  tgt: {
+    nodeId: targetNode,
+    portId: targetPort,
+  },
+  metadata,
+})
 
-export const serialize = (edge: Edge): EdgeSchema.Edge => {
-  const input: EdgeSchema.EdgeInput = {
+export const serialize = (edge: Edge): EdgeSchema.Edge =>
+  EdgeSchema.EdgeTranscoder.decode({
     src: {
       node: edge.src.nodeId,
       port: edge.src.portId,
@@ -46,24 +44,18 @@ export const serialize = (edge: Edge): EdgeSchema.Edge => {
       port: edge.tgt.portId,
     },
     metadata: edge.metadata,
-  }
+  })
 
-  return EdgeSchema.EdgeTranscoder.decode(input)
-}
-
-export const deserialize = (edge: EdgeSchema.Edge): Edge => {
-  return create(
+export const deserialize = (edge: EdgeSchema.Edge): Edge =>
+  create(
     edge.src.node,
     edge.src.port,
     edge.tgt.node,
     edge.tgt.port,
     edge.metadata ?? {},
   )
-}
 
-export const eqPortTarget = Eq.fromEquals<PortTarget>((a, b) => {
-  return a.nodeId === b.nodeId && a.portId === b.portId
-})
+export const eqPortTarget = Eq.fromEquals<PortTarget>((a, b) => a.nodeId === b.nodeId && a.portId === b.portId)
 
 export const eq: Eq.Eq<Edge> = pipe(
   Eq.tuple(eqPortTarget, eqPortTarget),

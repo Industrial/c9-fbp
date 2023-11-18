@@ -6,8 +6,8 @@ import { PersistNetworkInputMessage } from '#/schemas/messages/network/input/Per
 // TODO: What do I return?
 export const persist = (
   _message: PersistNetworkInputMessage,
-): TE.TaskEither<Error, Array<EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> => {
-  return TE.right([
+): TE.TaskEither<Error, Array<EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+  TE.right([
     {
       protocol: 'network',
       command: 'error',
@@ -18,4 +18,3 @@ export const persist = (
       },
     },
   ])
-}

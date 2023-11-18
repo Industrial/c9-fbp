@@ -5,8 +5,8 @@ import { RuntimeRuntimeOutputMessageInput } from '#/schemas/messages/runtime/out
 
 export const getruntime = (
   _message: GetRuntimeRuntimeInputMessage,
-): TE.TaskEither<Error, Array<RuntimeRuntimeOutputMessageInput | ErrorRuntimeOutputMessage>> => {
-  return TE.right([{
+): TE.TaskEither<Error, Array<RuntimeRuntimeOutputMessageInput | ErrorRuntimeOutputMessage>> =>
+  TE.right([{
     protocol: 'runtime',
     command: 'runtime',
     payload: {
@@ -31,4 +31,3 @@ export const getruntime = (
       // secret: 'derp',
     },
   }])
-}

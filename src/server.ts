@@ -12,8 +12,8 @@ import { TranscodeErrors } from 'schemata-ts/TranscodeError'
 import { drawErrorTree } from 'schemata-ts/Transcoder'
 import { pipe } from 'fp-ts/function.ts'
 
-export const logErrorGraph = (error: Error) => {
-  const errorMessage = Deno.inspect(error, {
+export const logErrorGraph = (error: Error) =>
+  console.error(Deno.inspect(error, {
     colors: true,
     breakLength: 80,
     iterableLimit: 100,
@@ -26,9 +26,7 @@ export const logErrorGraph = (error: Error) => {
     sorted: true,
     trailingComma: true,
     depth: Infinity,
-  })
-  console.error(errorMessage)
-}
+  }))
 
 export const getOutputMessagesForInputMessage = (
   inputMessage: InputMessage,
@@ -44,93 +42,64 @@ export const getOutputMessagesForInputMessage = (
 export const transcodeErrorGraph = (
   inputMessageInput: InputMessageInput | OutputMessageInput,
   errors: TranscodeErrors,
-) => {
-  return new Error(`${JSON.stringify(inputMessageInput)}: ${drawErrorTree(errors)}`)
-}
+) => new Error(`${JSON.stringify(inputMessageInput)}: ${drawErrorTree(errors)}`)
 
-export const decodeInputMessage = (inputMessageInput: InputMessageInput): E.Either<Error, InputMessage> => {
-  return pipe(
+export const decodeInputMessage = (inputMessageInput: InputMessageInput): E.Either<Error, InputMessage> =>
+  pipe(
     InputMessageTranscoder.decode(inputMessageInput) as E.Either<
       Const<TranscodeErrors, InputMessageInput>,
       InputMessage
     >,
-    E.mapLeft((errors) => {
-      return transcodeErrorGraph(inputMessageInput, errors)
-    }),
+    E.mapLeft((errors) => transcodeErrorGraph(inputMessageInput, errors)),
   )
-}
 
-export const parseInputMessage = (inputMessageString: string): TE.TaskEither<Error, InputMessage> => {
-  return pipe(
+export const parseInputMessage = (inputMessageString: string): TE.TaskEither<Error, InputMessage> =>
+  pipe(
     inputMessageString,
     json.parse,
-    E.map((json) => {
-      return json as InputMessageInput
-    }),
+    E.map((json) => json as InputMessageInput),
     E.map(decodeInputMessage),
     E.flatten,
     TE.fromEither,
   )
-}
 
-export const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.Either<Error, OutputMessage> => {
-  return pipe(
+export const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.Either<Error, OutputMessage> =>
+  pipe(
     OutputMessageTranscoder.decode(outputMessageInput) as E.Either<
       Const<TranscodeErrors, OutputMessageInput>,
       OutputMessage
     >,
-    E.mapLeft((errors) => {
-      return transcodeErrorGraph(outputMessageInput, errors)
-    }),
+    E.mapLeft((errors) => transcodeErrorGraph(outputMessageInput, errors)),
   )
-}
 
 export const decodeOutputMessages = (
   outputMessageInputs: Array<OutputMessageInput>,
-): TE.TaskEither<Error, Array<OutputMessage>> => {
-  return pipe(
+): TE.TaskEither<Error, Array<OutputMessage>> =>
+  pipe(
     outputMessageInputs,
     A.map(decodeOutputMessage),
     TE.fromEitherK(E.sequenceArray),
-    TE.map((outputMessages) => {
-      return outputMessages as Array<OutputMessage>
-    }),
+    TE.map((outputMessages) => outputMessages as Array<OutputMessage>),
   )
-}
 
-export const socketSend = (outputMessageString: string) => {
-  return (socket: WebSocket): IO.IO<void> => {
-    return () => {
-      socket.send(outputMessageString)
-    }
-  }
-}
+export const socketSend = (outputMessageString: string) => (socket: WebSocket): IO.IO<void> => () =>
+  socket.send(outputMessageString)
 
-export const sendOutputMessages = (socket: WebSocket) => {
-  return (outputMessages: ReadonlyArray<OutputMessage>): TE.TaskEither<Error, Array<void>> => {
-    return pipe(
+export const sendOutputMessages =
+  (socket: WebSocket) => (outputMessages: ReadonlyArray<OutputMessage>): TE.TaskEither<Error, Array<void>> =>
+    pipe(
       outputMessages,
       RA.map(json.stringify),
       E.sequenceArray,
-      TE.fromEitherK(E.map((outputMessageStrings) => {
-        return pipe(
+      TE.fromEitherK(E.map((outputMessageStrings) =>
+        pipe(
           outputMessageStrings,
-          RA.map((outputMessageString) => {
-            socketSend(outputMessageString)(socket)()
-          }),
+          RA.map((outputMessageString) => socketSend(outputMessageString)(socket)()),
         )
-      })),
-      TE.mapLeft((error) => {
-        return new Error('SendOutput', {
-          cause: error,
-        })
-      }),
-      TE.map((steps) => {
-        return steps as Array<void>
-      }),
+      )),
+      TE.mapLeft((error) => new Error('SendOutput', { cause: error })),
+      TE.map((steps) => steps as Array<void>),
     )
-  }
-}
 
 export const handleMessage = (message: string, socket: WebSocket): void => {
   pipe(
@@ -140,28 +109,23 @@ export const handleMessage = (message: string, socket: WebSocket): void => {
     TE.chain(decodeOutputMessages),
     TE.chain(sendOutputMessages(socket)),
     TE.match(
-      (error) => {
-        logErrorGraph(error as Error)
-      },
-      () => {
-      },
+      (error) => logErrorGraph(error as Error),
+      () => {},
     ),
   )()
 }
 
-export const handleError = (error: unknown): Response => {
-  return new Response((error as Error).message, {
+export const handleError = (error: unknown): Response =>
+  new Response((error as Error).message, {
     status: 500,
   })
-}
 
-export const handleListen = () => {
-  // console.log('listening?')
-}
+export const handleListen = () => {}
+// console.log('listening?')
 
 export const handleRequest = (req: Request): Response => {
   if (req.headers.get('upgrade') != 'websocket') {
-    return new Response(null, {
+    new Response(null, {
       status: 501,
     })
   }
@@ -176,19 +140,16 @@ export const handleRequest = (req: Request): Response => {
     // idleTimeout: 1,
   })
 
-  socket.addEventListener('message', (event: MessageEvent<string>) => {
-    handleMessage(event.data, socket)
-  })
+  socket.addEventListener('message', (event: MessageEvent<string>) => handleMessage(event.data, socket))
 
   return response
 }
 
-export const startServer = (hostname: string, port: number): Deno.Server => {
-  return Deno.serve({
+export const startServer = (hostname: string, port: number): Deno.Server =>
+  Deno.serve({
     hostname,
     port,
     onError: handleError,
     onListen: handleListen,
     reusePort: true,
   }, handleRequest)
-}
