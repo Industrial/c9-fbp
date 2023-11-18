@@ -7,19 +7,17 @@ import { pipe } from 'fp-ts/function.ts'
 
 let graphs: Record<GraphDomain.GraphID, GraphDomain.Graph> = {}
 
-export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.Graph> => {
-  return id
+export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.Graph> =>
+  id
     ? pipe(
       graphs,
       R.lookup(id),
-      TE.fromEitherK(E.fromOption(() => {
-        return new Error('GraphNotFound')
-      })),
+      TE.fromEitherK(E.fromOption(() => new Error('GraphNotFound'))),
     )
     : pipe(
       uuid.create(),
-      TE.chain((newId) => {
-        return set(
+      TE.chain((newId) =>
+        set(
           newId,
           GraphDomain.create(
             'main',
@@ -30,14 +28,16 @@ export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.
             true,
           ),
         )
-      }),
+      ),
     )
-}
 
-export const set = (id: GraphDomain.GraphID, graph: GraphDomain.Graph): TE.TaskEither<Error, GraphDomain.Graph> => {
-  graphs = pipe(
-    graphs,
-    R.upsertAt(id, graph),
+export const set = (id: GraphDomain.GraphID, graph: GraphDomain.Graph): TE.TaskEither<Error, GraphDomain.Graph> =>
+  pipe(
+    TE.fromIO(() => {
+      graphs = pipe(
+        graphs,
+        R.upsertAt(id, graph),
+      )
+    }),
+    TE.chain(() => get(id)),
   )
-  return get(id)
-}

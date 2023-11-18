@@ -4,46 +4,30 @@ import * as RA from 'fp-ts/ReadonlyArray.ts'
 import { pipe } from 'fp-ts/function.ts'
 import { Predicate } from 'fp-ts/Predicate.ts'
 
-export const findFirstByPredicate = <P>(predicate: Predicate<P>) => {
-  return (as: ReadonlyArray<P>): O.Option<P> => {
-    return pipe(
-      as,
-      RA.findFirst(predicate),
-    )
-  }
-}
+export const findFirstByPredicate = <P>(predicate: Predicate<P>) => (as: ReadonlyArray<P>): O.Option<P> =>
+  pipe(
+    as,
+    RA.findFirst(predicate),
+  )
 
-export const findFirstByPredicateE = <P>(predicate: Predicate<P>) => {
-  return (as: ReadonlyArray<P>): E.Either<Error, P> => {
-    return pipe(
-      as,
-      findFirstByPredicate(predicate),
-      E.fromOption(() => {
-        return new Error('NotFound')
-      }),
-    )
-  }
-}
+export const findFirstByPredicateE = <P>(predicate: Predicate<P>) => (as: ReadonlyArray<P>): E.Either<Error, P> =>
+  pipe(
+    as,
+    findFirstByPredicate(predicate),
+    E.fromOption(() => new Error('NotFound')),
+  )
 
-export const findFirstByProperty = <P, V>(propertyName: keyof P, propertyValue: V) => {
-  return (as: ReadonlyArray<P>): O.Option<P> => {
-    return pipe(
+export const findFirstByProperty =
+  <P, V>(propertyName: keyof P, propertyValue: V) => (as: ReadonlyArray<P>): O.Option<P> =>
+    pipe(
       as,
-      RA.findFirst((entry) => {
-        return entry[propertyName] === propertyValue
-      }),
+      RA.findFirst((entry) => entry[propertyName] === propertyValue),
     )
-  }
-}
 
-export const findFirstByPropertyE = <P, V>(propertyName: keyof P, propertyValue: V) => {
-  return (as: ReadonlyArray<P>): E.Either<Error, P> => {
-    return pipe(
+export const findFirstByPropertyE =
+  <P, V>(propertyName: keyof P, propertyValue: V) => (as: ReadonlyArray<P>): E.Either<Error, P> =>
+    pipe(
       as,
       findFirstByProperty(propertyName, propertyValue),
-      E.fromOption(() => {
-        return new Error('NotFound')
-      }),
+      E.fromOption(() => new Error('NotFound')),
     )
-  }
-}

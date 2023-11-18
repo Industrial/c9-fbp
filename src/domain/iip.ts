@@ -11,15 +11,13 @@ export type IIP = {
 export const create = (
   data: IIP['data'],
   metadata: IIP['metadata'],
-): IIP => {
-  return {
-    data,
-    metadata,
-  }
-}
+): IIP => ({
+  data,
+  metadata,
+})
 
-export const serialize = (iip: IIP, node: Node, port: Port): IIPSchema.IIP => {
-  const input: IIPSchema.IIPInput = {
+export const serialize = (iip: IIP, node: Node, port: Port): IIPSchema.IIP =>
+  IIPSchema.IIPTranscoder.decode({
     src: {
       data: iip.data as unknown as IIPSchema.IIP['src']['data'],
     },
@@ -28,18 +26,12 @@ export const serialize = (iip: IIP, node: Node, port: Port): IIPSchema.IIP => {
       port: port.id,
     },
     metadata: iip.metadata,
-  }
+  })
 
-  return IIPSchema.IIPTranscoder.decode(input)
-}
-
-export const deserialize = (iip: IIPSchema.IIP): IIP => {
-  return create(
+export const deserialize = (iip: IIPSchema.IIP): IIP =>
+  create(
     iip.src.data,
     iip.metadata,
   )
-}
 
-export const eq: Eq.Eq<IIP> = Eq.fromEquals((a, b) => {
-  return a.data === b.data
-})
+export const eq: Eq.Eq<IIP> = Eq.fromEquals((a, b) => a.data === b.data)

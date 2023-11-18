@@ -18,9 +18,7 @@ export type Port = {
 }
 
 const portTransformer: Transformer<Value, Value> = {
-  transform: async (chunk, controller) => {
-    controller.enqueue(chunk)
-  },
+  transform: async (chunk, controller) => controller.enqueue(chunk),
 }
 
 export const create = (
@@ -28,33 +26,28 @@ export const create = (
   publicName: Port['public'],
   metadata: Port['metadata'],
   iip?: Port['iip'],
-): Port => {
-  return {
-    id,
-    'public': publicName,
-    metadata,
-    iip,
-    stream: new TransformStream(portTransformer),
-  }
-}
+): Port => ({
+  id,
+  'public': publicName,
+  metadata,
+  iip,
+  stream: new TransformStream(portTransformer),
+})
 
-export const serialize = (port: Port, node: NodeDomain.Node, index: number): PortSchema.Port => {
-  const input: PortSchema.PortInput = {
+export const serialize = (port: Port, node: NodeDomain.Node, index: number): PortSchema.Port =>
+  PortSchema.PortTranscoder.decode({
     node: node.id,
     index: index as PortSchema.PortInput['index'],
     port: port.id,
     public: port.public,
     metadata: port.metadata,
-  }
-
-  return PortSchema.PortTranscoder.decode(input)
-}
+  })
 
 export const deserialize = (
   port: PortSchema.Port,
   iip?: IIPSchema.IIP,
-): Port => {
-  return iip
+): Port =>
+  iip
     ? create(
       port.port,
       port.public,
@@ -66,11 +59,8 @@ export const deserialize = (
       port.public,
       port.metadata ?? {},
     )
-}
 
-export const eq: Eq.Eq<Port> = Eq.fromEquals((a, b) => {
-  return a.id === b.id
-})
+export const eq: Eq.Eq<Port> = Eq.fromEquals((a, b) => a.id === b.id)
 
 export const containsIIP = (iip: IIPDomain.IIP) => (port: Port): E.Either<Error, Port> =>
   pipe(
@@ -92,8 +82,8 @@ export const withoutIIP = () => (port: Port): E.Either<Error, Port> =>
 
 // // https://streams.spec.whatwg.org/#rs-class
 // const portReadableStream = new ReadableStream({
-//   start: (controller) => {
-//     const push = () => {
+//   start: (controller) =>
+//     const push = () =>
 //       // const { done, value } = await someDataSource.read()
 //       const done = false
 //       const value = 123
@@ -110,6 +100,6 @@ export const withoutIIP = () => (port: Port): E.Either<Error, Port> =>
 
 // // https://streams.spec.whatwg.org/#ws-class
 // const portWritableStream = new WritableStream({
-//   write: async (chunk, controller) => {
+//   write: async (chunk, controller) =>
 //   },
 // })

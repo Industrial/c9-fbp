@@ -33,170 +33,120 @@ export const create = (
   inports: Node['inports'],
   outports: Node['outports'],
   metadata: Node['metadata'],
-): Node => {
-  return {
-    id,
-    component,
-    inports,
-    outports,
-    metadata,
-    state: {},
-  }
-}
+): Node => ({
+  id,
+  component,
+  inports,
+  outports,
+  metadata,
+  state: {},
+})
 
-export const serialize = (node: Node): NodeSchema.Node => {
-  const input: NodeSchema.NodeInput = {
+export const serialize = (node: Node): NodeSchema.Node =>
+  NodeSchema.NodeTranscoder.decode({
     id: node.id,
     component: node.component,
     metadata: node.metadata,
-  }
-
-  return NodeSchema.NodeTranscoder.decode(input)
-}
+  })
 
 export const deserialize = (
   node: NodeSchema.Node,
   graph: GraphSchema.Graph,
-): Node => {
-  const inports = pipe(
-    graph.inports,
-    RA.map((inport) => {
-      return pipe(
-        graph.iips,
-        RA.findFirst((iip) => {
-          return iip.tgt.node === node.id && iip.tgt.port === inport.port
-        }),
-        O.match(
-          () => {
-            return PortDomain.deserialize(inport)
-          },
-          (iip) => {
-            return PortDomain.deserialize(inport, iip)
-          },
-        ),
-      )
-    }),
-  )
-
-  const outports = pipe(
-    graph.outports,
-    RA.map((outport) => {
-      return pipe(
-        graph.iips,
-        RA.findFirst((iip) => {
-          return iip.tgt.node === node.id && iip.tgt.port === outport.port
-        }),
-        O.match(
-          () => {
-            return PortDomain.deserialize(outport)
-          },
-          (iip) => {
-            return PortDomain.deserialize(outport, iip)
-          },
-        ),
-      )
-    }),
-  )
-
-  return create(
+): Node =>
+  create(
     node.id,
     node.component,
-    inports,
-    outports,
+    pipe(
+      graph.inports,
+      RA.map((inport) =>
+        pipe(
+          graph.iips,
+          RA.findFirst((iip) => iip.tgt.node === node.id && iip.tgt.port === inport.port),
+          O.match(
+            () => PortDomain.deserialize(inport),
+            (iip) => PortDomain.deserialize(inport, iip),
+          ),
+        )
+      ),
+    ),
+    pipe(
+      graph.outports,
+      RA.map((outport) =>
+        pipe(
+          graph.iips,
+          RA.findFirst((iip) => iip.tgt.node === node.id && iip.tgt.port === outport.port),
+          O.match(
+            () => PortDomain.deserialize(outport),
+            (iip) => PortDomain.deserialize(outport, iip),
+          ),
+        )
+      ),
+    ),
     node.metadata,
   )
-}
 
-export const eq: Eq.Eq<Node> = Eq.fromEquals((a, b) => {
-  return a.id === b.id
-})
+export const eq: Eq.Eq<Node> = Eq.fromEquals((a, b) => a.id === b.id)
 
-export const findInportById = (id: PortDomain.Port['id']) => {
-  return (node: Node): E.Either<Error, PortDomain.Port> => {
-    return pipe(
+export const findInportById = (id: PortDomain.Port['id']) => (node: Node): E.Either<Error, PortDomain.Port> =>
+  pipe(
+    node.inports,
+    findFirstByPropertyE('id', id),
+    E.mapLeft(() => new Error('InportNotFound')),
+  )
+
+export const withoutInport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
+  E.right(create(
+    node.id,
+    node.component,
+    pipe(
       node.inports,
-      findFirstByPropertyE('id', id),
-      E.mapLeft(() => new Error('InportNotFound')),
-    )
-  }
-}
+      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
+    ),
+    node.outports,
+    node.metadata,
+  ))
 
-export const withoutInport = (port: PortDomain.Port) => {
-  return (node: Node): E.Either<Error, Node> => {
-    return E.right(create(
-      node.id,
-      node.component,
-      pipe(
-        node.inports,
-        RA.filter((entry) => {
-          return !PortDomain.eq.equals(entry, port)
-        }),
-      ),
-      node.outports,
-      node.metadata,
-    ))
-  }
-}
-
-export const withInport = (port: PortDomain.Port) => {
-  return (node: Node): E.Either<Error, Node> => {
-    return E.right(create(
-      node.id,
-      node.component,
-      pipe(
-        node.inports,
-        RA.filter((entry) => {
-          return !PortDomain.eq.equals(entry, port)
-        }),
-        RA.append(port),
-      ),
-      node.outports,
-      node.metadata,
-    ))
-  }
-}
-
-export const findOutportById = (id: PortDomain.Port['id']) => {
-  return (node: Node): E.Either<Error, PortDomain.Port> => {
-    return pipe(
-      node.outports,
-      findFirstByPropertyE('id', id),
-      E.mapLeft(() => new Error('OutportNotFound')),
-    )
-  }
-}
-
-export const withoutOutport = (port: PortDomain.Port) => {
-  return (node: Node): E.Either<Error, Node> => {
-    return E.right(create(
-      node.id,
-      node.component,
+export const withInport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
+  E.right(create(
+    node.id,
+    node.component,
+    pipe(
       node.inports,
-      pipe(
-        node.outports,
-        RA.filter((entry) => {
-          return !PortDomain.eq.equals(entry, port)
-        }),
-      ),
-      node.metadata,
-    ))
-  }
-}
+      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
+      RA.append(port),
+    ),
+    node.outports,
+    node.metadata,
+  ))
 
-export const withOutport = (port: PortDomain.Port) => {
-  return (node: Node): E.Either<Error, Node> => {
-    return E.right(create(
-      node.id,
-      node.component,
-      node.inports,
-      pipe(
-        node.outports,
-        RA.filter((entry) => {
-          return !PortDomain.eq.equals(entry, port)
-        }),
-        RA.append(port),
-      ),
-      node.metadata,
-    ))
-  }
-}
+export const findOutportById = (id: PortDomain.Port['id']) => (node: Node): E.Either<Error, PortDomain.Port> =>
+  pipe(
+    node.outports,
+    findFirstByPropertyE('id', id),
+    E.mapLeft(() => new Error('OutportNotFound')),
+  )
+
+export const withoutOutport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
+  E.right(create(
+    node.id,
+    node.component,
+    node.inports,
+    pipe(
+      node.outports,
+      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
+    ),
+    node.metadata,
+  ))
+
+export const withOutport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
+  E.right(create(
+    node.id,
+    node.component,
+    node.inports,
+    pipe(
+      node.outports,
+      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
+      RA.append(port),
+    ),
+    node.metadata,
+  ))

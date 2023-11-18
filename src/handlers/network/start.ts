@@ -9,51 +9,42 @@ import { pipe } from 'fp-ts/function.ts'
 
 export const start = (
   message: StartNetworkInputMessage,
-): TE.TaskEither<Error, Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> => {
-  return pipe(
+): TE.TaskEither<Error, Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+  pipe(
     graphs.get(message.payload.graph),
-    TE.chain((graph) => {
-      return pipe(
+    TE.chain((graph) =>
+      pipe(
         E.right(graph),
         E.chain(withNetworkStart()),
-        TE.fromEitherK(E.map((graph) => {
-          return graph
-        })),
+        TE.fromEitherK(E.map((graph) => graph)),
       )
-    }),
-    TE.chain((graph) => {
-      return graphs.set(graph.id, graph)
-    }),
+    ),
+    TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      (error): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => {
-        return [
-          {
-            protocol: 'network',
-            command: 'error',
-            payload: {
-              graph: message.payload.graph,
-              message: error.message,
-              stack: undefined,
-            },
+      (error): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
+        {
+          protocol: 'network',
+          command: 'error',
+          payload: {
+            graph: message.payload.graph,
+            message: error.message,
+            stack: undefined,
           },
-        ]
-      },
-      (graph): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => {
-        return [
-          {
-            protocol: 'network',
-            command: 'started',
-            payload: {
-              graph: graph.id,
-              debug: graph.network.isDebugging,
-              running: graph.network.isRunning,
-              started: graph.network.hasStarted,
-              time: graph.network.startTime,
-            },
+        },
+      ],
+      (graph): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
+        {
+          protocol: 'network',
+          command: 'started',
+          payload: {
+            graph: graph.id,
+            debug: graph.network.isDebugging,
+            running: graph.network.isRunning,
+            started: graph.network.hasStarted,
+            time: graph.network.startTime,
           },
-        ]
-      },
+        },
+      ],
     ),
     TE.fromTask,
   )
-}

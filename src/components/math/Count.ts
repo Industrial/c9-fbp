@@ -5,8 +5,5 @@ type ComponentInput = Record<string, Value>
 
 type ComponentOutput = Record<string, Value>
 
-export const Count = () => {
-  return (_input: ComponentInput): TE.TaskEither<Error, ComponentOutput> => {
-    return TE.left(new Error('NotImplemented'))
-  }
-}
+export const Count = () => (_input: ComponentInput): TE.TaskEither<Error, ComponentOutput> =>
+  TE.left(new Error('NotImplemented'))

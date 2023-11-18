@@ -5,6 +5,4 @@ import { PacketRuntimeOutputMessageInput } from '#/schemas/messages/runtime/outp
 
 export const packet = (
   _message: PacketRuntimeInputMessage,
-): TE.TaskEither<Error, Array<PacketRuntimeOutputMessageInput | ErrorRuntimeOutputMessageInput>> => {
-  return TE.right([])
-}
+): TE.TaskEither<Error, Array<PacketRuntimeOutputMessageInput | ErrorRuntimeOutputMessageInput>> => TE.right([])
