@@ -4,12 +4,15 @@ import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutp
 import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
 
 export const RemoveInportGraphOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['removeinport']>('removeinport'),
     payload: S.Struct({
       public: PortIDSchema,
+      // This breaks the spec, but I need it to select a node.
+      node: NodeIDSchema,
       graph: GraphIDSchema,
     }),
   })

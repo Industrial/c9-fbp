@@ -1,39 +1,13 @@
 import * as E from 'fp-ts/Either.ts'
+import * as GraphDomain from './domain/graph.ts'
 import * as R from 'fp-ts/Record.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as uuid from '#/uuid.ts'
-import { Graph } from '#/schemas/messages/shared/Graph.ts'
-import { GraphID } from '#/schemas/messages/shared/GraphID.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-let graphs: Record<GraphID, Graph> = {}
+let graphs: Record<GraphDomain.GraphID, GraphDomain.Graph> = {}
 
-// TODO: This is a factory function and duplication. This logic should be in one
-// place (src/domain/graph.ts).
-export const main = (): Graph => {
-  return {
-    id: 'main',
-    main: true,
-    name: 'main',
-    outports: [],
-    nodes: [],
-    inports: [],
-    iips: [],
-    groups: [],
-    edges: [],
-    library: undefined,
-    description: undefined,
-    icon: undefined,
-    network: {
-      isDebugging: false,
-      isRunning: true,
-      hasStarted: true,
-      startTime: new Date().toISOString(),
-    },
-  }
-}
-
-export const get = (id?: GraphID): TE.TaskEither<Error, Graph> => {
+export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.Graph> => {
   return id
     ? pipe(
       graphs,
@@ -45,12 +19,22 @@ export const get = (id?: GraphID): TE.TaskEither<Error, Graph> => {
     : pipe(
       uuid.create(),
       TE.chain((newId) => {
-        return set(newId, main())
+        return set(
+          newId,
+          GraphDomain.create(
+            'main',
+            'main',
+            [],
+            [],
+            [],
+            true,
+          ),
+        )
       }),
     )
 }
 
-export const set = (id: GraphID, graph: Graph): TE.TaskEither<Error, Graph> => {
+export const set = (id: GraphDomain.GraphID, graph: GraphDomain.Graph): TE.TaskEither<Error, GraphDomain.Graph> => {
   graphs = pipe(
     graphs,
     R.upsertAt(id, graph),

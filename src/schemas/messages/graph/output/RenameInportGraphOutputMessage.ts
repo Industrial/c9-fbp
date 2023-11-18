@@ -4,14 +4,16 @@ import { GraphOutputMessageBaseSchema } from '#/schemas/messages/graph/GraphOutp
 import { PortIDSchema } from '#/schemas/messages/shared/PortID.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
+import { NodeIDSchema } from '#/schemas/messages/shared/NodeID.ts'
 
 export const RenameInportGraphOutputMessageSchema = GraphOutputMessageBaseSchema
   .extend({
     command: S.Literal<['renameinport']>('renameinport'),
     payload: S.Struct({
+      graph: GraphIDSchema,
+      node: NodeIDSchema,
       from: PortIDSchema,
       to: PortIDSchema,
-      graph: GraphIDSchema,
     }),
   })
 

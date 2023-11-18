@@ -5,7 +5,7 @@ import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/outpu
 import { Float } from 'schemata-ts/float'
 import { StopNetworkInputMessage } from '#/schemas/messages/network/input/StopNetworkInputMessage.ts'
 import { StoppedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StoppedNetworkOutputMessage.ts'
-import { graphHasNetworkStarted, graphWithNetworkStop } from '#/domain/graph.ts'
+import { hasNetworkStarted, withNetworkStop } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const stop = (
@@ -16,8 +16,8 @@ export const stop = (
     TE.chain((graph) => {
       return pipe(
         E.right(graph),
-        E.chain(graphHasNetworkStarted()),
-        E.chain(graphWithNetworkStop()),
+        E.chain(hasNetworkStarted()),
+        E.chain(withNetworkStop()),
         TE.fromEitherK(E.map((graph) => {
           return graph
         })),

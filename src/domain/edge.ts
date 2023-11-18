@@ -1,12 +1,12 @@
 import * as EdgeSchema from '#/schemas/messages/shared/Edge.ts'
+import * as NodeDomain from '#/domain/node.ts'
+import * as PortDomain from '#/domain/port.ts'
 import * as Eq from 'fp-ts/Eq.ts'
-import { NodeID } from '#/domain1/node.ts'
-import { PortID } from '#/domain1/port.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export type PortTarget = {
-  nodeId: NodeID
-  portId: PortID
+  nodeId: NodeDomain.Node['id']
+  portId: PortDomain.Port['id']
 }
 
 export type Edge = {

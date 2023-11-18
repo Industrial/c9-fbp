@@ -1727,6 +1727,7 @@ describe('Runtime', () => {
               command: 'removeinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -1774,6 +1775,7 @@ describe('Runtime', () => {
               command: 'removeinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -1782,6 +1784,7 @@ describe('Runtime', () => {
               command: 'removeinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -1918,6 +1921,7 @@ describe('Runtime', () => {
               command: 'removeoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -1965,6 +1969,7 @@ describe('Runtime', () => {
               command: 'removeoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -1973,6 +1978,7 @@ describe('Runtime', () => {
               command: 'removeoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 public: 'someport',
               },
             }
@@ -2170,6 +2176,7 @@ describe('Runtime', () => {
               command: 'renameinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
@@ -2218,6 +2225,7 @@ describe('Runtime', () => {
               command: 'renameinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
@@ -2227,6 +2235,7 @@ describe('Runtime', () => {
               command: 'renameinport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
@@ -2367,6 +2376,7 @@ describe('Runtime', () => {
               command: 'renameoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
@@ -2415,6 +2425,7 @@ describe('Runtime', () => {
               command: 'renameoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
@@ -2424,6 +2435,7 @@ describe('Runtime', () => {
               command: 'renameoutport',
               payload: {
                 graph: 'foo',
+                node: 'somenode',
                 from: 'someport',
                 to: 'someotherport',
               },
