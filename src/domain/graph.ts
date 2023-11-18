@@ -1,21 +1,182 @@
 import * as E from 'fp-ts/Either.ts'
-import * as EdgeDomain from '#/domain1/edge.ts'
-import * as GraphDomain from '#/domain1/graph.ts'
+import * as EdgeDomain from './edge.ts'
+import * as Eq from 'fp-ts/Eq.ts'
+import * as GraphDomain from './graph.ts'
+import * as GraphSchema from '#/schemas/messages/shared/Graph.ts'
+import * as GroupDomain from './group.ts'
+import * as IIPDomain from './iip.ts'
+import * as NodeDomain from './node.ts'
+import * as PortDomain from './port.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as S from 'fp-ts/string.ts'
-import * as groupDomain from '#/domain/group.ts'
-import * as iipDomain from '#/domain/iip.ts'
-import * as nodeDomain from '#/domain/node.ts'
-import * as portDomain from '#/domain/port.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
-import { Graph } from '#/schemas/messages/shared/Graph.ts'
-import { Group } from '#/schemas/messages/shared/Group.ts'
-import { IIP } from '#/schemas/messages/shared/IIP.ts'
-import { Node } from '#/schemas/messages/shared/Node.ts'
-import { Port } from '#/schemas/messages/shared/Port.ts'
 import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
+import { Value } from '#/schemas/messages/shared/Value.ts'
 import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
+
+export type GraphID = string
+
+export type Graph = {
+  id: GraphID
+  main: boolean
+  name: string
+  nodes: ReadonlyArray<NodeDomain.Node>
+  edges: ReadonlyArray<EdgeDomain.Edge>
+  groups: ReadonlyArray<GroupDomain.Group>
+  library?: string
+  description?: string
+  icon?: string
+  network: {
+    isDebugging: boolean
+    isRunning: boolean
+    hasStarted: boolean
+    startTime: string
+  }
+}
+
+export const create = (
+  id: Graph['id'],
+  name: Graph['name'],
+  nodes: Graph['nodes'],
+  edges: Graph['edges'],
+  groups: Graph['groups'],
+  main: Graph['main'] = false,
+  library?: Graph['library'],
+  description?: Graph['description'],
+  icon?: Graph['icon'],
+): Graph => {
+  return {
+    id,
+    main,
+    name,
+    nodes,
+    edges,
+    groups,
+    library,
+    description,
+    icon,
+    network: {
+      isDebugging: false,
+      isRunning: false,
+      hasStarted: false,
+      startTime: new Date().toISOString(),
+    },
+  }
+}
+
+export const serialize = (graph: Graph): GraphSchema.Graph => {
+  const inports: GraphSchema.Graph['inports'] = pipe(
+    graph.nodes,
+    RA.map((node) => {
+      return pipe(
+        node.inports,
+        RA.mapWithIndex((index, port) => {
+          return PortDomain.serialize(port, node, index)
+        }),
+      )
+    }),
+    RA.flatten,
+  )
+
+  const outports: GraphSchema.Graph['outports'] = pipe(
+    graph.nodes,
+    RA.map((node) => {
+      return pipe(
+        node.outports,
+        RA.mapWithIndex((index, port) => {
+          return PortDomain.serialize(port, node, index)
+        }),
+      )
+    }),
+    RA.flatten,
+  )
+
+  const iips: GraphSchema.Graph['iips'] = pipe(
+    graph.nodes,
+    RA.map((node) => {
+      return pipe(
+        node.inports,
+        RA.filter((port) => {
+          return Boolean(port.iip)
+        }),
+        RA.map((port) => {
+          return IIPDomain.serialize(
+            {
+              data: port.iip!.data as unknown as Value,
+              metadata: port.iip!.metadata,
+            },
+            node,
+            port,
+          )
+        }),
+      )
+    }),
+    RA.flatten,
+  )
+
+  const input: GraphSchema.GraphInput = {
+    id: graph.id,
+    main: graph.main,
+    name: graph.name,
+    nodes: graph.nodes,
+    edges: pipe(graph.edges, RA.map(EdgeDomain.serialize)),
+    groups: pipe(graph.groups, RA.map(GroupDomain.serialize)),
+    library: graph.library,
+    description: graph.description,
+    icon: graph.icon,
+    network: {
+      isDebugging: graph.network.isDebugging,
+      isRunning: graph.network.isRunning,
+      hasStarted: graph.network.hasStarted,
+      startTime: graph.network.startTime,
+    },
+    inports,
+    outports,
+    iips,
+  }
+
+  return GraphSchema.GraphTranscoder.decode(input)
+}
+
+export const deserialize = (graph: GraphSchema.Graph): Graph => {
+  const nodes = pipe(
+    graph.nodes,
+    RA.map((node) => {
+      return NodeDomain.deserialize(node, graph)
+    }),
+  )
+
+  const edges = pipe(
+    graph.edges,
+    RA.map((edge) => {
+      return EdgeDomain.deserialize(edge)
+    }),
+  )
+
+  const groups = pipe(
+    graph.groups,
+    RA.map((group) => {
+      return GroupDomain.deserialize(group)
+    }),
+  )
+
+  return create(
+    graph.id,
+    graph.name,
+    nodes,
+    edges,
+    groups,
+    graph.main,
+    graph.library,
+    graph.description,
+    graph.icon,
+  )
+}
+
+export const eq: Eq.Eq<Graph> = Eq.fromEquals((a, b) => {
+  return a.id === b.id
+})
 
 export const toGraphErrorGraphInput = <T>(error: Error): ReadonlyArray<T | ErrorGraphOutputMessageInput> => {
   return [
@@ -29,20 +190,8 @@ export const toGraphErrorGraphInput = <T>(error: Error): ReadonlyArray<T | Error
   ]
 }
 
-export const areGraphsEqual = (a: Graph) => {
-  return (b: Graph) => {
-    return a.id === b.id
-  }
-}
-
-export const areGraphsNotEqual = (a: Graph) => {
-  return (b: Graph) => {
-    return !areGraphsEqual(a)(b)
-  }
-}
-
-export const graphFindNodeById = (id: Node['id']) => {
-  return (graph: Graph): E.Either<Error, Node> => {
+export const findNodeById = (id: NodeDomain.Node['id']) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, NodeDomain.Node> => {
     return pipe(
       graph.nodes,
       findFirstByPropertyE('id', id),
@@ -53,8 +202,8 @@ export const graphFindNodeById = (id: Node['id']) => {
   }
 }
 
-export const graphContainsNodeById = (id: Node['id']) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const containsNodeById = (id: NodeDomain.Node['id']) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return pipe(
       graph.nodes,
       findFirstByPropertyE('id', id),
@@ -68,8 +217,8 @@ export const graphContainsNodeById = (id: Node['id']) => {
   }
 }
 
-export const graphContainsAllNodesById = (ids: ReadonlyArray<Node['id']>) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const containsAllNodesById = (ids: ReadonlyArray<NodeDomain.Node['id']>) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return pipe(
       graph,
       E.fromPredicate(
@@ -96,47 +245,36 @@ export const graphContainsAllNodesById = (ids: ReadonlyArray<Node['id']>) => {
   }
 }
 
-export const graphContainsNode = (node: Node) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.nodes,
-      findFirstByPredicateE(nodeDomain.areNodesNotEqual(node)),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('NodeNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutNode = (node: Node) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const withoutNode = (node: NodeDomain.Node) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       nodes: pipe(
         graph.nodes,
-        RA.filter(nodeDomain.areNodesNotEqual(node)),
+        RA.filter((entry) => {
+          return NodeDomain.eq.equals(entry, node)
+        }),
       ),
     })
   }
 }
 
-export const graphWithNode = (node: Node) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const withNode = (node: NodeDomain.Node) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       nodes: pipe(
         graph.nodes,
-        RA.filter(nodeDomain.areNodesNotEqual(node)),
+        RA.filter((entry) => {
+          return NodeDomain.eq.equals(entry, node)
+        }),
         RA.append(node),
       ),
     })
   }
 }
 
-export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
+export const findEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
   return (graph: GraphDomain.Graph): E.Either<Error, EdgeDomain.Edge> => {
     return pipe(
       graph.edges,
@@ -163,24 +301,7 @@ export const graphFindEdgeByTargetNode = (src: TargetNode, tgt: TargetNode) => {
   }
 }
 
-export const graphContainsEdge = (edge: EdgeDomain.Edge) => {
-  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
-    return pipe(
-      graph.edges,
-      findFirstByPredicateE((entry) => {
-        return EdgeDomain.eq.equals(edge, entry)
-      }),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('EdgeNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutEdge = (edge: EdgeDomain.Edge) => {
+export const withoutEdge = (edge: EdgeDomain.Edge) => {
   return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
@@ -194,7 +315,7 @@ export const graphWithoutEdge = (edge: EdgeDomain.Edge) => {
   }
 }
 
-export const graphWithEdge = (edge: EdgeDomain.Edge) => {
+export const withEdge = (edge: EdgeDomain.Edge) => {
   return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
@@ -209,8 +330,8 @@ export const graphWithEdge = (edge: EdgeDomain.Edge) => {
   }
 }
 
-export const graphFindGroupByName = (name: Group['name']) => {
-  return (graph: Graph): E.Either<Error, Group> => {
+export const findGroupByName = (name: GroupDomain.Group['name']) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GroupDomain.Group> => {
     return pipe(
       graph.groups,
       findFirstByPropertyE('name', name),
@@ -221,229 +342,192 @@ export const graphFindGroupByName = (name: Group['name']) => {
   }
 }
 
-export const graphContainsGroup = (group: Group) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.groups,
-      findFirstByPredicateE(groupDomain.areGroupsNotEqual(group)),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('GroupNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutGroup = (group: Group) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const withoutGroup = (group: GroupDomain.Group) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       groups: pipe(
         graph.groups,
-        RA.filter(groupDomain.areGroupsNotEqual(group)),
+        RA.filter((entry) => {
+          return !GroupDomain.eq.equals(entry, group)
+        }),
       ),
     })
   }
 }
 
-export const graphWithGroup = (group: Group) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
+export const withGroup = (group: GroupDomain.Group) => {
+  return (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> => {
     return E.right({
       ...graph,
       groups: pipe(
         graph.groups,
-        RA.filter(groupDomain.areGroupsNotEqual(group)),
+        RA.filter((entry) => {
+          return !GroupDomain.eq.equals(entry, group)
+        }),
         RA.append(group),
       ),
     })
   }
 }
 
-export const graphContainsIIP = (iip: IIP) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.iips,
-      findFirstByPredicateE(iipDomain.areIIPsEqual(iip)),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('IIPNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutIIP = (iip: IIP) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
-      ...graph,
-      iips: pipe(
-        graph.iips,
-        RA.filter(iipDomain.areIIPsNotEqual(iip)),
+export const containsIIPByNodeIdAndPortId =
+  (iip: IIPDomain.IIP, nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.findInportById(portId),
+          E.chain((port) =>
+            pipe(
+              port,
+              PortDomain.containsIIP(iip),
+              E.map(() => graph),
+            )
+          ),
+          E.map(() => graph),
+        )
       ),
-    })
-  }
-}
+    )
 
-export const graphWithIIP = (iip: IIP) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return E.right({
-      ...graph,
-      iips: pipe(
-        graph.iips,
-        RA.filter(iipDomain.areIIPsNotEqual(iip)),
-        RA.append(iip),
+export const withIIPByNodeIdAndPortId =
+  (iip: IIPDomain.IIP, nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.findInportById(portId),
+          E.chain((port) =>
+            pipe(
+              port,
+              PortDomain.withIIP(iip),
+              E.map(() => graph),
+            )
+          ),
+          E.map(() => graph),
+        )
       ),
-    })
-  }
-}
-
-export const graphFindInportByPublic = (name: Port['public']) => {
-  return (graph: Graph): E.Either<Error, Port> => {
-    return pipe(
-      graph.inports,
-      findFirstByPropertyE('public', name),
-      E.mapLeft(() => {
-        return new Error('InportNotFound')
-      }),
     )
-  }
-}
 
-export const graphContainsInportByPublic = (name: Port['public']) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.inports,
-      findFirstByPropertyE('public', name),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('InportNotFound')
-      }),
-    )
-  }
-}
-
-export const graphContainsInport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.inports,
-      findFirstByPredicateE(portDomain.arePortsNotEqual(port)),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('InportNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutInport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    const newGraph: Graph = {
-      ...graph,
-      inports: pipe(
-        graph.inports,
-        RA.filter(portDomain.arePortsNotEqual(port)),
+export const withoutIIPByNodeIdAndPortId =
+  (nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.findInportById(portId),
+          E.chain((port) =>
+            pipe(
+              port,
+              PortDomain.withoutIIP(),
+              E.map(() => graph),
+            )
+          ),
+          E.map(() => graph),
+        )
       ),
-    }
-
-    return E.right(newGraph)
-  }
-}
-
-export const graphWithInport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    const newGraph: Graph = {
-      ...graph,
-      inports: pipe(
-        graph.inports,
-        RA.filter(portDomain.arePortsNotEqual(port)),
-        RA.append(port),
-      ),
-    }
-
-    return E.right(newGraph)
-  }
-}
-
-export const graphFindOutportByPublic = (name: Port['public']) => {
-  return (graph: Graph): E.Either<Error, Port> => {
-    return pipe(
-      graph.outports,
-      findFirstByPropertyE('public', name),
-      E.mapLeft(() => {
-        return new Error('OutportNotFound')
-      }),
     )
-  }
-}
 
-export const graphContainsOutportByPublic = (name: Port['public']) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.outports,
-      findFirstByPropertyE('public', name),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('OutportNotFound')
-      }),
-    )
-  }
-}
-
-export const graphContainsOutport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    return pipe(
-      graph.outports,
-      findFirstByPredicateE(portDomain.arePortsNotEqual(port)),
-      E.map(() => {
-        return graph
-      }),
-      E.mapLeft(() => {
-        return new Error('OutportNotFound')
-      }),
-    )
-  }
-}
-
-export const graphWithoutOutport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    const newGraph: Graph = {
-      ...graph,
-      outports: pipe(
-        graph.outports,
-        RA.filter(portDomain.arePortsNotEqual(port)),
+export const containsInportByNodeIdAndPortId =
+  (nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.findInportById(portId),
+          E.map(() => graph),
+        )
       ),
-    }
+    )
 
-    return E.right(newGraph)
-  }
-}
-
-export const graphWithOutport = (port: Port) => {
-  return (graph: Graph): E.Either<Error, Graph> => {
-    const newGraph: Graph = {
-      ...graph,
-      outports: pipe(
-        graph.outports,
-        RA.filter(portDomain.arePortsNotEqual(port)),
-        RA.append(port),
+export const withInportByNodeId =
+  (port: PortDomain.Port, nodeId: NodeDomain.Node['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.withInport(port),
+          E.map(() => graph),
+        )
       ),
-    }
+    )
 
-    return E.right(newGraph)
-  }
-}
+export const withoutInportByNodeId =
+  (port: PortDomain.Port, nodeId: NodeDomain.Node['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.withoutInport(port),
+          E.map(() => graph),
+        )
+      ),
+    )
 
-export const graphHasNetworkStarted = () => {
+export const containsOutportByNodeIdAndPortId =
+  (nodeId: NodeDomain.Node['id'], portId: PortDomain.Port['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.findOutportById(portId),
+          E.map(() => graph),
+        )
+      ),
+    )
+
+export const withOutportByNodeId =
+  (port: PortDomain.Port, nodeId: NodeDomain.Node['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.withInport(port),
+          E.map(() => graph),
+        )
+      ),
+    )
+
+export const withoutOutportByNodeId =
+  (port: PortDomain.Port, nodeId: NodeDomain.Node['id']) =>
+  (graph: GraphDomain.Graph): E.Either<Error, GraphDomain.Graph> =>
+    pipe(
+      graph,
+      GraphDomain.findNodeById(nodeId),
+      E.chain((node) =>
+        pipe(
+          node,
+          NodeDomain.withoutInport(port),
+          E.map(() => graph),
+        )
+      ),
+    )
+
+export const hasNetworkStarted = () => {
   return (graph: Graph): E.Either<Error, Graph> => {
     return pipe(
       graph.network.hasStarted,
@@ -462,7 +546,7 @@ export const graphHasNetworkStarted = () => {
   }
 }
 
-export const graphWithNetworkStart = () => {
+export const withNetworkStart = () => {
   return (graph: Graph): E.Either<Error, Graph> => {
     const newGraph: Graph = {
       ...graph,
@@ -478,7 +562,7 @@ export const graphWithNetworkStart = () => {
   }
 }
 
-export const graphWithNetworkStop = () => {
+export const withNetworkStop = () => {
   return (graph: Graph): E.Either<Error, Graph> => {
     const newGraph: Graph = {
       ...graph,

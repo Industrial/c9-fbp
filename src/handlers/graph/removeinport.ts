@@ -1,47 +1,44 @@
 import * as E from 'fp-ts/Either.ts'
+import * as GraphDomain from '#/domain/graph.ts'
+import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { RemoveInportGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInportGraphInputMessage.ts'
 import { RemoveInportGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInportGraphOutputMessage.ts'
-import { graphFindInportByPublic, graphWithoutInport, toGraphErrorGraphInput } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const removeinport = (
   message: RemoveInportGraphInputMessage,
-): TE.TaskEither<Error, Array<RemoveInportGraphOutputMessageInput | ErrorGraphOutputMessageInput>> => {
-  return pipe(
+): TE.TaskEither<Error, Array<RemoveInportGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+  pipe(
     graphs.get(message.payload.graph),
-    TE.chain((graph) => {
-      return pipe(
+    TE.chain((graph) =>
+      pipe(
         E.right(graph),
-        E.chain(graphFindInportByPublic(message.payload.public)),
-        TE.fromEitherK(E.chain((inport) => {
-          return pipe(
-            graph,
-            graphWithoutInport(inport),
-          )
-        })),
+        E.chain(
+          GraphDomain.withoutInportByNodeId(
+            PortDomain.create(message.payload.public, message.payload.public, {}),
+            message.payload.public,
+          ),
+        ),
+        TE.fromEitherK(E.map((graph) => graph)),
       )
-    }),
-    TE.chain((graph) => {
-      return graphs.set(graph.id, graph)
-    }),
+    ),
+    TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      toGraphErrorGraphInput,
-      (graph): Array<RemoveInportGraphOutputMessageInput | ErrorGraphOutputMessageInput> => {
-        return [
-          {
-            protocol: 'graph',
-            command: 'removeinport',
-            payload: {
-              graph: graph.id,
-              public: message.payload.public,
-            },
+      GraphDomain.toGraphErrorGraphInput,
+      (graph): Array<RemoveInportGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
+        {
+          protocol: 'graph',
+          command: 'removeinport',
+          payload: {
+            graph: graph.id,
+            node: message.payload.node,
+            public: message.payload.public,
           },
-        ]
-      },
+        },
+      ],
     ),
     TE.fromTask,
   )
-}

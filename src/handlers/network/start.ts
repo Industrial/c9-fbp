@@ -4,7 +4,7 @@ import * as graphs from '#/graphs.ts'
 import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/output/ErrorNetworkOutputMessage.ts'
 import { StartNetworkInputMessage } from '#/schemas/messages/network/input/StartNetworkInputMessage.ts'
 import { StartedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StartedNetworkOutputMessage.ts'
-import { graphWithNetworkStart } from '#/domain/graph.ts'
+import { withNetworkStart } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
 
 export const start = (
@@ -15,7 +15,7 @@ export const start = (
     TE.chain((graph) => {
       return pipe(
         E.right(graph),
-        E.chain(graphWithNetworkStart()),
+        E.chain(withNetworkStart()),
         TE.fromEitherK(E.map((graph) => {
           return graph
         })),
