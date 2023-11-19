@@ -1,12 +1,8 @@
 import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
-// import * as GraphSchema from '#/schemas/messages/shared/Graph.ts'
 import * as IO from 'fp-ts/IO.ts'
-// import * as NodeSchema from '#/schemas/messages/shared/Node.ts'
-// import * as O from 'fp-ts/Option.ts'
-import * as PortDomain from './port.ts'
+import * as PortDomain from '#/domain/port.ts'
 import * as RA from 'fp-ts/ReadonlyArray.ts'
-import { Port } from './port.ts'
 import { pipe } from 'fp-ts/function.ts'
 import { findFirstByPropertyE } from '#/helpers.ts'
 
@@ -16,8 +12,8 @@ export type Node = {
   id: string
   component: string
   metadata: Record<string, unknown>
-  inports: ReadonlyArray<Port>
-  outports: ReadonlyArray<Port>
+  inports: ReadonlyArray<PortDomain.Port>
+  outports: ReadonlyArray<PortDomain.Port>
 
   // The current state of the node logic. In here, you can buffer messages of
   // inports if the node requires multiple messages from the same port, or keep

@@ -1,9 +1,6 @@
 import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
 import * as IIPDomain from '#/domain/iip.ts'
-// import * as IIPSchema from '#/schemas/messages/shared/IIP.ts'
-// import * as NodeDomain from '#/domain/node.ts'
-// import * as PortSchema from '#/schemas/messages/shared/Port.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
 import { pipe } from 'fp-ts/function.ts'
 
