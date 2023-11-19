@@ -1,5 +1,5 @@
 import * as E from 'fp-ts/Either.ts'
-import * as GraphDomain from './domain/graph.ts'
+import * as GraphDomain from '#/domain/graph.ts'
 import * as R from 'fp-ts/Record.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as uuid from '#/uuid.ts'
