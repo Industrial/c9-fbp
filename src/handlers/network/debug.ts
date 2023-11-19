@@ -7,7 +7,7 @@ import { MessageHandler } from '#/handlers/MessageHandler.ts'
 export const debug: MessageHandler<
   DebugNetworkInputMessage,
   EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput
-> = (send) => (message) =>
+> = (send) => (_message) =>
   T.fromIO(() => {
     send({
       protocol: 'network',

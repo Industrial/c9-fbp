@@ -7,7 +7,7 @@ import { SourceComponentOutputMessage } from '#/schemas/messages/component/outpu
 export const getsource: MessageHandler<
   GetSourceComponentInputMessage,
   SourceComponentOutputMessage | ErrorComponentOutputMessageInput
-> = (send) => (message) =>
+> = (send) => (_message) =>
   T.fromIO(() => {
     send({
       protocol: 'component',
