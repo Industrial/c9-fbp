@@ -7,7 +7,7 @@ import { RuntimeRuntimeOutputMessageInput } from '#/schemas/messages/runtime/out
 export const getruntime: MessageHandler<
   GetRuntimeRuntimeInputMessage,
   RuntimeRuntimeOutputMessageInput | ErrorRuntimeOutputMessage
-> = (send) => (message) =>
+> = (send) => (_message) =>
   T.fromIO(() => {
     send({
       protocol: 'runtime',

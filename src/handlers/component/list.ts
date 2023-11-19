@@ -7,7 +7,7 @@ import { MessageHandler } from '#/handlers/MessageHandler.ts'
 export const list: MessageHandler<
   GetSourceComponentInputMessage,
   ComponentComponentOutputMessageInput | ErrorComponentOutputMessageInput
-> = (send) => (message) =>
+> = (send) => (_message) =>
   T.fromIO(() => {
     send({
       protocol: 'component',

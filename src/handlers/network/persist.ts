@@ -8,7 +8,7 @@ import { PersistNetworkInputMessage } from '#/schemas/messages/network/input/Per
 export const persist: MessageHandler<
   PersistNetworkInputMessage,
   EdgesNetworkOutputMessageInput | ErrorNetworkOutputMessageInput
-> = (send) => (message) =>
+> = (send) => (_message) =>
   T.fromIO(() => {
     send({
       protocol: 'network',
