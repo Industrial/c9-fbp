@@ -6,10 +6,12 @@ import { StartNetworkInputMessage } from '#/schemas/messages/network/input/Start
 import { StartedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StartedNetworkOutputMessage.ts'
 import { withNetworkStart } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const start = (
-  message: StartNetworkInputMessage,
-): TE.TaskEither<Error, Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+export const start: MessageHandler<
+  StartNetworkInputMessage,
+  StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -21,8 +23,8 @@ export const start = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      (error): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
-        {
+      (error) => {
+        send({
           protocol: 'network',
           command: 'error',
           payload: {
@@ -30,10 +32,10 @@ export const start = (
             message: error.message,
             stack: undefined,
           },
-        },
-      ],
-      (graph): Array<StartedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
-        {
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'network',
           command: 'started',
           payload: {
@@ -43,8 +45,7 @@ export const start = (
             started: graph.network.hasStarted,
             time: graph.network.startTime,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

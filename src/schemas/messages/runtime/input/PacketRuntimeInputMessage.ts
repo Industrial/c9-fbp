@@ -18,9 +18,9 @@ export const PacketRuntimeInputMessageSchema = RuntimeInputMessageBaseSchema.int
   }),
 }))
 
-export type PacketRuntimeInputMessageInput = S.InputOf<typeof PacketEventSchema>
+export type PacketRuntimeInputMessageInput = S.InputOf<typeof PacketRuntimeInputMessageSchema>
 
-export type PacketRuntimeInputMessage = S.OutputOf<typeof PacketEventSchema>
+export type PacketRuntimeInputMessage = S.OutputOf<typeof PacketRuntimeInputMessageSchema>
 
 export const PacketRuntimeInputMessageTranscoder = deriveTranscoder(PacketRuntimeInputMessageSchema)
 

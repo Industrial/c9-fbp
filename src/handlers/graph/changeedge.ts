@@ -6,10 +6,12 @@ import { ChangeEdgeGraphInputMessage } from '#/schemas/messages/graph/input/Chan
 import { ChangeEdgeGraphOutputMessageInput } from '#/schemas/messages/graph/output/ChangeEdgeGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const changeedge = (
-  message: ChangeEdgeGraphInputMessage,
-): TE.TaskEither<Error, Array<ChangeEdgeGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const changeedge: MessageHandler<
+  ChangeEdgeGraphInputMessage,
+  ChangeEdgeGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -36,9 +38,17 @@ export const changeedge = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<ChangeEdgeGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'changeedge',
           payload: {
@@ -47,8 +57,7 @@ export const changeedge = (
             tgt: message.payload.tgt,
             metadata: message.payload.metadata,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

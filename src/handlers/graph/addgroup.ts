@@ -6,11 +6,13 @@ import * as graphs from '#/graphs.ts'
 import { AddGroupGraphInputMessage } from '#/schemas/messages/graph/input/AddGroupGraphInputMessage.ts'
 import { AddGroupGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddGroupGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-export const addgroup = (
-  message: AddGroupGraphInputMessage,
-): TE.TaskEither<Error, Array<AddGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const addgroup: MessageHandler<
+  AddGroupGraphInputMessage,
+  AddGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -27,9 +29,17 @@ export const addgroup = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<AddGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'addgroup',
           payload: {
@@ -38,8 +48,7 @@ export const addgroup = (
             name: message.payload.name,
             nodes: message.payload.nodes,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

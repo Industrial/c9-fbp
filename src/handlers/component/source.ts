@@ -1,17 +1,19 @@
-import * as TE from 'fp-ts/TaskEither.ts'
+import * as T from 'fp-ts/Task.ts'
+import { ErrorComponentOutputMessageInput } from '#/schemas/messages/component/output/ErrorComponentOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { SourceComponentInputMessage } from '#/schemas/messages/component/input/SourceComponentInputMessage.ts'
 import { SourceComponentOutputMessage } from '#/schemas/messages/component/output/SourceComponentOutputMessage.ts'
-import { ErrorComponentOutputMessageInput } from '#/schemas/messages/component/output/ErrorComponentOutputMessage.ts'
 
-export const source = (
-  _message: SourceComponentInputMessage,
-): TE.TaskEither<Error, Array<SourceComponentOutputMessage | ErrorComponentOutputMessageInput>> =>
-  TE.right([
-    {
+export const source: MessageHandler<
+  SourceComponentInputMessage,
+  SourceComponentOutputMessage | ErrorComponentOutputMessageInput
+> = (send) => (message) =>
+  T.fromIO(() => {
+    send({
       protocol: 'component',
       command: 'error',
       payload: {
         message: 'foo',
       },
-    },
-  ])
+    })()
+  })

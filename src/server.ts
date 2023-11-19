@@ -1,18 +1,16 @@
-import * as A from 'fp-ts/Array.ts'
 import * as E from 'fp-ts/Either.ts'
 import * as IO from 'fp-ts/IO.ts'
-import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
-import * as handlers from '#/handlers/mod.ts'
 import * as json from 'fp-ts/Json.ts'
 import { Const } from 'fp-ts/Const.ts'
 import { InputMessage, InputMessageInput, InputMessageTranscoder } from '#/schemas/messages/InputMessage.ts'
 import { OutputMessage, OutputMessageInput, OutputMessageTranscoder } from '#/schemas/messages/OutputMessage.ts'
 import { TranscodeErrors } from 'schemata-ts/TranscodeError'
 import { drawErrorTree } from 'schemata-ts/Transcoder'
-import { pipe } from 'fp-ts/function.ts'
+import { getHandlerByInputMessage } from '#/handlers.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
-export const logErrorGraph = (error: Error) =>
+export const logErrorGraph = (error: Error): IO.IO<void> => () =>
   console.error(Deno.inspect(error, {
     colors: true,
     breakLength: 80,
@@ -28,17 +26,6 @@ export const logErrorGraph = (error: Error) =>
     depth: Infinity,
   }))
 
-export const getOutputMessagesForInputMessage = (
-  inputMessage: InputMessage,
-): TE.TaskEither<Error, Array<OutputMessageInput>> => {
-  const protocolHandlers = handlers[inputMessage.protocol as keyof typeof handlers]
-  const handler = protocolHandlers[inputMessage.command as keyof typeof protocolHandlers] as (
-    input: InputMessage,
-  ) => TE.TaskEither<Error, Array<OutputMessageInput>>
-  const outputMessageInputs = handler(inputMessage)
-  return outputMessageInputs
-}
-
 export const transcodeErrorGraph = (
   inputMessageInput: InputMessageInput | OutputMessageInput,
   errors: TranscodeErrors,
@@ -53,14 +40,13 @@ export const decodeInputMessage = (inputMessageInput: InputMessageInput): E.Eith
     E.mapLeft((errors) => transcodeErrorGraph(inputMessageInput, errors)),
   )
 
-export const parseInputMessage = (inputMessageString: string): TE.TaskEither<Error, InputMessage> =>
+export const parseInputMessage = (inputMessageString: string): E.Either<Error, InputMessage> =>
   pipe(
     inputMessageString,
     json.parse,
     E.map((json) => json as InputMessageInput),
-    E.map(decodeInputMessage),
-    E.flatten,
-    TE.fromEither,
+    E.mapLeft((e) => new Error(String(e))),
+    E.chain(decodeInputMessage),
   )
 
 export const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.Either<Error, OutputMessage> =>
@@ -72,44 +58,39 @@ export const decodeOutputMessage = (outputMessageInput: OutputMessageInput): E.E
     E.mapLeft((errors) => transcodeErrorGraph(outputMessageInput, errors)),
   )
 
-export const decodeOutputMessages = (
-  outputMessageInputs: Array<OutputMessageInput>,
-): TE.TaskEither<Error, Array<OutputMessage>> =>
-  pipe(
-    outputMessageInputs,
-    A.map(decodeOutputMessage),
-    TE.fromEitherK(E.sequenceArray),
-    TE.map((outputMessages) => outputMessages as Array<OutputMessage>),
-  )
-
-export const socketSend = (outputMessageString: string) => (socket: WebSocket): IO.IO<void> => () =>
+export const socketSend = (socket: WebSocket) => (outputMessageString: string): IO.IO<void> => () =>
   socket.send(outputMessageString)
 
-export const sendOutputMessages =
-  (socket: WebSocket) => (outputMessages: ReadonlyArray<OutputMessage>): TE.TaskEither<Error, Array<void>> =>
-    pipe(
-      outputMessages,
-      RA.map(json.stringify),
-      E.sequenceArray,
-      TE.fromEitherK(E.map((outputMessageStrings) =>
-        pipe(
-          outputMessageStrings,
-          RA.map((outputMessageString) => socketSend(outputMessageString)(socket)()),
-        )
-      )),
-      TE.mapLeft((error) => new Error('SendOutput', { cause: error })),
-      TE.map((steps) => steps as Array<void>),
-    )
+export const sendOutputMessage = (socket: WebSocket) => (outputMessageInput: OutputMessageInput): IO.IO<void> => () => {
+  // TODO: Fix this. This is probably very wrong. I don't want the calling code
+  // of this function (message handler) to handle the possible error that may
+  // occur here. Instead I just want to log it.
+  const x = pipe(
+    E.right(outputMessageInput),
+    E.chain(decodeOutputMessage),
+    E.chain(json.stringify),
+    E.mapLeft((error) => new Error('SendOutput', { cause: error })),
+    E.map(socketSend(socket)),
+    E.orElse((error) => E.right(logErrorGraph(error))),
+  )
+
+  if (E.isRight(x)) {
+    x.right()
+  }
+}
 
 export const handleMessage = (message: string, socket: WebSocket): void => {
   pipe(
-    TE.right(message),
-    TE.chain(parseInputMessage),
-    TE.chain(getOutputMessagesForInputMessage),
-    TE.chain(decodeOutputMessages),
-    TE.chain(sendOutputMessages(socket)),
+    E.right(message),
+    E.chain(parseInputMessage),
+    TE.fromEitherK(identity),
+    TE.chain((inputMessage) =>
+      TE.rightTask(getHandlerByInputMessage(inputMessage)(sendOutputMessage(socket))(inputMessage))
+    ),
     TE.match(
-      (error) => logErrorGraph(error as Error),
+      (error) => {
+        logErrorGraph(error)()
+      },
       () => {},
     ),
   )()

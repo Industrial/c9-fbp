@@ -7,10 +7,12 @@ import { AddNodeGraphInputMessage } from '#/schemas/messages/graph/input/AddNode
 import { AddNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const addnode = (
-  message: AddNodeGraphInputMessage,
-): TE.TaskEither<Error, Array<AddNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const addnode: MessageHandler<
+  AddNodeGraphInputMessage,
+  AddNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -26,9 +28,17 @@ export const addnode = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<AddNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'addnode',
           payload: {
@@ -37,8 +47,7 @@ export const addnode = (
             component: message.payload.component,
             metadata: message.payload.metadata,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

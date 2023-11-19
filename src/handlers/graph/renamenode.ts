@@ -7,10 +7,12 @@ import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/Er
 import { RenameNodeGraphInputMessage } from '#/schemas/messages/graph/input/RenameNodeGraphInputMessage.ts'
 import { RenameNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/RenameNodeGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const renamenode = (
-  message: RenameNodeGraphInputMessage,
-): TE.TaskEither<Error, Array<RenameNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const renamenode: MessageHandler<
+  RenameNodeGraphInputMessage,
+  RenameNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -33,9 +35,17 @@ export const renamenode = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<RenameNodeGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'renamenode',
           payload: {
@@ -43,8 +53,7 @@ export const renamenode = (
             from: message.payload.from,
             to: message.payload.to,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

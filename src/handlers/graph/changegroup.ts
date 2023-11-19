@@ -6,10 +6,12 @@ import { ChangeGroupGraphInputMessage } from '#/schemas/messages/graph/input/Cha
 import { ChangeGroupGraphOutputMessageInput } from '#/schemas/messages/graph/output/ChangeGroupGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const changegroup = (
-  message: ChangeGroupGraphInputMessage,
-): TE.TaskEither<Error, Array<ChangeGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const changegroup: MessageHandler<
+  ChangeGroupGraphInputMessage,
+  ChangeGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -27,9 +29,17 @@ export const changegroup = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<ChangeGroupGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'changegroup',
           payload: {
@@ -37,8 +47,7 @@ export const changegroup = (
             metadata: message.payload.metadata,
             name: message.payload.name,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )
