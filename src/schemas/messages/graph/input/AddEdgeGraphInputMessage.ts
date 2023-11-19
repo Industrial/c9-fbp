@@ -1,16 +1,20 @@
 import * as S from 'schemata-ts'
-import { EdgeSchema } from '#/schemas/messages/shared/Edge.ts'
 import { GraphIDSchema } from '#/schemas/messages/shared/GraphID.ts'
 import { GraphInputMessageBaseSchema } from '#/schemas/messages/graph/GraphInputMessageBase.ts'
+import { MetadataEdgeSchema } from '#/schemas/messages/shared/MetadataEdge.ts'
+import { TargetNodeSchema } from '#/schemas/messages/shared/TargetNode.ts'
 import { deriveGuard, deriveInputGuard } from 'schemata-ts/Guard'
 import { deriveTranscoder } from 'schemata-ts/Transcoder'
 
 export const AddEdgeGraphInputMessageSchema = GraphInputMessageBaseSchema
   .extend({
     command: S.Literal<['addedge']>('addedge'),
-    payload: EdgeSchema.intersect(S.Struct({
+    payload: S.Struct({
       graph: GraphIDSchema,
-    })),
+      src: TargetNodeSchema,
+      tgt: TargetNodeSchema,
+      metadata: S.Optional(MetadataEdgeSchema),
+    }),
   })
 
 export type AddEdgeGraphInputMessageInput = S.InputOf<typeof AddEdgeGraphInputMessageSchema>

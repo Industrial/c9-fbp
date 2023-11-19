@@ -1,17 +1,15 @@
 import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
 import * as IIPDomain from '#/domain/iip.ts'
-import * as IIPSchema from '#/schemas/messages/shared/IIP.ts'
-import * as NodeDomain from '#/domain/node.ts'
-import * as PortSchema from '#/schemas/messages/shared/Port.ts'
+// import * as IIPSchema from '#/schemas/messages/shared/IIP.ts'
+// import * as NodeDomain from '#/domain/node.ts'
+// import * as PortSchema from '#/schemas/messages/shared/Port.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-export type PortID = string
-
 export type Port = {
-  id: PortID
-  public: PortID
+  id: string
+  public: string
   metadata: Record<string, unknown>
   iip?: IIPDomain.IIP
   stream: TransformStream
@@ -34,31 +32,31 @@ export const create = (
   stream: new TransformStream(portTransformer),
 })
 
-export const serialize = (port: Port, node: NodeDomain.Node, index: number): PortSchema.Port =>
-  PortSchema.PortTranscoder.decode({
-    node: node.id,
-    index: index as PortSchema.PortInput['index'],
-    port: port.id,
-    public: port.public,
-    metadata: port.metadata,
-  })
+// export const serialize = (port: Port, node: NodeDomain.Node, index: number): PortSchema.Port =>
+//   PortSchema.PortTranscoder.decode({
+//     node: node.id,
+//     index: index as PortSchema.PortInput['index'],
+//     port: port.id,
+//     public: port.public,
+//     metadata: port.metadata,
+//   })
 
-export const deserialize = (
-  port: PortSchema.Port,
-  iip?: IIPSchema.IIP,
-): Port =>
-  iip
-    ? create(
-      port.port,
-      port.public,
-      port.metadata ?? {},
-      IIPDomain.deserialize(iip),
-    )
-    : create(
-      port.port,
-      port.public,
-      port.metadata ?? {},
-    )
+// export const deserialize = (
+//   port: PortSchema.Port,
+//   iip?: IIPSchema.IIP,
+// ): Port =>
+//   iip
+//     ? create(
+//       port.port,
+//       port.public,
+//       port.metadata ?? {},
+//       IIPDomain.deserialize(iip),
+//     )
+//     : create(
+//       port.port,
+//       port.public,
+//       port.metadata ?? {},
+//     )
 
 export const eq: Eq.Eq<Port> = Eq.fromEquals((a, b) => a.id === b.id)
 

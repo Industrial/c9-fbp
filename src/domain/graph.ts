@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either.ts'
 import * as EdgeDomain from './edge.ts'
 import * as Eq from 'fp-ts/Eq.ts'
 import * as GraphDomain from './graph.ts'
-import * as GraphSchema from '#/schemas/messages/shared/Graph.ts'
+// import * as GraphSchema from '#/schemas/messages/shared/Graph.ts'
 import * as GroupDomain from './group.ts'
 import * as IIPDomain from './iip.ts'
 import * as NodeDomain from './node.ts'
@@ -11,14 +11,12 @@ import * as RA from 'fp-ts/ReadonlyArray.ts'
 import * as S from 'fp-ts/string.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { TargetNode } from '#/schemas/messages/shared/TargetNode.ts'
-import { Value } from '#/schemas/messages/shared/Value.ts'
+// import { Value } from '#/schemas/messages/shared/Value.ts'
 import { findFirstByPredicateE, findFirstByPropertyE } from '#/helpers.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-export type GraphID = string
-
 export type Graph = {
-  id: GraphID
+  id: string
   main: boolean
   name: string
   nodes: ReadonlyArray<NodeDomain.Node>
@@ -63,86 +61,86 @@ export const create = (
   },
 })
 
-export const serialize = (graph: Graph): GraphSchema.Graph =>
-  GraphSchema.GraphTranscoder.decode({
-    id: graph.id,
-    main: graph.main,
-    name: graph.name,
-    nodes: graph.nodes,
-    edges: pipe(graph.edges, RA.map(EdgeDomain.serialize)),
-    groups: pipe(graph.groups, RA.map(GroupDomain.serialize)),
-    library: graph.library,
-    description: graph.description,
-    icon: graph.icon,
-    network: {
-      isDebugging: graph.network.isDebugging,
-      isRunning: graph.network.isRunning,
-      hasStarted: graph.network.hasStarted,
-      startTime: graph.network.startTime,
-    },
-    inports: pipe(
-      graph.nodes,
-      RA.map((node) =>
-        pipe(
-          node.inports,
-          RA.mapWithIndex((index, port) => PortDomain.serialize(port, node, index)),
-        )
-      ),
-      RA.flatten,
-    ),
-    outports: pipe(
-      graph.nodes,
-      RA.map((node) =>
-        pipe(
-          node.outports,
-          RA.mapWithIndex((index, port) => PortDomain.serialize(port, node, index)),
-        )
-      ),
-      RA.flatten,
-    ),
-    iips: pipe(
-      graph.nodes,
-      RA.map((node) =>
-        pipe(
-          node.inports,
-          RA.filter((port) => Boolean(port.iip)),
-          RA.map((port) =>
-            IIPDomain.serialize(
-              {
-                data: port.iip!.data as unknown as Value,
-                metadata: port.iip!.metadata,
-              },
-              node,
-              port,
-            )
-          ),
-        )
-      ),
-      RA.flatten,
-    ),
-  })
+// export const serialize = (graph: Graph): GraphSchema.Graph =>
+//   GraphSchema.GraphTranscoder.decode({
+//     id: graph.id,
+//     main: graph.main,
+//     name: graph.name,
+//     nodes: graph.nodes,
+//     edges: pipe(graph.edges, RA.map(EdgeDomain.serialize)),
+//     groups: pipe(graph.groups, RA.map(GroupDomain.serialize)),
+//     library: graph.library,
+//     description: graph.description,
+//     icon: graph.icon,
+//     network: {
+//       isDebugging: graph.network.isDebugging,
+//       isRunning: graph.network.isRunning,
+//       hasStarted: graph.network.hasStarted,
+//       startTime: graph.network.startTime,
+//     },
+//     inports: pipe(
+//       graph.nodes,
+//       RA.map((node) =>
+//         pipe(
+//           node.inports,
+//           RA.mapWithIndex((index, port) => PortDomain.serialize(port, node, index)),
+//         )
+//       ),
+//       RA.flatten,
+//     ),
+//     outports: pipe(
+//       graph.nodes,
+//       RA.map((node) =>
+//         pipe(
+//           node.outports,
+//           RA.mapWithIndex((index, port) => PortDomain.serialize(port, node, index)),
+//         )
+//       ),
+//       RA.flatten,
+//     ),
+//     iips: pipe(
+//       graph.nodes,
+//       RA.map((node) =>
+//         pipe(
+//           node.inports,
+//           RA.filter((port) => Boolean(port.iip)),
+//           RA.map((port) =>
+//             IIPDomain.serialize(
+//               {
+//                 data: port.iip!.data as unknown as Value,
+//                 metadata: port.iip!.metadata,
+//               },
+//               node,
+//               port,
+//             )
+//           ),
+//         )
+//       ),
+//       RA.flatten,
+//     ),
+//   })
 
-export const deserialize = (graph: GraphSchema.Graph): Graph =>
-  create(
-    graph.id,
-    graph.name,
-    pipe(
-      graph.nodes,
-      RA.map((node) => NodeDomain.deserialize(node, graph)),
-    ),
-    pipe(
-      graph.edges,
-      RA.map((edge) => EdgeDomain.deserialize(edge)),
-    ),
-    pipe(
-      graph.groups,
-      RA.map((group) => GroupDomain.deserialize(group)),
-    ),
-    graph.main,
-    graph.library,
-    graph.description,
-    graph.icon,
-  )
+// export const deserialize = (graph: GraphSchema.Graph): Graph =>
+//   create(
+//     graph.id,
+//     graph.name,
+//     pipe(
+//       graph.nodes,
+//       RA.map((node) => NodeDomain.deserialize(node, graph)),
+//     ),
+//     pipe(
+//       graph.edges,
+//       RA.map((edge) => EdgeDomain.deserialize(edge)),
+//     ),
+//     pipe(
+//       graph.groups,
+//       RA.map((group) => GroupDomain.deserialize(group)),
+//     ),
+//     graph.main,
+//     graph.library,
+//     graph.description,
+//     graph.icon,
+//   )
 
 export const eq: Eq.Eq<Graph> = Eq.fromEquals((a, b) => a.id === b.id)
 
