@@ -5,9 +5,9 @@ import * as TE from 'fp-ts/TaskEither.ts'
 import * as uuid from '#/uuid.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-let graphs: Record<GraphDomain.GraphID, GraphDomain.Graph> = {}
+let graphs: Record<GraphDomain.Graph['id'], GraphDomain.Graph> = {}
 
-export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.Graph> =>
+export const get = (id?: GraphDomain.Graph['id']): TE.TaskEither<Error, GraphDomain.Graph> =>
   id
     ? pipe(
       graphs,
@@ -31,7 +31,7 @@ export const get = (id?: GraphDomain.GraphID): TE.TaskEither<Error, GraphDomain.
       ),
     )
 
-export const set = (id: GraphDomain.GraphID, graph: GraphDomain.Graph): TE.TaskEither<Error, GraphDomain.Graph> =>
+export const set = (id: GraphDomain.Graph['id'], graph: GraphDomain.Graph): TE.TaskEither<Error, GraphDomain.Graph> =>
   pipe(
     TE.fromIO(() => {
       graphs = pipe(

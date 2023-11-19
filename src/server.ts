@@ -121,7 +121,6 @@ export const handleError = (error: unknown): Response =>
   })
 
 export const handleListen = () => {}
-// console.log('listening?')
 
 export const handleRequest = (req: Request): Response => {
   if (req.headers.get('upgrade') != 'websocket') {

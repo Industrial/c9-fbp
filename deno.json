@@ -18,7 +18,10 @@
     "runtime": "deno run --unstable -A src/runtime.ts",
     "start": "deno run --unstable -A src/runtime.ts",
     "test": "deno test --unstable -A --trace-ops",
-    "test:coverage": "deno task test --coverage=./coverage && deno coverage ./coverage --lcov --output=./coverage/coverage.lcov && deno coverage ./coverage",
+    "test:coverage": "deno task test:coverage:clear && deno task test:coverage:test && deno task test:coverage:coverage",
+    "test:coverage:test": "deno task test --coverage=./coverage",
+    "test:coverage:coverage": "deno coverage ./coverage --lcov --output=./coverage/coverage.lcov && deno coverage ./coverage",
+    "test:coverage:clear": "rm -rf coverage && mkdir coverage",
     "test:coverage:report": "genhtml -o coverage/report coverage/coverage.lcov",
     "test:watch": "deno task test --watch"
   },
