@@ -1,5 +1,4 @@
 import * as Eq from 'fp-ts/Eq.ts'
-// import * as GroupSchema from '#/schemas/messages/shared/Group.ts'
 import * as NodeDomain from '#/domain/node.ts'
 
 export type Group = {

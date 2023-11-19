@@ -1,4 +1,3 @@
-// import * as EdgeSchema from '#/schemas/messages/shared/Edge.ts'
 import * as NodeDomain from '#/domain/node.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as Eq from 'fp-ts/Eq.ts'

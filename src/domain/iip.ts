@@ -1,7 +1,4 @@
 import * as Eq from 'fp-ts/Eq.ts'
-// import * as IIPSchema from '#/schemas/messages/shared/IIP.ts'
-// import { Node } from './node.ts'
-// import { Port } from './port.ts'
 
 export type IIP = {
   data: unknown
