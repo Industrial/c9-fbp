@@ -7,10 +7,12 @@ import { StopNetworkInputMessage } from '#/schemas/messages/network/input/StopNe
 import { StoppedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StoppedNetworkOutputMessage.ts'
 import { hasNetworkStarted, withNetworkStop } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const stop = (
-  message: StopNetworkInputMessage,
-): TE.TaskEither<Error, Array<StoppedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput>> =>
+export const stop: MessageHandler<
+  StopNetworkInputMessage,
+  StoppedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -23,8 +25,8 @@ export const stop = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      (error): Array<StoppedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
-        {
+      (error) => {
+        send({
           protocol: 'network',
           command: 'error',
           payload: {
@@ -32,10 +34,10 @@ export const stop = (
             message: error.message,
             stack: undefined,
           },
-        },
-      ],
-      (graph): Array<StoppedNetworkOutputMessageInput | ErrorNetworkOutputMessageInput> => [
-        {
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'network',
           command: 'stopped',
           payload: {
@@ -46,8 +48,7 @@ export const stop = (
             time: graph.network.startTime,
             uptime: (new Date().valueOf() - new Date(graph.network.startTime).valueOf() as Float),
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

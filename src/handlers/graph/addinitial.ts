@@ -6,11 +6,13 @@ import * as graphs from '#/graphs.ts'
 import { AddInitialGraphInputMessage } from '#/schemas/messages/graph/input/AddInitialGraphInputMessage.ts'
 import { AddInitialGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddInitialGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { pipe } from 'fp-ts/function.ts'
 
-export const addinitial = (
-  message: AddInitialGraphInputMessage,
-): TE.TaskEither<Error, Array<AddInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const addinitial: MessageHandler<
+  AddInitialGraphInputMessage,
+  AddInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -28,9 +30,17 @@ export const addinitial = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<AddInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'addinitial',
           payload: {
@@ -39,8 +49,7 @@ export const addinitial = (
             src: message.payload.src,
             tgt: message.payload.tgt,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

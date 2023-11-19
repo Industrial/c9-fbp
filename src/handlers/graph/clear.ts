@@ -5,10 +5,12 @@ import { ClearGraphInputMessage } from '#/schemas/messages/graph/input/ClearGrap
 import { ClearGraphOutputMessageInput } from '#/schemas/messages/graph/output/ClearGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const clear = (
-  message: ClearGraphInputMessage,
-): TE.TaskEither<Error, ClearGraphOutputMessageInput | ErrorGraphOutputMessageInput> =>
+export const clear: MessageHandler<
+  ClearGraphInputMessage,
+  ClearGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.set(
       message.payload.id,
@@ -25,9 +27,17 @@ export const clear = (
       ),
     ),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<ClearGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'clear',
           payload: {
@@ -38,8 +48,7 @@ export const clear = (
             icon: message.payload.icon,
             library: message.payload.library,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )

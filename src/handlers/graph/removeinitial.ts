@@ -6,10 +6,12 @@ import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/Er
 import { RemoveInitialGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInitialGraphInputMessage.ts'
 import { RemoveInitialGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInitialGraphOutputMessage.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
-export const removeinitial = (
-  message: RemoveInitialGraphInputMessage,
-): TE.TaskEither<Error, Array<RemoveInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput>> =>
+export const removeinitial: MessageHandler<
+  RemoveInitialGraphInputMessage,
+  RemoveInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput
+> = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
     TE.chain((graph) =>
@@ -30,9 +32,17 @@ export const removeinitial = (
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
     TE.match(
-      GraphDomain.toGraphErrorGraphInput,
-      (graph): Array<RemoveInitialGraphOutputMessageInput | ErrorGraphOutputMessageInput> => [
-        {
+      (error) => {
+        send({
+          protocol: 'graph',
+          command: 'error',
+          payload: {
+            message: error.message,
+          },
+        })()
+      },
+      (graph) => {
+        send({
           protocol: 'graph',
           command: 'removeinitial',
           payload: {
@@ -40,8 +50,7 @@ export const removeinitial = (
             src: message.payload.src,
             tgt: message.payload.tgt,
           },
-        },
-      ],
+        })()
+      },
     ),
-    TE.fromTask,
   )
