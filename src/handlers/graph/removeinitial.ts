@@ -1,12 +1,15 @@
-import * as GraphDomain from '#/domain/graph.ts'
 import * as E from 'fp-ts/Either.ts'
+import * as GraphDomain from '#/domain/graph.ts'
+import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
+import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RemoveInitialGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInitialGraphInputMessage.ts'
 import { RemoveInitialGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInitialGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
-import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const removeinitial: MessageHandler<
   RemoveInitialGraphInputMessage,
@@ -17,17 +20,29 @@ export const removeinitial: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.tgt.node, message.payload.tgt.port)),
-        E.chain((graph) =>
+        E.chain(GraphDomain.findNodeByIdE(message.payload.tgt.node)),
+        E.chain(NodeDomain.findInportByIdE(message.payload.tgt.port)),
+        E.map(() =>
           pipe(
             graph,
-            GraphDomain.withoutIIPByNodeIdAndPortId(
-              message.payload.tgt.node,
-              message.payload.tgt.port,
+            GraphDomain.modifyNodeAtId(message.payload.tgt.node)(
+              O.map((node) =>
+                pipe(
+                  node,
+                  NodeDomain.modifyInportAtId(message.payload.tgt.port)(
+                    O.map((port) =>
+                      pipe(
+                        port,
+                        PortDomain.modifyIIP(() => O.none),
+                      )
+                    ),
+                  ),
+                )
+              ),
             ),
           )
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

@@ -1,12 +1,11 @@
-import * as E from 'fp-ts/Either.ts'
+import * as GraphDomain from '#/domain/graph.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorNetworkOutputMessageInput } from '#/schemas/messages/network/output/ErrorNetworkOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { StartNetworkInputMessage } from '#/schemas/messages/network/input/StartNetworkInputMessage.ts'
 import { StartedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StartedNetworkOutputMessage.ts'
-import { withNetworkStart } from '#/domain/graph.ts'
 import { pipe } from 'fp-ts/function.ts'
-import { MessageHandler } from '#/handlers/MessageHandler.ts'
 
 export const start: MessageHandler<
   StartNetworkInputMessage,
@@ -14,11 +13,10 @@ export const start: MessageHandler<
 > = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
-    TE.chain((graph) =>
+    TE.map((graph) =>
       pipe(
-        E.right(graph),
-        E.chain(withNetworkStart()),
-        TE.fromEitherK(E.map((graph) => graph)),
+        graph,
+        GraphDomain.startNetwork,
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

@@ -1,13 +1,13 @@
-import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { AddNodeGraphInputMessage } from '#/schemas/messages/graph/input/AddNodeGraphInputMessage.ts'
 import { AddNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { pipe } from 'fp-ts/function.ts'
 
 export const addnode: MessageHandler<
   AddNodeGraphInputMessage,
@@ -15,15 +15,20 @@ export const addnode: MessageHandler<
 > = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
-    TE.chain((graph) =>
+    TE.map((graph) =>
       pipe(
-        E.right(graph),
-        E.chain(
-          GraphDomain.withNode(
-            NodeDomain.create(message.payload.id, message.payload.component, [], [], message.payload.metadata ?? {}),
+        graph,
+        GraphDomain.modifyNodeAtId(message.payload.id)(
+          O.map(() =>
+            NodeDomain.create(
+              message.payload.id,
+              message.payload.component,
+              {},
+              {},
+              message.payload.metadata ?? {},
+            )
           ),
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

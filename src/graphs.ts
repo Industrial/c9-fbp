@@ -22,9 +22,9 @@ export const get = (id?: GraphDomain.Graph['id']): TE.TaskEither<Error, GraphDom
           GraphDomain.create(
             'main',
             'main',
-            [],
-            [],
-            [],
+            {},
+            {},
+            {},
             true,
           ),
         )

@@ -64,3 +64,22 @@ A GraphNode is a Node that contains it's own Graph. For a Graph to be usable in
 a GraphNode, it needs to contain an Input Node and an Output Node, which wire in
 the GraphNode's Inport to the Input Node and the Output Node to the GraphNode's
 Outport.
+
+## Functional Model of Streams
+Create a function called `waitForAllOutportsReady => Task<void>`. It completes
+(asynchronously) when all outport ports are ready to write to.
+
+Create a function called `waitForNextInportMessage => Task<{ portId: string,
+data: unknown }>`. It completes when the next message arrives on any inport.
+
+Create a `send` function that takes a `pordId` and `data` argument. It send the
+data to the port.
+
+Create a function called `run` that takes a `logic` function. The `logic`
+function is the implementation of the component that the nodes is configured to
+run. It first calls `waitForAllOutportsReady`. Then, it calls
+`waitForNextInportMessage`. Then, it passes the next InportMessage to the logic
+function along with the `send` function. The `send` function is composed with
+the `run` function so that the process is started again when the message is
+sent. It might be more efficient to run the `run` function (as a side effect)
+before the send happens so it's listening before the send triggers the ready.
