@@ -18,7 +18,7 @@ export const removenode: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.findNodeByIdE(message.payload.graph)),
+        E.chain(GraphDomain.findNodeByIdE(message.payload.id)),
         E.map(() =>
           pipe(
             graph,

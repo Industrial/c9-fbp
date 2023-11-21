@@ -1,6 +1,7 @@
 import * as E from 'fp-ts/Either.ts'
 import * as EdgeDomain from '#/domain/edge.ts'
 import * as GraphDomain from '#/domain/graph.ts'
+import * as NodeDomain from '#/domain/node.ts'
 import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
@@ -19,6 +20,22 @@ export const changeedge: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
+        E.chain(() =>
+          pipe(
+            E.right(graph),
+            E.chain(GraphDomain.findNodeByIdE(message.payload.src.node)),
+            E.chain(NodeDomain.findOutportByIdE(message.payload.src.port)),
+            E.map(() => graph),
+          )
+        ),
+        E.chain(() =>
+          pipe(
+            E.right(graph),
+            E.chain(GraphDomain.findNodeByIdE(message.payload.tgt.node)),
+            E.chain(NodeDomain.findInportByIdE(message.payload.tgt.port)),
+            E.map(() => graph),
+          )
+        ),
         E.chain(GraphDomain.findEdgeByEdgeIdE(EdgeDomain.createEdgeId({
           nodeId: message.payload.src.node,
           portId: message.payload.src.port,

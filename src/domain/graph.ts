@@ -159,6 +159,17 @@ export const modifyGroupAtName =
 
 export const hasNetworkStarted = (graph: Graph) => graph.network.hasStarted
 
+export const notStartedError = () => new Error('NotStarted')
+
+export const hasNetworkStartedE = (graph: Graph) =>
+  pipe(
+    graph,
+    E.fromPredicate(
+      hasNetworkStarted,
+      notStartedError,
+    ),
+  )
+
 export const startNetwork = pipe(
   T.id<Graph>(),
   T.prop('network'),

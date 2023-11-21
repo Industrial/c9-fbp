@@ -1,10 +1,11 @@
+import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
 import * as IIPDomain from '#/domain/iip.ts'
 import * as O from 'fp-ts/Option.ts'
 import * as equals from '#/equals.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
+import { lens as L, traversal as T } from 'monocle-ts'
 import { pipe } from 'fp-ts/function.ts'
-import { traversal as T } from 'monocle-ts'
 
 export type Port = {
   id: string
@@ -35,13 +36,26 @@ export const eq: Eq.Eq<Port> = Eq.fromEquals(equals.byProperty('id'))
 
 export const hasIIP = (iip: IIPDomain.IIP) => (port: Port) =>
   pipe(
-    port.iip,
+    port,
+    pipe(
+      L.id<Port>(),
+      L.prop('iip'),
+    ).get,
     (portIIP) => O.isSome(portIIP) && IIPDomain.eq.equals(iip, portIIP.value),
   )
 
 export const iipNotFoundError = () => new Error('IIPNotFound')
 
-export const modifyIIP = (f: (iip: O.Option<IIPDomain.IIP>) => O.Option<IIPDomain.IIP>): (port: Port) => Port =>
+export const hasIIPE = (iip: IIPDomain.IIP) => (port: Port) =>
+  pipe(
+    port,
+    E.fromPredicate(
+      hasIIP(iip),
+      iipNotFoundError,
+    ),
+  )
+
+export const modifyIIP = (f: (iip: O.Option<IIPDomain.IIP>) => O.Option<IIPDomain.IIP>) =>
   pipe(
     T.id<Port>(),
     T.prop('iip'),

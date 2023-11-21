@@ -19,15 +19,16 @@ export const addnode: MessageHandler<
       pipe(
         graph,
         GraphDomain.modifyNodeAtId(message.payload.id)(
-          O.map(() =>
-            NodeDomain.create(
-              message.payload.id,
-              message.payload.component,
-              {},
-              {},
-              message.payload.metadata ?? {},
-            )
-          ),
+          () =>
+            O.some(
+              NodeDomain.create(
+                message.payload.id,
+                message.payload.component,
+                {},
+                {},
+                message.payload.metadata ?? {},
+              ),
+            ),
         ),
       )
     ),

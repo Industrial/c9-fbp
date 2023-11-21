@@ -81,7 +81,7 @@ export const findOutportByIdE = (id: PortDomain.Port['id']) => (node: Node) =>
   pipe(
     node,
     findOutportById(id),
-    E.fromOption(inportNotFoundError),
+    E.fromOption(outportNotFoundError),
   )
 
 export const modifyOutportAtId =

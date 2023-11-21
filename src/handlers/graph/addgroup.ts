@@ -23,13 +23,13 @@ export const addgroup: MessageHandler<
         E.map((graph) =>
           pipe(
             graph,
-            GraphDomain.modifyGroupAtName(message.payload.name)(O.map(() =>
-              GroupDomain.create(
+            GraphDomain.modifyGroupAtName(message.payload.name)(() =>
+              O.some(GroupDomain.create(
                 message.payload.name,
                 message.payload.nodes,
                 message.payload.metadata?.description,
-              )
-            )),
+              ))
+            ),
           )
         ),
         TE.fromEitherK(identity),

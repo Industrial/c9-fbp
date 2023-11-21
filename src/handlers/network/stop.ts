@@ -1,3 +1,4 @@
+import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
@@ -6,7 +7,7 @@ import { Float } from 'schemata-ts/float'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { StopNetworkInputMessage } from '#/schemas/messages/network/input/StopNetworkInputMessage.ts'
 import { StoppedNetworkOutputMessageInput } from '#/schemas/messages/network/output/StoppedNetworkOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const stop: MessageHandler<
   StopNetworkInputMessage,
@@ -14,10 +15,17 @@ export const stop: MessageHandler<
 > = (send) => (message) =>
   pipe(
     graphs.get(message.payload.graph),
-    TE.map((graph) =>
+    TE.chain((graph) =>
       pipe(
-        graph,
-        GraphDomain.startNetwork,
+        E.right(graph),
+        E.chain(GraphDomain.hasNetworkStartedE),
+        E.map((graph) =>
+          pipe(
+            graph,
+            GraphDomain.stopNetwork,
+          )
+        ),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
