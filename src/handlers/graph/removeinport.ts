@@ -1,12 +1,14 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
+import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RemoveInportGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInportGraphInputMessage.ts'
 import { RemoveInportGraphOutputMessageInput } from '#/schemas/messages/graph/output/RemoveInportGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
-import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const removeinport: MessageHandler<
   RemoveInportGraphInputMessage,
@@ -17,14 +19,21 @@ export const removeinport: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.node, message.payload.public)),
-        E.chain(
-          GraphDomain.withoutInportByNodeIdAndPortId(
-            message.payload.node,
-            message.payload.public,
-          ),
+        E.chain(GraphDomain.findNodeByIdE(message.payload.node)),
+        E.map(() =>
+          pipe(
+            graph,
+            GraphDomain.modifyNodeAtId(message.payload.node)(
+              O.map((node) =>
+                pipe(
+                  node,
+                  NodeDomain.modifyInportAtId(message.payload.public)(() => O.none),
+                )
+              ),
+            ),
+          )
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

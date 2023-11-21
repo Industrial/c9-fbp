@@ -1,4 +1,5 @@
 import * as Eq from 'fp-ts/Eq.ts'
+import * as equals from '#/equals.ts'
 
 export type IIP = {
   data: unknown
@@ -13,22 +14,4 @@ export const create = (
   metadata,
 })
 
-// export const serialize = (iip: IIP, node: Node, port: Port): IIPSchema.IIP =>
-//   IIPSchema.IIPTranscoder.decode({
-//     src: {
-//       data: iip.data as unknown as IIPSchema.IIP['src']['data'],
-//     },
-//     tgt: {
-//       node: node.id,
-//       port: port.id,
-//     },
-//     metadata: iip.metadata,
-//   })
-
-// export const deserialize = (iip: IIPSchema.IIP): IIP =>
-//   create(
-//     iip.src.data,
-//     iip.metadata,
-//   )
-
-export const eq: Eq.Eq<IIP> = Eq.fromEquals((a, b) => a.data === b.data)
+export const eq: Eq.Eq<IIP> = Eq.fromEquals(equals.byProperty('data'))

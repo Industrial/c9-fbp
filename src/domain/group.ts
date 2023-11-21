@@ -1,5 +1,6 @@
 import * as Eq from 'fp-ts/Eq.ts'
 import * as NodeDomain from '#/domain/node.ts'
+import * as equals from '#/equals.ts'
 
 export type Group = {
   name: string
@@ -19,22 +20,4 @@ export const create = (
   },
 })
 
-// export const serialize = (group: Group): GroupSchema.Group =>
-//   GroupSchema.GroupTranscoder.decode({
-//     name: group.name,
-//     nodes: group.nodes,
-//     metadata: group.metadata.description
-//       ? {
-//         description: group.metadata.description as string,
-//       }
-//       : undefined,
-//   })
-
-// export const deserialize = (group: GroupSchema.Group) =>
-//   create(
-//     group.name,
-//     group.nodes,
-//     group.metadata?.description,
-//   )
-
-export const eq: Eq.Eq<Group> = Eq.fromEquals((a, b) => a.name === b.name)
+export const eq: Eq.Eq<Group> = Eq.fromEquals(equals.byProperty('name'))

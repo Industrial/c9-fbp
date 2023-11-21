@@ -17,9 +17,9 @@ export const clear: MessageHandler<
       GraphDomain.create(
         message.payload.id,
         message.payload.name ?? 'main',
-        [],
-        [],
-        [],
+        {},
+        {},
+        {},
         message.payload.main ?? false,
         message.payload.library,
         message.payload.description,

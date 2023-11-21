@@ -1,14 +1,15 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RenameInportGraphInputMessage } from '#/schemas/messages/graph/input/RenameInportGraphInputMessage.ts'
 import { RenameInportGraphOutputMessageInput } from '#/schemas/messages/graph/output/RenameInportGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
-import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const renameinport: MessageHandler<
   RenameInportGraphInputMessage,
@@ -19,28 +20,30 @@ export const renameinport: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsInportByNodeIdAndPortId(message.payload.node, message.payload.from)),
-        E.chain(GraphDomain.findNodeById(message.payload.node)),
-        E.chain((node) =>
+        E.chain(GraphDomain.findNodeByIdE(message.payload.node)),
+        E.chain(NodeDomain.findInportByIdE(message.payload.from)),
+        E.map(() =>
           pipe(
-            E.right(node),
-            E.chain(NodeDomain.findInportById(message.payload.from)),
-            E.chain((port) =>
-              pipe(
-                E.right(node),
-                E.chain(NodeDomain.withoutInport(port)),
-                E.chain(NodeDomain.withInport(PortDomain.create(
-                  message.payload.to,
-                  message.payload.to,
-                  port.metadata,
-                  port.iip,
-                ))),
-              )
+            graph,
+            GraphDomain.modifyNodeAtId(message.payload.node)(
+              O.map((node) =>
+                pipe(
+                  node,
+                  NodeDomain.modifyInportAtId(message.payload.from)(() => O.none),
+                  NodeDomain.modifyInportAtId(message.payload.to)(O.map((port) =>
+                    PortDomain.create(
+                      message.payload.to,
+                      message.payload.to,
+                      port.metadata,
+                      port.iip,
+                    )
+                  )),
+                )
+              ),
             ),
-            E.map(() => graph),
           )
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

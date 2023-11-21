@@ -1,13 +1,15 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
+import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { AddOutportGraphInputMessage } from '#/schemas/messages/graph/input/AddOutportGraphInputMessage.ts'
 import { AddOutportGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddOutportGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const addoutport: MessageHandler<
   AddOutportGraphInputMessage,
@@ -18,14 +20,29 @@ export const addoutport: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.containsNodeById(message.payload.node)),
-        E.chain(
-          GraphDomain.withOutportByNodeId(
-            PortDomain.create(message.payload.port, message.payload.public, message.payload.metadata ?? {}),
-            message.payload.node,
-          ),
+        E.chain(GraphDomain.findNodeByIdE(message.payload.node)),
+        E.map((port) =>
+          pipe(
+            graph,
+            GraphDomain.modifyNodeAtId(message.payload.node)(
+              O.map((node) =>
+                pipe(
+                  node,
+                  NodeDomain.modifyOutportAtId(port.id)(
+                    O.map(() =>
+                      PortDomain.create(
+                        message.payload.port,
+                        message.payload.public,
+                        message.payload.metadata ?? {},
+                      )
+                    ),
+                  ),
+                )
+              ),
+            ),
+          )
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),

@@ -1,19 +1,18 @@
 import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
-import * as IO from 'fp-ts/IO.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
-import * as RA from 'fp-ts/ReadonlyArray.ts'
+import * as equals from '#/equals.ts'
+import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord.ts'
 import { pipe } from 'fp-ts/function.ts'
-import { findFirstByPropertyE } from '#/helpers.ts'
-
-export type Component = (node: Node) => IO.IO<void>
+import { lens as L, traversal as T } from 'monocle-ts'
 
 export type Node = {
   id: string
   component: string
   metadata: Record<string, unknown>
-  inports: ReadonlyArray<PortDomain.Port>
-  outports: ReadonlyArray<PortDomain.Port>
+  inports: ReadonlyRecord<PortDomain.Port['id'], PortDomain.Port>
+  outports: ReadonlyRecord<PortDomain.Port['id'], PortDomain.Port>
 
   // The current state of the node logic. In here, you can buffer messages of
   // inports if the node requires multiple messages from the same port, or keep
@@ -36,111 +35,60 @@ export const create = (
   state: {},
 })
 
-// export const serialize = (node: Node): NodeSchema.Node =>
-//   NodeSchema.NodeTranscoder.decode({
-//     id: node.id,
-//     component: node.component,
-//     metadata: node.metadata,
-//   })
+export const eq: Eq.Eq<Node> = Eq.fromEquals(equals.byProperty('id'))
 
-// export const deserialize = (
-//   node: NodeSchema.Node,
-//   graph: GraphSchema.Graph,
-// ): Node =>
-//   create(
-//     node.id,
-//     node.component,
-//     pipe(
-//       graph.inports,
-//       RA.map((inport) =>
-//         pipe(
-//           graph.iips,
-//           RA.findFirst((iip) => iip.tgt.node === node.id && iip.tgt.port === inport.port),
-//           O.match(
-//             () => PortDomain.deserialize(inport),
-//             (iip) => PortDomain.deserialize(inport, iip),
-//           ),
-//         )
-//       ),
-//     ),
-//     pipe(
-//       graph.outports,
-//       RA.map((outport) =>
-//         pipe(
-//           graph.iips,
-//           RA.findFirst((iip) => iip.tgt.node === node.id && iip.tgt.port === outport.port),
-//           O.match(
-//             () => PortDomain.deserialize(outport),
-//             (iip) => PortDomain.deserialize(outport, iip),
-//           ),
-//         )
-//       ),
-//     ),
-//     node.metadata,
-//   )
-
-export const eq: Eq.Eq<Node> = Eq.fromEquals((a, b) => a.id === b.id)
-
-export const findInportById = (id: PortDomain.Port['id']) => (node: Node): E.Either<Error, PortDomain.Port> =>
+export const findInportById = (id: PortDomain.Port['id']) => (node: Node) =>
   pipe(
-    node.inports,
-    findFirstByPropertyE('id', id),
-    E.mapLeft(() => new Error('InportNotFound')),
+    node,
+    pipe(
+      L.id<Node>(),
+      L.prop('inports'),
+      L.atKey(id),
+    ).get,
   )
 
-export const withoutInport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
-  E.right(create(
-    node.id,
-    node.component,
-    pipe(
-      node.inports,
-      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
-    ),
-    node.outports,
-    node.metadata,
-  ))
+export const inportNotFoundError = () => new Error('InportNotFound')
 
-export const withInport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
-  E.right(create(
-    node.id,
-    node.component,
-    pipe(
-      node.inports,
-      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
-      RA.append(port),
-    ),
-    node.outports,
-    node.metadata,
-  ))
-
-export const findOutportById = (id: PortDomain.Port['id']) => (node: Node): E.Either<Error, PortDomain.Port> =>
+export const findInportByIdE = (id: PortDomain.Port['id']) => (node: Node) =>
   pipe(
-    node.outports,
-    findFirstByPropertyE('id', id),
-    E.mapLeft(() => new Error('OutportNotFound')),
+    node,
+    findInportById(id),
+    E.fromOption(inportNotFoundError),
   )
 
-export const withoutOutport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
-  E.right(create(
-    node.id,
-    node.component,
-    node.inports,
+export const modifyInportAtId =
+  (id: PortDomain.Port['id']) => (f: (port: O.Option<PortDomain.Port>) => O.Option<PortDomain.Port>) =>
     pipe(
-      node.outports,
-      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
-    ),
-    node.metadata,
-  ))
+      T.id<Node>(),
+      T.prop('inports'),
+      T.atKey(id),
+      T.modify(f),
+    )
 
-export const withOutport = (port: PortDomain.Port) => (node: Node): E.Either<Error, Node> =>
-  E.right(create(
-    node.id,
-    node.component,
-    node.inports,
+export const findOutportById = (id: PortDomain.Port['id']) => (node: Node) =>
+  pipe(
+    node,
     pipe(
-      node.outports,
-      RA.filter((entry) => !PortDomain.eq.equals(entry, port)),
-      RA.append(port),
-    ),
-    node.metadata,
-  ))
+      L.id<Node>(),
+      L.prop('outports'),
+      L.atKey(id),
+    ).get,
+  )
+
+export const outportNotFoundError = () => new Error('OutportNotFound')
+
+export const findOutportByIdE = (id: PortDomain.Port['id']) => (node: Node) =>
+  pipe(
+    node,
+    findOutportById(id),
+    E.fromOption(inportNotFoundError),
+  )
+
+export const modifyOutportAtId =
+  (id: PortDomain.Port['id']) => (f: (port: O.Option<PortDomain.Port>) => O.Option<PortDomain.Port>) =>
+    pipe(
+      T.id<Node>(),
+      T.prop('outports'),
+      T.atKey(id),
+      T.modify(f),
+    )

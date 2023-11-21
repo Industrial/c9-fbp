@@ -1,14 +1,16 @@
-import * as E from 'fp-ts/Either.ts'
 import * as Eq from 'fp-ts/Eq.ts'
 import * as IIPDomain from '#/domain/iip.ts'
+import * as O from 'fp-ts/Option.ts'
+import * as equals from '#/equals.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
 import { pipe } from 'fp-ts/function.ts'
+import { traversal as T } from 'monocle-ts'
 
 export type Port = {
   id: string
   public: string
   metadata: Record<string, unknown>
-  iip?: IIPDomain.IIP
+  iip: O.Option<IIPDomain.IIP>
   stream: TransformStream
 }
 
@@ -25,53 +27,26 @@ export const create = (
   id,
   'public': publicName,
   metadata,
-  iip,
+  iip: iip ? iip : O.none,
   stream: new TransformStream(portTransformer),
 })
 
-// export const serialize = (port: Port, node: NodeDomain.Node, index: number): PortSchema.Port =>
-//   PortSchema.PortTranscoder.decode({
-//     node: node.id,
-//     index: index as PortSchema.PortInput['index'],
-//     port: port.id,
-//     public: port.public,
-//     metadata: port.metadata,
-//   })
+export const eq: Eq.Eq<Port> = Eq.fromEquals(equals.byProperty('id'))
 
-// export const deserialize = (
-//   port: PortSchema.Port,
-//   iip?: IIPSchema.IIP,
-// ): Port =>
-//   iip
-//     ? create(
-//       port.port,
-//       port.public,
-//       port.metadata ?? {},
-//       IIPDomain.deserialize(iip),
-//     )
-//     : create(
-//       port.port,
-//       port.public,
-//       port.metadata ?? {},
-//     )
-
-export const eq: Eq.Eq<Port> = Eq.fromEquals((a, b) => a.id === b.id)
-
-export const containsIIP = (iip: IIPDomain.IIP) => (port: Port): E.Either<Error, Port> =>
+export const hasIIP = (iip: IIPDomain.IIP) => (port: Port) =>
   pipe(
     port.iip,
-    E.fromPredicate(
-      (entry) => Boolean(entry) && IIPDomain.eq.equals(entry as IIPDomain.IIP, iip),
-      () => new Error('IIPNotFound'),
-    ),
-    E.map(() => port),
+    (portIIP) => O.isSome(portIIP) && IIPDomain.eq.equals(iip, portIIP.value),
   )
 
-export const withIIP = (iip: IIPDomain.IIP) => (port: Port): E.Either<Error, Port> =>
-  E.right(create(port.id, port.public, port.metadata, iip))
+export const iipNotFoundError = () => new Error('IIPNotFound')
 
-export const withoutIIP = () => (port: Port): E.Either<Error, Port> =>
-  E.right(create(port.id, port.public, port.metadata))
+export const modifyIIP = (f: (iip: O.Option<IIPDomain.IIP>) => O.Option<IIPDomain.IIP>): (port: Port) => Port =>
+  pipe(
+    T.id<Port>(),
+    T.prop('iip'),
+    T.modify(f),
+  )
 
 // const portTransformStream = new TransformStream(portTransformer)
 

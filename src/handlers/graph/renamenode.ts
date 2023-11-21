@@ -1,13 +1,14 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
+import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
+import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RenameNodeGraphInputMessage } from '#/schemas/messages/graph/input/RenameNodeGraphInputMessage.ts'
 import { RenameNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/RenameNodeGraphOutputMessage.ts'
-import { pipe } from 'fp-ts/function.ts'
-import { MessageHandler } from '#/handlers/MessageHandler.ts'
+import { identity, pipe } from 'fp-ts/function.ts'
 
 export const renamenode: MessageHandler<
   RenameNodeGraphInputMessage,
@@ -18,19 +19,25 @@ export const renamenode: MessageHandler<
     TE.chain((graph) =>
       pipe(
         E.right(graph),
-        E.chain(GraphDomain.findNodeById(message.payload.from)),
-        E.chain((node) =>
+        E.chain(GraphDomain.findNodeByIdE(message.payload.from)),
+        E.map(() =>
           pipe(
-            E.right(graph),
-            E.chain(GraphDomain.withoutNode(node)),
-            E.chain(
-              GraphDomain.withNode(
-                NodeDomain.create(message.payload.to, node.component, node.inports, node.outports, node.metadata),
+            graph,
+            GraphDomain.modifyNodeAtId(message.payload.from)(() => O.none),
+            GraphDomain.modifyNodeAtId(message.payload.from)(
+              O.map((node) =>
+                NodeDomain.create(
+                  message.payload.to,
+                  node.component,
+                  node.inports,
+                  node.outports,
+                  node.metadata,
+                )
               ),
             ),
           )
         ),
-        TE.fromEitherK(E.map((graph) => graph)),
+        TE.fromEitherK(identity),
       )
     ),
     TE.chain((graph) => graphs.set(graph.id, graph)),
