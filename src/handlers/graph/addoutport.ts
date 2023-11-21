@@ -21,21 +21,20 @@ export const addoutport: MessageHandler<
       pipe(
         E.right(graph),
         E.chain(GraphDomain.findNodeByIdE(message.payload.node)),
-        E.map((port) =>
+        E.map(() =>
           pipe(
             graph,
             GraphDomain.modifyNodeAtId(message.payload.node)(
               O.map((node) =>
                 pipe(
                   node,
-                  NodeDomain.modifyOutportAtId(port.id)(
-                    O.map(() =>
-                      PortDomain.create(
+                  NodeDomain.modifyOutportAtId(message.payload.port)(
+                    () =>
+                      O.some(PortDomain.create(
                         message.payload.port,
                         message.payload.public,
                         message.payload.metadata ?? {},
-                      )
-                    ),
+                      )),
                   ),
                 )
               ),

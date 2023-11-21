@@ -20,6 +20,7 @@ export const removeoutport: MessageHandler<
       pipe(
         E.right(graph),
         E.chain(GraphDomain.findNodeByIdE(message.payload.node)),
+        E.chain(NodeDomain.findOutportByIdE(message.payload.public)),
         E.map(() =>
           pipe(
             graph,

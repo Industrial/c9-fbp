@@ -35,12 +35,11 @@ export const addinitial: MessageHandler<
                       pipe(
                         port,
                         PortDomain.modifyIIP(
-                          O.map(() =>
-                            IIPDomain.create(
+                          () =>
+                            O.some(IIPDomain.create(
                               message.payload.src.data,
                               message.payload.metadata ?? {},
-                            )
-                          ),
+                            )),
                         ),
                       )
                     ),

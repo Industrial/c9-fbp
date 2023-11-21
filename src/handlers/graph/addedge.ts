@@ -47,15 +47,15 @@ export const addedge: MessageHandler<
                 nodeId: message.payload.tgt.node,
                 portId: message.payload.tgt.port,
               }),
-            )(O.map(() =>
-              EdgeDomain.create(
+            )(() =>
+              O.some(EdgeDomain.create(
                 message.payload.src.node,
                 message.payload.src.port,
                 message.payload.tgt.node,
                 message.payload.tgt.port,
                 message.payload.metadata ?? {},
-              )
-            )),
+              ))
+            ),
           )
         ),
         TE.fromEitherK(identity),

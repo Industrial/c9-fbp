@@ -29,13 +29,12 @@ export const addinport: MessageHandler<
                 pipe(
                   node,
                   NodeDomain.modifyInportAtId(message.payload.port)(
-                    O.map(() =>
-                      PortDomain.create(
+                    () =>
+                      O.some(PortDomain.create(
                         message.payload.port,
                         message.payload.public,
                         message.payload.metadata ?? {},
-                      )
-                    ),
+                      )),
                   ),
                 )
               ),
