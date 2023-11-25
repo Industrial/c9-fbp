@@ -41,6 +41,8 @@
     "mocha": "npm:/mocha",
     "monocle-ts": "npm:/monocle-ts",
     "monocle-ts/": "npm:/monocle-ts/",
+    "pattern-matching-ts": "npm:/pattern-matching-ts",
+    "pattern-matching-ts/": "npm:/pattern-matching-ts/",
     "rotating-file-stream": "npm:/rotating-file-stream",
     "schemata-ts": "npm:/schemata-ts",
     "schemata-ts/": "npm:/schemata-ts/",

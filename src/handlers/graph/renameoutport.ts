@@ -5,6 +5,7 @@ import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RenameOutportGraphInputMessage } from '#/schemas/messages/graph/input/RenameOutportGraphInputMessage.ts'
@@ -29,15 +30,17 @@ export const renameoutport: MessageHandler<
               O.map((node) =>
                 pipe(
                   node,
-                  NodeDomain.modifyOutportAtId(message.payload.from)(() => O.none),
-                  NodeDomain.modifyOutportAtId(message.payload.to)(O.map((port) =>
-                    PortDomain.create(
-                      message.payload.to,
-                      message.payload.to,
-                      port.metadata,
-                      port.iip,
-                    )
-                  )),
+                  NodeDomain.modifyOutportAtId(message.payload.from)(traversal.remove),
+                  NodeDomain.modifyOutportAtId(message.payload.to)(
+                    traversal.map((port) =>
+                      PortDomain.create(
+                        message.payload.to,
+                        message.payload.to,
+                        port.metadata,
+                        port.iip,
+                      )
+                    ),
+                  ),
                 )
               ),
             ),

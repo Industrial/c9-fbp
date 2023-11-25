@@ -1,9 +1,9 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ChangeNodeGraphInputMessage } from '#/schemas/messages/graph/input/ChangeNodeGraphInputMessage.ts'
 import { ChangeNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/ChangeNodeGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
@@ -23,15 +23,17 @@ export const changenode: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyNodeAtId(message.payload.id)(O.map((node) =>
-              NodeDomain.create(
-                message.payload.id,
-                node.component,
-                node.inports,
-                node.outports,
-                message.payload.metadata,
-              )
-            )),
+            GraphDomain.modifyNodeAtId(message.payload.id)(
+              traversal.map((node) =>
+                NodeDomain.create(
+                  message.payload.id,
+                  node.component,
+                  node.inports,
+                  node.outports,
+                  message.payload.metadata,
+                )
+              ),
+            ),
           )
         ),
         TE.fromEitherK(identity),

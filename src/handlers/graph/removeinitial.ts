@@ -1,10 +1,10 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RemoveInitialGraphInputMessage } from '#/schemas/messages/graph/input/RemoveInitialGraphInputMessage.ts'
@@ -25,20 +25,12 @@ export const removeinitial: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyNodeAtId(message.payload.tgt.node)(
-              O.map((node) =>
-                pipe(
-                  node,
-                  NodeDomain.modifyInportAtId(message.payload.tgt.port)(
-                    O.map((port) =>
-                      pipe(
-                        port,
-                        PortDomain.modifyIIP(() => O.none),
-                      )
-                    ),
-                  ),
-                )
-              ),
+            pipe(
+              PortDomain.modifyIIP(traversal.remove),
+              traversal.map,
+              NodeDomain.modifyInportAtId(message.payload.tgt.port),
+              traversal.map,
+              GraphDomain.modifyNodeAtId(message.payload.tgt.node),
             ),
           )
         ),

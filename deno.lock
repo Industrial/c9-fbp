@@ -15,6 +15,7 @@
       "npm:lint-staged@^13.0.3": "npm:lint-staged@13.3.0",
       "npm:mocha": "npm:mocha@5.2.0",
       "npm:monocle-ts": "npm:monocle-ts@2.3.13_fp-ts@2.16.1",
+      "npm:pattern-matching-ts": "npm:pattern-matching-ts@2.0.0",
       "npm:rotating-file-stream": "npm:rotating-file-stream@3.1.1",
       "npm:schemata-ts": "npm:schemata-ts@2.1.1_fast-check@3.13.2",
       "npm:spectacles-ts": "npm:spectacles-ts@1.0.7_fp-ts@2.16.1",
@@ -1835,6 +1836,10 @@
       },
       "pathval@1.1.1": {
         "integrity": "sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==",
+        "dependencies": {}
+      },
+      "pattern-matching-ts@2.0.0": {
+        "integrity": "sha512-XfNA/wZ1A92Ps+jzlmFKXviAI6YQt98GwZoHVAsDEMOKYo+g5aSjvMQ3lnvYQskIYdBj30r7S4rAx/VzuxsRhA==",
         "dependencies": {}
       },
       "picocolors@1.0.0": {

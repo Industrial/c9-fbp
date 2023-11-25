@@ -1,9 +1,9 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RenameNodeGraphInputMessage } from '#/schemas/messages/graph/input/RenameNodeGraphInputMessage.ts'
@@ -23,9 +23,9 @@ export const renamenode: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyNodeAtId(message.payload.from)(() => O.none),
+            GraphDomain.modifyNodeAtId(message.payload.from)(traversal.remove),
             GraphDomain.modifyNodeAtId(message.payload.from)(
-              O.map((node) =>
+              traversal.map((node) =>
                 NodeDomain.create(
                   message.payload.to,
                   node.component,

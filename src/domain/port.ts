@@ -6,6 +6,7 @@ import * as equals from '#/equals.ts'
 import { Value } from '#/schemas/messages/shared/Value.ts'
 import { lens as L, traversal as T } from 'monocle-ts'
 import { pipe } from 'fp-ts/function.ts'
+import { writeToTransformStream } from '#/transform-stream.ts'
 
 export type Port = {
   id: string
@@ -61,6 +62,8 @@ export const modifyIIP = (f: (iip: O.Option<IIPDomain.IIP>) => O.Option<IIPDomai
     T.prop('iip'),
     T.modify(f),
   )
+
+export const writeToStream = <C>(c: C) => (a: Port) => writeToTransformStream(c)(a.stream)
 
 // const portTransformStream = new TransformStream(portTransformer)
 

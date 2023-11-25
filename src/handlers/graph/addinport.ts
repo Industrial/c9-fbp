@@ -1,10 +1,10 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as PortDomain from '#/domain/port.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { AddInportGraphInputMessage } from '#/schemas/messages/graph/input/AddInportGraphInputMessage.ts'
 import { AddInportGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddInportGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
@@ -24,20 +24,16 @@ export const addinport: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyNodeAtId(message.payload.node)(
-              O.map((node) =>
-                pipe(
-                  node,
-                  NodeDomain.modifyInportAtId(message.payload.port)(
-                    () =>
-                      O.some(PortDomain.create(
-                        message.payload.port,
-                        message.payload.public,
-                        message.payload.metadata ?? {},
-                      )),
-                  ),
-                )
+            pipe(
+              PortDomain.create(
+                message.payload.port,
+                message.payload.public,
+                message.payload.metadata ?? {},
               ),
+              traversal.add,
+              NodeDomain.modifyInportAtId(message.payload.port),
+              traversal.map,
+              GraphDomain.modifyNodeAtId(message.payload.node),
             ),
           )
         ),

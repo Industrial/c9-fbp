@@ -1,8 +1,8 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RemoveNodeGraphInputMessage } from '#/schemas/messages/graph/input/RemoveNodeGraphInputMessage.ts'
@@ -22,7 +22,10 @@ export const removenode: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyNodeAtId(message.payload.id)(() => O.none),
+            pipe(
+              traversal.remove,
+              GraphDomain.modifyNodeAtId(message.payload.id),
+            ),
           )
         ),
         TE.fromEitherK(identity),
