@@ -32,7 +32,7 @@
 
       # spagoOld = spagoPkgs.haskellPackages.spago;
     in {
-      devShell = pkgs.mkShell {
+      devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           bashInteractive
         ];
