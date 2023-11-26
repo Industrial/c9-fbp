@@ -22,28 +22,41 @@
   in (eachDefaultSystem (
     system: let
       pkgs = nixpkgsFor.${system};
+
+      # spagoPkgs = import (builtins.fetchGit {
+      #   name = "spago-0.20.7";
+      #   url = "https://github.com/NixOS/nixpkgs/";
+      #   ref = "refs/heads/nixpkgs-unstable";
+      #   rev = "d1c3fea7ecbed758168787fe4e4a3157e52bc808";
+      # }) {};
+
+      # spagoOld = spagoPkgs.haskellPackages.spago;
     in {
       devShell = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           bashInteractive
         ];
         buildInputs = with pkgs; [
-          # Watch for changes
-          inotify-tools
-
-          # Node
-          nodejs_20
-          nodejs_20.pkgs.eslint
-          nodejs_20.pkgs.pnpm
-          nodejs_20.pkgs.typescript
+          # # Node
+          # nodejs_20
+          # nodejs_20.pkgs.eslint
+          # nodejs_20.pkgs.pnpm
+          # nodejs_20.pkgs.typescript
 
           # Deno
           deno
 
-          # fbp-protocol
+          # # fbp-protocol
           jekyll
-
           lcov
+
+          # PureScript
+          git
+          purescript
+          # spagoOld
+          haskellPackages.stack
+          esbuild
+          # openssl
         ];
       };
     }
