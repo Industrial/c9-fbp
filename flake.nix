@@ -1,13 +1,10 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.flake-compat.url = "github:edolstra/flake-compat";
-  inputs.flake-compat.flake = false;
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-    flake-compat,
   } @ inputs: let
     inherit (nixpkgs) lib;
     inherit (lib) recursiveUpdate;
@@ -32,7 +29,7 @@
 
       # spagoOld = spagoPkgs.haskellPackages.spago;
     in {
-      devShells.${system}.default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           bashInteractive
         ];
