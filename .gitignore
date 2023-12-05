@@ -1,8 +1,11 @@
 /*.log
 /.direnv
 /.env
-/coverage
-/node_modules
+/.psc-ide-port
+/.purs-repl
 /.spago
+/coverage
 /dist
+/node_modules
 /output
+/output-es

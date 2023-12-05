@@ -1,0 +1,24 @@
+/// <reference types="./deno.d.ts" />
+export declare const create: (uri: string) => (options: RequestInit) => () => Request;
+export declare const getBody: (request: Request) => () => ReadableStream<Uint8Array> | null;
+export declare const getBodyUsed: (request: Request) => () => boolean;
+export declare const getCache: (request: Request) => () => RequestCache;
+export declare const getCredentials: (request: Request) => () => RequestCredentials;
+export declare const getDestination: (request: Request) => () => RequestDestination;
+export declare const getHeaders: (request: Request) => () => Headers;
+export declare const getIntegrity: (request: Request) => () => string;
+export declare const getIsHistoryNavigation: (request: Request) => () => boolean;
+export declare const getIsReloadNavigation: (request: Request) => () => boolean;
+export declare const getKeepalive: (request: Request) => () => boolean;
+export declare const getMethod: (request: Request) => () => string;
+export declare const getMode: (request: Request) => () => RequestMode;
+export declare const getRedirect: (request: Request) => () => RequestRedirect;
+export declare const getReferrer: (request: Request) => () => string;
+export declare const getReferrerPolicy: (request: Request) => () => ReferrerPolicy;
+export declare const getSignal: (request: Request) => () => AbortSignal;
+export declare const getURL: (request: Request) => () => string;
+export declare const getBlob: (request: Request) => () => Promise<Blob>;
+export declare const getClone: (request: Request) => () => Request;
+export declare const getFormData: (request: Request) => () => Promise<FormData>;
+export declare const getJSON: (request: Request) => () => Promise<any>;
+export declare const getText: (request: Request) => () => Promise<string>;

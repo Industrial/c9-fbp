@@ -1,59 +1,52 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.purescript-overlay.url = "github:thomashoneyman/purescript-overlay";
+  inputs.purescript-overlay.inputs.nixpkgs.follows = "nixpkgs";
   outputs = {
     self,
     nixpkgs,
     flake-utils,
+    purescript-overlay,
   } @ inputs: let
     inherit (nixpkgs) lib;
     inherit (lib) recursiveUpdate;
     inherit (flake-utils.lib) eachDefaultSystem defaultSystems;
+    overlays = [purescript-overlay.overlays.default];
     nixpkgsFor = lib.genAttrs defaultSystems (system:
       import nixpkgs {
+        inherit system;
+        inherit overlays;
         config = {
           allowUnfree = true;
         };
-        inherit system;
       });
   in (eachDefaultSystem (
     system: let
       pkgs = nixpkgsFor.${system};
-
-      # spagoPkgs = import (builtins.fetchGit {
-      #   name = "spago-0.20.7";
-      #   url = "https://github.com/NixOS/nixpkgs/";
-      #   ref = "refs/heads/nixpkgs-unstable";
-      #   rev = "d1c3fea7ecbed758168787fe4e4a3157e52bc808";
-      # }) {};
-
-      # spagoOld = spagoPkgs.haskellPackages.spago;
     in {
       devShells.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           bashInteractive
         ];
         buildInputs = with pkgs; [
-          # # Node
-          # nodejs_20
-          # nodejs_20.pkgs.eslint
-          # nodejs_20.pkgs.pnpm
-          # nodejs_20.pkgs.typescript
+          # File Watch (Deno Watch isn't sufficient, use inotifywatch)
+          inotify-tools
 
           # Deno
           deno
 
-          # # fbp-protocol
+          # FBP Protocol
           jekyll
           lcov
 
           # PureScript
-          git
-          purescript
-          # spagoOld
-          haskellPackages.stack
+          purs
+          spago-unstable
+          purs-tidy-bin.purs-tidy-0_10_0
+          purs-backend-es
           esbuild
-          # openssl
+          # haskellPackages.stack
         ];
       };
     }
