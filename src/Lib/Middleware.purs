@@ -8,9 +8,10 @@ import Data.JSDate (JSDate, now)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Console as Console
-import FFI.Server (RequestHandler)
-import JS.Fetch.Request (Request)
 import Lib.Date (differenceInMilliseconds)
+import Lib.Request (Request)
+import Lib.Request as Request
+import Lib.Server (RequestHandler)
 import Lib.Stream as Stream
 import Web.Encoding.TextDecoder as TextDecoder
 import Web.Encoding.UtfLabel (utf8)
@@ -31,8 +32,9 @@ responseTime handler =
 
 requestBodyParser :: Request -> Aff String
 requestBodyParser request = do
-  reader <- liftEffect $ getReader request
-  Stream.toString (TextDecoder.new utf8) reader ""
+  pure $ "LOL"
+  -- reader <- liftEffect $ getReader request
+  -- Stream.toString (TextDecoder.new utf8) reader ""
 
 requestBodyJSONParser :: Request -> Aff (Either JsonDecodeError Json)
 requestBodyJSONParser request = do

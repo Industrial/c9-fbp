@@ -1,12 +1,12 @@
-module FFI.Server where
+module Lib.Server where
 
 import Prelude
 
 import Control.Promise as Promise
 import Effect (Effect)
 import Effect.Aff (Aff, Error)
-import FFI.Request (Request)
-import FFI.Response (Response)
+import Lib.Request (Request)
+import Lib.Response (Response)
 
 foreign import _startServer
   :: (Unit -> Effect (Promise.Promise Unit))

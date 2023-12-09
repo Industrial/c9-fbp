@@ -1,7 +1,7 @@
 module Lib.Endpoint where
 
 import Data.Tuple.Nested (Tuple3, get1, get2, get3)
-import FFI.Server (RequestHandler)
+import Lib.Server (RequestHandler)
 import Lib.Method (Method)
 import Lib.Route (Route)
 

@@ -9,3 +9,5 @@
 /node_modules
 /output
 /output-es
+/src/Lib/**/*.d.ts
+/src/Lib/**/*.js
