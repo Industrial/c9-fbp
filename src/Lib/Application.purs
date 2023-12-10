@@ -9,19 +9,21 @@ import Data.Tuple (Tuple(..))
 import Effect.Class (liftEffect)
 import Lib.Endpoint (Endpoint)
 import Lib.Endpoint as Endpoint
-import Lib.Request as Request
 import Lib.Response.Handler as ResponseHandler
-import Lib.Route (matchesURL)
+import Lib.Route as Route
 import Lib.Server (RequestHandler)
-import Lib.String (stripTrailingSlash)
+import Lib.Web.Request as Request
+import Lib.Web.URL (URL)
+import Lib.Web.URL as URL
 
 type Application = Array Endpoint
 
 handleRequest :: Application -> RequestHandler
 handleRequest app request = do
   method <- liftEffect $ Request.getMethod request
-  url <- liftEffect $ Request.getURL request
-  let maybeMatchingEndpoint = findMatchingEndpoint method url app
+  urlString <- liftEffect $ Request.getURL request
+  let url = URL.create urlString
+  let maybeMatchingEndpoint = findMatchingEndpoint app method url
   case maybeMatchingEndpoint of
     Just endpoint -> do
       let handler = Endpoint.getHandler endpoint
@@ -33,15 +35,14 @@ handleRequest app request = do
           ]
       ResponseHandler.notFound headers request
 
-findMatchingEndpoint :: String -> String -> Application -> Maybe Endpoint
-findMatchingEndpoint method url app =
-  Array.find
-    ( \endpoint ->
-        let
-          endpointMethod = Endpoint.getMethod endpoint
-          endpointRoute = Endpoint.getRoute endpoint
-          strippedURL = stripTrailingSlash url
-        in
-          endpointMethod == method && matchesURL endpointRoute strippedURL
-    )
-    app
+findMatchingEndpoint :: Application -> String -> URL -> Maybe Endpoint
+findMatchingEndpoint app method url =
+  Array.find findEndpoint app
+  where
+  findEndpoint :: Endpoint -> Boolean
+  findEndpoint endpoint =
+    let
+      endpointMethod = Endpoint.getMethod endpoint
+      endpointRoute = Endpoint.getRoute endpoint
+    in
+      endpointMethod == method && Route.matchesURL endpointRoute url

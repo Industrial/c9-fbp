@@ -1,4 +1,4 @@
-module Lib.Response where
+module Lib.Web.Response where
 
 import Control.Promise (Promise)
 import Data.Argonaut (Json)

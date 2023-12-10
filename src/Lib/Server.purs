@@ -5,8 +5,8 @@ import Prelude
 import Control.Promise as Promise
 import Effect (Effect)
 import Effect.Aff (Aff, Error)
-import Lib.Request (Request)
-import Lib.Response (Response)
+import Lib.Web.Request (Request)
+import Lib.Web.Response (Response)
 
 foreign import _startServer
   :: (Unit -> Effect (Promise.Promise Unit))

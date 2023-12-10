@@ -1,4 +1,4 @@
-module Lib.Request where
+module Lib.Web.Request where
 
 import Control.Promise (Promise)
 import Data.Argonaut (Json)

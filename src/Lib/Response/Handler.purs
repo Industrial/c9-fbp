@@ -5,7 +5,7 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Lib.Headers (Headers)
-import Lib.Response as Response
+import Lib.Web.Response as Response
 import Lib.Server (RequestHandler)
 
 locationHeader :: String -> Tuple String String

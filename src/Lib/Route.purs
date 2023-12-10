@@ -4,11 +4,13 @@ import Prelude
 
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Map as Map
 import Data.String as String
 import Data.String.Regex (regex, test)
 import Data.String.Regex.Flags (RegexFlags(..))
 import Data.Tuple (Tuple(..))
+import Debug as Debug
+import Lib.Web.URL (URL)
+import Lib.Web.URL as URL
 
 type Route = String
 
@@ -31,23 +33,17 @@ isParameter str =
     Left _ -> false
     Right re -> test re str
 
-matchesURL :: Route -> String -> Boolean
+parts :: String -> Array String
+parts = String.split $ String.Pattern "/"
+
+matchesURL :: Route -> URL -> Boolean
 matchesURL route url =
   let
-    urlParts = String.split (String.Pattern "/") url
-    routeParts = String.split (String.Pattern "/") route
+    urlParts = parts $ URL.pathname url
+    routeParts = parts route
     pairs = Array.zip urlParts routeParts
-    matches' = map (\(Tuple u p) -> u == p || isParameter p) pairs
   in
-    Array.all identity matches'
-
-parametersOfRoute :: Route -> String -> Map.Map String String
-parametersOfRoute route url =
-  let
-    urlParts = String.split (String.Pattern "/") url
-    routeParts = String.split (String.Pattern "/") route
-    pairs = Array.zip urlParts routeParts
-    paramPairs = Array.filter (\(Tuple _ p) -> isParameter p) pairs
-    params = map (\(Tuple u p) -> Tuple (String.drop 1 p) u) paramPairs
-  in
-    Map.fromFoldable params
+    Array.all identity $ map match pairs
+  where
+  match :: (Tuple String String) -> Boolean
+  match (Tuple a b) = a == b || isParameter b
