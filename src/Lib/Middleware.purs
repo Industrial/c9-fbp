@@ -4,15 +4,15 @@ import Prelude
 
 import Data.Argonaut (Json, JsonDecodeError, parseJson, stringify)
 import Data.Either (Either(..))
-import Data.JSDate (JSDate, now)
+import Data.JSDate (now)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Console as Console
 import Lib.Date (differenceInMilliseconds)
-import Lib.Web.Request (Request)
-import Lib.Web.Request as Request
 import Lib.Server (RequestHandler)
 import Lib.Stream as Stream
+import Lib.Web.Request (Request)
+import Lib.Web.Request as Request
 import Web.Encoding.TextDecoder as TextDecoder
 import Web.Encoding.UtfLabel (utf8)
 import Web.Streams.ReadableStream (getReader)
@@ -32,10 +32,10 @@ responseTime handler =
 
 requestBodyParser :: Request -> Aff String
 requestBodyParser request = do
-  pure $ "LOL"
-
--- reader <- liftEffect $ getReader request
--- Stream.toString (TextDecoder.new utf8) reader ""
+  body <- liftEffect $ Request.getBody request
+  reader <- liftEffect $ getReader body
+  decoder <- liftEffect $ TextDecoder.new utf8
+  Stream.toString decoder reader ""
 
 requestBodyJSONParser :: Request -> Aff (Either JsonDecodeError Json)
 requestBodyJSONParser request = do

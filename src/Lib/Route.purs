@@ -8,7 +8,6 @@ import Data.String as String
 import Data.String.Regex (regex, test)
 import Data.String.Regex.Flags (RegexFlags(..))
 import Data.Tuple (Tuple(..))
-import Debug as Debug
 import Lib.Web.URL (URL)
 import Lib.Web.URL as URL
 
