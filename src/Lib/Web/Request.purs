@@ -1,56 +1,62 @@
 module Lib.Web.Request where
 
+import Prelude
+
 import Control.Promise (Promise)
 import Data.Argonaut (Json)
 import Data.ArrayBuffer.Types (Uint8Array)
 import Data.Map (Map)
-import Effect (Effect)
+import Data.Maybe (Maybe)
+import Data.Nullable (Nullable, toMaybe)
 import Web.Streams.ReadableStream (ReadableStream)
 
 foreign import data Request :: Type
 
-foreign import getBody :: Request -> Effect (ReadableStream Uint8Array)
+foreign import getBodyImpl :: Request -> Nullable (ReadableStream Uint8Array)
 
-foreign import getBodyUsed :: Request -> Effect Boolean
+getBody ∷ Request → Maybe (ReadableStream Uint8Array)
+getBody = getBodyImpl >>> toMaybe
 
-foreign import getCache :: Request -> Effect String
+foreign import getBodyUsed :: Request -> Boolean
 
-foreign import getCredentials :: Request -> Effect String
+foreign import getCache :: Request -> String
 
-foreign import getDestination :: Request -> Effect String
+foreign import getCredentials :: Request -> String
 
-foreign import getHeaders :: Request -> Effect (Map String String)
+foreign import getDestination :: Request -> String
 
-foreign import getIntegrity :: Request -> Effect String
+foreign import getHeaders :: Request -> Map String String
 
-foreign import getIsHistoryNavigation :: Request -> Effect Boolean
+foreign import getIntegrity :: Request -> String
 
-foreign import getIsReloadNavigation :: Request -> Effect Boolean
+foreign import getIsHistoryNavigation :: Request -> Boolean
 
-foreign import getKeepalive :: Request -> Effect Boolean
+foreign import getIsReloadNavigation :: Request -> Boolean
 
-foreign import getMethod :: Request -> Effect String
+foreign import getKeepalive :: Request -> Boolean
 
-foreign import getMode :: Request -> Effect String
+foreign import getMethod :: Request -> String
 
-foreign import getRedirect :: Request -> Effect String
+foreign import getMode :: Request -> String
 
-foreign import getReferrer :: Request -> Effect String
+foreign import getRedirect :: Request -> String
 
-foreign import getReferrerPolicy :: Request -> Effect String
+foreign import getReferrer :: Request -> String
+
+foreign import getReferrerPolicy :: Request -> String
 
 -- TODO: Deno Type?
--- foreign import getSignal :: Request -> Effect Uint8Array
+-- foreign import getSignal :: Request -> Uint8Array
 
-foreign import getURL :: Request -> Effect String
+foreign import getURL :: Request -> String
 
 -- Methods
--- foreign import getBlob :: Request -> Effect (Promise Blob)
+-- foreign import getBlob :: Request -> Promise Blob
 
-foreign import getClone :: Request -> Effect (Promise Request)
+foreign import getClone :: Request -> Promise Request
 
--- foreign import getFormData :: Request -> Effect (Promise FormData)
+-- foreign import getFormData :: Request -> Promise FormData
 
-foreign import getJSON :: Request -> Effect (Promise Json)
+foreign import getJSON :: Request -> Promise Json
 
-foreign import getText :: Request -> Effect (Promise String)
+foreign import getText :: Request -> Promise String

@@ -5,6 +5,7 @@ import Prelude
 import Data.Argonaut (Json, JsonDecodeError, parseJson, stringify)
 import Data.Either (Either(..))
 import Data.JSDate (now)
+import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Console as Console
@@ -30,22 +31,28 @@ responseTime handler =
       pure response
   ) :: RequestHandler
 
-requestBodyParser :: Request -> Aff String
-requestBodyParser request = do
-  body <- liftEffect $ Request.getBody request
-  reader <- liftEffect $ getReader body
-  decoder <- liftEffect $ TextDecoder.new utf8
-  Stream.toString decoder reader ""
+parseStringBody :: Request -> Aff (Maybe String)
+parseStringBody request = do
+  let requestBody = Request.getBody request
+  case requestBody of
+    Nothing -> pure Nothing
+    Just body -> do
+      reader <- liftEffect $ getReader body
+      decoder <- liftEffect $ TextDecoder.new utf8
+      string <- Stream.toString decoder reader ""
+      pure $ Just string
 
-requestBodyJSONParser :: Request -> Aff (Either JsonDecodeError Json)
-requestBodyJSONParser request = do
-  body <- requestBodyParser request
-  let output = parseJson body
-  case output of
-    Left error -> do
-      pure $ Left error
-    Right json -> do
-      pure $ Right json
+data JSONBodyParseError = NoBody | JsonError JsonDecodeError
+
+parseJSONBody :: Request -> Aff (Either JSONBodyParseError Json)
+parseJSONBody request = do
+  maybeBody <- parseStringBody request
+  case maybeBody of
+    Nothing -> pure (Left NoBody)
+    Just body -> do
+      case parseJson body of
+        Left error -> pure (Left (JsonError error))
+        Right json -> pure (Right json)
 
 -- TODO: Do we really need this API?
 responseBodyJSONSerializer :: Json -> Aff String

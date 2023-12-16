@@ -6,7 +6,6 @@ import Data.Array as Array
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
-import Effect.Class (liftEffect)
 import Lib.Endpoint (Endpoint)
 import Lib.Endpoint as Endpoint
 import Lib.Response.Handler as ResponseHandler
@@ -20,8 +19,8 @@ type Application = Array Endpoint
 
 handleRequest :: Application -> RequestHandler
 handleRequest app request = do
-  method <- liftEffect $ Request.getMethod request
-  urlString <- liftEffect $ Request.getURL request
+  let method = Request.getMethod request
+  let urlString = Request.getURL request
   let url = URL.create urlString
   let maybeMatchingEndpoint = findMatchingEndpoint app method url
   case maybeMatchingEndpoint of
