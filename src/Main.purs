@@ -12,15 +12,12 @@ import Data.Tuple (Tuple(..))
 import Data.Tuple.Nested (tuple3)
 import Effect (Effect)
 import Effect.Aff (Aff, Error)
-import Effect.Class (liftEffect)
 import Effect.Console (log)
+import Lib.Aff (affLog)
 import Lib.Application (Application, handleRequest)
 import Lib.Server (startServer)
 import Lib.Web.Response (Response)
 import Lib.Web.Response as Response
-
-affLog :: String -> Aff Unit
-affLog = liftEffect <<< log
 
 handleListening :: String -> Int -> (Unit -> Aff Unit)
 handleListening hostname port = do
