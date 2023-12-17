@@ -2,7 +2,10 @@ module Main where
 
 import Prelude
 
-import Controller.Message (handleMessage)
+import Controller.Component as Component
+import Controller.Graph as Graph
+import Controller.Network as Network
+import Controller.Runtime as Runtime
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -12,16 +15,17 @@ import Effect.Aff (Aff, Error)
 import Effect.Class (liftEffect)
 import Effect.Console (log)
 import Lib.Application (Application, handleRequest)
+import Lib.Server (startServer)
 import Lib.Web.Response (Response)
 import Lib.Web.Response as Response
-import Lib.Server (startServer)
 
 affLog :: String -> Aff Unit
 affLog = liftEffect <<< log
 
-handleListening :: Unit -> Aff Unit
-handleListening = do
-  pure $ affLog "Listening"
+handleListening :: String -> Int -> (Unit -> Aff Unit)
+handleListening hostname port = do
+  let message = "Listening on http://" <> hostname <> ":" <> (show port)
+  pure $ affLog message
 
 handleError :: Error -> Aff Response
 handleError e = do
@@ -39,15 +43,20 @@ handleError e = do
 
 application :: Application
 application =
-  [ tuple3 "GET" "/" handleMessage
+  [ tuple3 "GET" "/component" Component.handleMessage
+  , tuple3 "GET" "/graph" Graph.handleMessage
+  , tuple3 "GET" "/network" Network.handleMessage
+  , tuple3 "GET" "/runtime" Runtime.handleMessage
   ]
 
 main :: Effect Unit
 main = do
+  let hostname = "localhost"
+  let port = 3000
   log "Starting ..."
   startServer
-    handleListening
+    (handleListening hostname port)
     handleError
     (handleRequest application)
-    "localhost"
-    3000
+    hostname
+    port

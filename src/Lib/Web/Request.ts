@@ -1,9 +1,7 @@
-import { Nullable } from '#/Lib/Nullable.ts'
-
 export const create = (uri: string) => (options: RequestInit) => new Request(uri, options)
 
 // Properties
-export const getBodyImpl = (request: Request): Nullable<ReadableStream<Uint8Array>> => request.body
+export const getBodyImpl = (request: Request): ReadableStream<Uint8Array> | null => request.body
 
 export const getBodyUsed = (request: Request): boolean => request.bodyUsed
 
