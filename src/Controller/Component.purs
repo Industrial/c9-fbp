@@ -2,13 +2,14 @@ module Controller.Component where
 
 import Prelude
 
-import Data.Argonaut (printJsonDecodeError, stringify)
+import Data.Argonaut (stringify)
 import Data.Either (Either(..))
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect.Class.Console (logShow)
-import Lib.Middleware (JSONBodyParseError(..), parseJSONBody, responseTime)
+import Lib.Middleware (parseJSONBody, responseTime)
+import Lib.Response.Handler (internalServerError)
 import Lib.Server (RequestHandler)
 import Lib.Web.Response as Response
 
@@ -18,26 +19,12 @@ handleMessage r =
     ( \request -> do
         requestBodyE <- parseJSONBody request
         case requestBodyE of
-          Left e -> do
+          Left _error -> do
             let
               headers = Map.fromFoldable
                 [ Tuple "Content-Type" "application/json"
                 ]
-            case e of
-              NoBody -> do
-                let payload = "{ \"error\": \"No Body\" }"
-                pure $ Response.create
-                  payload
-                  (Just headers)
-                  (Just 500)
-                  (Just "OK")
-              JsonError err -> do
-                let payload = "{ \"error\": \"" <> printJsonDecodeError err <> "\" }"
-                pure $ Response.create
-                  payload
-                  (Just headers)
-                  (Just 500)
-                  (Just "OK")
+            internalServerError headers r
           Right requestBody -> do
             logShow $ stringify requestBody
             let payload = "{ \"orly\": \"yarly\" }"

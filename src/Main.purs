@@ -6,9 +6,7 @@ import Controller.Component as Component
 import Controller.Graph as Graph
 import Controller.Network as Network
 import Controller.Runtime as Runtime
-import Data.Map as Map
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Data.Tuple.Nested (tuple3)
 import Effect (Effect)
 import Effect.Aff (Aff, Error)
@@ -26,15 +24,9 @@ handleListening hostname port = do
 
 handleError :: Error -> Aff Response
 handleError e = do
-  let payload = show e
-  let
-    headers = Map.fromFoldable
-      [ Tuple "Content-Type" "application/json"
-      ]
-  _ <- affLog $ payload
   pure $ Response.create
-    payload
-    (Just headers)
+    (show e)
+    Nothing
     (Just 500)
     (Just "OK")
 
