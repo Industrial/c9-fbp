@@ -32,10 +32,10 @@ handleError e = do
 
 application :: Application
 application =
-  [ tuple3 "GET" "/component" Component.handleMessage
-  , tuple3 "GET" "/graph" Graph.handleMessage
-  , tuple3 "GET" "/network" Network.handleMessage
-  , tuple3 "GET" "/runtime" Runtime.handleMessage
+  [ tuple3 "POST" "/component" Component.handleMessage
+  , tuple3 "POST" "/graph" Graph.handleMessage
+  , tuple3 "POST" "/network" Network.handleMessage
+  , tuple3 "POST" "/runtime" Runtime.handleMessage
   ]
 
 main :: Effect Unit

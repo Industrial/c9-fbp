@@ -3,12 +3,10 @@ module Lib.Application where
 import Prelude
 
 import Data.Array as Array
-import Data.Map as Map
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Lib.Endpoint (Endpoint)
 import Lib.Endpoint as Endpoint
-import Lib.Response.Handler as ResponseHandler
+import Lib.Response.Handler (notFound)
 import Lib.Route as Route
 import Lib.Server (RequestHandler)
 import Lib.Web.Request as Request
@@ -24,15 +22,8 @@ handleRequest app request = do
   let url = URL.create urlString
   let maybeMatchingEndpoint = findMatchingEndpoint app method url
   case maybeMatchingEndpoint of
-    Just endpoint -> do
-      let handler = Endpoint.getHandler endpoint
-      handler request
-    _ -> do
-      let
-        headers = Map.fromFoldable
-          [ Tuple "Content-Type" "application/json"
-          ]
-      ResponseHandler.notFound headers request
+    Just endpoint -> (Endpoint.getHandler endpoint) request
+    _ -> notFound Nothing request
 
 findMatchingEndpoint :: Application -> String -> URL -> Maybe Endpoint
 findMatchingEndpoint app method url =
