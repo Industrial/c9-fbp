@@ -1,9 +1,9 @@
 import * as E from 'fp-ts/Either.ts'
 import * as GraphDomain from '#/domain/graph.ts'
 import * as GroupDomain from '#/domain/group.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
 import { MessageHandler } from '#/handlers/MessageHandler.ts'
 import { RenameGroupGraphInputMessage } from '#/schemas/messages/graph/input/RenameGroupGraphInputMessage.ts'
@@ -23,9 +23,9 @@ export const renamegroup: MessageHandler<
         E.map(() =>
           pipe(
             graph,
-            GraphDomain.modifyGroupAtName(message.payload.from)(() => O.none),
+            GraphDomain.modifyGroupAtName(message.payload.from)(traversal.remove),
             GraphDomain.modifyGroupAtName(message.payload.from)(
-              O.map((group) =>
+              traversal.map((group) =>
                 GroupDomain.create(
                   message.payload.to,
                   group.nodes,

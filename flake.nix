@@ -1,49 +1,52 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.flake-compat.url = "github:edolstra/flake-compat";
-  inputs.flake-compat.flake = false;
+  inputs.purescript-overlay.url = "github:thomashoneyman/purescript-overlay";
+  inputs.purescript-overlay.inputs.nixpkgs.follows = "nixpkgs";
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-    flake-compat,
+    purescript-overlay,
   } @ inputs: let
     inherit (nixpkgs) lib;
     inherit (lib) recursiveUpdate;
     inherit (flake-utils.lib) eachDefaultSystem defaultSystems;
+    overlays = [purescript-overlay.overlays.default];
     nixpkgsFor = lib.genAttrs defaultSystems (system:
       import nixpkgs {
+        inherit system;
+        inherit overlays;
         config = {
           allowUnfree = true;
         };
-        inherit system;
       });
   in (eachDefaultSystem (
     system: let
       pkgs = nixpkgsFor.${system};
     in {
-      devShell = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           bashInteractive
         ];
         buildInputs = with pkgs; [
-          # Watch for changes
+          # File Watch (Deno Watch isn't sufficient, use inotifywatch)
           inotify-tools
-
-          # Node
-          nodejs_20
-          nodejs_20.pkgs.eslint
-          nodejs_20.pkgs.pnpm
-          nodejs_20.pkgs.typescript
 
           # Deno
           deno
 
-          # fbp-protocol
+          # FBP Protocol
           jekyll
-
           lcov
+
+          # PureScript
+          purs
+          spago-unstable
+          purs-tidy-bin.purs-tidy-0_10_0
+          purs-backend-es
+          esbuild
+          # haskellPackages.stack
         ];
       };
     }

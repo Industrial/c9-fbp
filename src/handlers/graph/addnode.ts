@@ -1,8 +1,8 @@
 import * as GraphDomain from '#/domain/graph.ts'
 import * as NodeDomain from '#/domain/node.ts'
-import * as O from 'fp-ts/Option.ts'
 import * as TE from 'fp-ts/TaskEither.ts'
 import * as graphs from '#/graphs.ts'
+import * as traversal from '#/traversal.ts'
 import { AddNodeGraphInputMessage } from '#/schemas/messages/graph/input/AddNodeGraphInputMessage.ts'
 import { AddNodeGraphOutputMessageInput } from '#/schemas/messages/graph/output/AddNodeGraphOutputMessage.ts'
 import { ErrorGraphOutputMessageInput } from '#/schemas/messages/graph/output/ErrorGraphOutputMessage.ts'
@@ -18,17 +18,16 @@ export const addnode: MessageHandler<
     TE.map((graph) =>
       pipe(
         graph,
-        GraphDomain.modifyNodeAtId(message.payload.id)(
-          () =>
-            O.some(
-              NodeDomain.create(
-                message.payload.id,
-                message.payload.component,
-                {},
-                {},
-                message.payload.metadata ?? {},
-              ),
-            ),
+        pipe(
+          NodeDomain.create(
+            message.payload.id,
+            message.payload.component,
+            {},
+            {},
+            message.payload.metadata ?? {},
+          ),
+          traversal.add,
+          GraphDomain.modifyNodeAtId(message.payload.id),
         ),
       )
     ),

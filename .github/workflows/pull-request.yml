@@ -1,0 +1,30 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: DeterminateSystems/flake-checker-action@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      # - uses: denoland/setup-deno@v1
+      #   with:
+      #     deno-version: v1.x
+      - run: nix develop --command deno task ci:fmt:check
+      - run: nix develop --command deno task ci:lint
+      - run: nix develop --command deno task test:coverage
+      # - name: Setup Code Coverage
+      #   uses: hrishikesh-kadam/setup-lcov@v1
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v3
+        with:
+          coverage-files: coverage/coverage.lcov
+          minimum-coverage: 10
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: .
+          update-comment: true

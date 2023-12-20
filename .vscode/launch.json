@@ -48,6 +48,21 @@
         "--allow-all"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "name": "Main",
+      "request": "launch",
+      "type": "node",
+      "program": "${workspaceFolder}/bin/start.js",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--unstable",
+        "--inspect-brk",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }

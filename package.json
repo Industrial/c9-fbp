@@ -3,5 +3,8 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "pattern-matching-ts": "^2.0.0"
   }
 }

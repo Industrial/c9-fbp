@@ -1,0 +1,32 @@
+package:
+  dependencies:
+    - arraybuffer
+    - arraybuffer-types
+    - console
+    - debug
+    - deno
+    - effect
+    - exceptions
+    - js-date
+    - js-fetch
+    - js-promise
+    - js-promise-aff
+    - maybe
+    - ordered-collections
+    - prelude
+    - spec
+    - tuples
+    - web-encoding
+    - web-streams
+  name: c9-fbp
+  test:
+    dependencies: []
+    main: Test.Main
+workspace:
+  # backend:
+  #   cmd: purs-backend-es
+  #   args:
+  #     - "build"
+  extra_packages: {}
+  package_set:
+    registry: 46.3.0
