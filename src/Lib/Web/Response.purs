@@ -66,3 +66,34 @@ foreign import getClone :: Response -> Effect (Promise Response)
 foreign import getJSON :: Response -> Effect (Promise Json)
 
 foreign import getText :: Response -> Effect (Promise String)
+
+data ResponseType
+  = Basic
+  | Cors
+  | Default
+  | Error
+  | Opaque
+
+foreign import _create
+  :: String
+  -> Nullable (Record String)
+  -> Nullable Int
+  -> Nullable String
+  -> Effect Response
+
+foreign import getBodyImpl :: Response -> Nullable (ReadableStream (ArrayBuffer))
+foreign import getBodyUsed :: Response -> Boolean
+foreign import getHeaders :: Response -> Headers
+foreign import getOK :: Response -> Boolean
+foreign import getRedirected :: Response -> Boolean
+foreign import getStatus :: Response -> Int
+foreign import getStatusText :: Response -> String
+foreign import getType :: Response -> ResponseType
+foreign import getURL :: Response -> String
+
+foreign import getArrayBuffer :: Response -> Promise ArrayBuffer
+foreign import getBlob :: Response -> Promise Blob
+foreign import getClone :: Response -> Response
+foreign import getFormData :: Response -> Promise FormData
+foreign import getJSON :: Response -> Promise (Record String) -- or Array (Record String)
+foreign import getText :: Response -> Promise String

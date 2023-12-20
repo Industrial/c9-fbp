@@ -2,10 +2,7 @@ module Main where
 
 import Prelude
 
-import Controller.Component as Component
-import Controller.Graph as Graph
-import Controller.Network as Network
-import Controller.Runtime as Runtime
+import Controller.Message as Message
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (tuple3)
 import Effect (Effect)
@@ -32,10 +29,7 @@ handleError e = do
 
 application :: Application
 application =
-  [ tuple3 "POST" "/component" Component.handleMessage
-  , tuple3 "POST" "/graph" Graph.handleMessage
-  , tuple3 "POST" "/network" Network.handleMessage
-  , tuple3 "POST" "/runtime" Runtime.handleMessage
+  [ tuple3 "POST" "/" Message.handleMessage
   ]
 
 main :: Effect Unit

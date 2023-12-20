@@ -1,4 +1,4 @@
-module Controller.Network where
+module Controller.MessageHandler.Graph where
 
 import Prelude
 

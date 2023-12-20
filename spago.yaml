@@ -14,6 +14,7 @@ package:
     - maybe
     - ordered-collections
     - prelude
+    - spec
     - tuples
     - web-encoding
     - web-streams
